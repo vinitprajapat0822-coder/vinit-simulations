@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masterpiece Projectile Motion Simulator — Optimal Trajectory & Envelope</title>
+    <style>
+        :root {
+            --bg-base: #090a0f;
+            --bg-panel: #131520;
+            --bg-card: #1c1f2e;
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-pink: #ff0844;
+            --accent-gold: #ffb199;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #2a2f45;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+            max-width: 1300px;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .canvas-card {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 540px;
+            background: #040508;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: crosshair;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .canvas-overlay-tip {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(19, 21, 32, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            pointer-events: none;
+        }
+
+        .controls-panel {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            margin-bottom: -4px;
+        }
+
+        .control-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        label span.val {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #2a2f45;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--accent-cyan);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .metric-box {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .metric-value.highlight {
+            color: var(--accent-pink);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #090a0f;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mode-toggles {
+            display: flex;
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--text-muted);
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-cyan);
+            color: #090a0f;
+            box-shadow: 0 2px 8px rgba(0, 242, 254, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Optimal Projectile Trajectory Simulator</h1>
+        <p class="subtitle">Minimum speed $u_{\min}$ required to pass through target point $(X, Y)$</p>
+    </header>
+
+    <div class="main-layout">
+        <div class="canvas-card">
+            <div class="canvas-wrapper">
+                <canvas id="simCanvas"></canvas>
+                <div class="canvas-overlay-tip">💡 Drag target point directly on canvas or use sliders</div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="section-title">Simulation Parameters</div>
+
+            <div class="control-card">
+                <label>Target X Position: <span class="val" id="lblX">30.0 m</span></label>
+                <input type="range" id="sliderX" min="10" max="75" value="30" step="1">
+            </div>
+
+            <div class="control-card">
+                <label>Target Y Position: <span class="val" id="lblY">40.0 m</span></label>
+                <input type="range" id="sliderY" min="5" max="75" value="40" step="1">
+            </div>
+
+            <div class="control-card">
+                <label>Simulation Speed (YT Style): <span class="val" id="lblSpeed">1.0x</span></label>
+                <input type="range" id="sliderSpeed" min="0.2" max="3.0" value="1.0" step="0.1">
+            </div>
+
+            <div class="control-card">
+                <label>Gravitational Field ($g$): <span class="val" id="lblG">10.0 m/s²</span></label>
+                <input type="range" id="sliderG" min="1.0" max="25.0" value="10.0" step="0.5">
+            </div>
+
+            <div class="control-card">
+                <label>Trajectory Display Mode</label>
+                <div class="mode-toggles">
+                    <button class="mode-btn active" id="modeMin" onclick="setMode('min')">Minimum $u$</button>
+                    <button class="mode-btn" id="modeAll" onclick="setMode('all')">All Paths</button>
+                    <button class="mode-btn" id="modeCustom" onclick="setMode('custom')">Custom Angle</button>
+                </div>
+            </div>
+
+            <div class="control-card" id="customAngleGroup" style="display: none;">
+                <label>Custom Launch Angle: <span class="val" id="lblAngleCustom">60.0°</span></label>
+                <input type="range" id="sliderAngle" min="10" max="89" value="60" step="0.5">
+            </div>
+
+            <div class="section-title" style="margin-top: 4px;">Analytical Metrics</div>
+            
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <span class="metric-label">Min Speed ($u_{\min}$)</span>
+                    <span class="metric-value" id="valUmin">30.00 m/s</span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Launch Angle ($\theta$)</span>
+                    <span class="metric-value" id="valAngle">71.57°</span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Apex Height ($H_{\max}$)</span>
+                    <span class="metric-value highlight" id="valHmax">40.50 m</span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Max Range ($R_{\max}$)</span>
+                    <span class="metric-value" id="valRmax">90.00 m</span>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-primary" id="btnLaunch">Launch Particle</button>
+                <button class="btn-secondary" id="btnReset">Reset Standard</button>
+            </div>
+        </div>
+     </div>
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const sliderX = document.getElementById('sliderX');
+        const sliderY = document.getElementById('sliderY');
+        const sliderSpeed = document.getElementById('sliderSpeed');
+        const sliderG = document.getElementById('sliderG');
+        const sliderAngle = document.getElementById('sliderAngle');
+        
+        const lblX = document.getElementById('lblX');
+        const lblY = document.getElementById('lblY');
+        const lblSpeed = document.getElementById('lblSpeed');
+        const lblG = document.getElementById('lblG');
+        const lblAngleCustom = document.getElementById('lblAngleCustom');
+
+        const valUmin = document.getElementById('valUmin');
+        const valAngle = document.getElementById('valAngle');
+        const valHmax = document.getElementById('valHmax');
+        const valRmax = document.getElementById('valRmax');
+
+        const btnLaunch = document.getElementById('btnLaunch');
+        const btnReset = document.getElementById('btnReset');
+        const customAngleGroup = document.getElementById('customAngleGroup');
+
+        let targetX = 30;
+        let targetY = 40;
+        let simSpeedMultiplier = 1.0;
+        let g = 10.0;
+        let displayMode = 'min'; 
+        let customAngleDeg = 60;
+
+        let uMin = 30;
+        let thetaMin = 0;
+        let hMax = 40.5;
+        let rMax = 90;
+
+        let isAnimating = false;
+        let animProgress = 0; 
+        let animId = null;
+
+        let originX = 70;
+        let originY = 480;
+        let scale = 6;
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            updateScaleFactors();
+        }
+
+        function updateScaleFactors() {
+            const width = canvas.parentElement.clientWidth;
+            const height = canvas.parentElement.clientHeight;
+            
+            originX = 70;
+            originY = height - 50;
+
+            const maxTrackX = Math.max(targetX * 1.6, 90);
+            const maxTrackY = Math.max(targetY * 1.5, 60);
+
+            const scaleX = (width - 100) / maxTrackX;
+            const scaleY = (height - 80) / maxTrackY;
+            scale = Math.min(scaleX, scaleY);
+        }
+
+        function toScreenX(x) { return originX + x * scale; }
+        function toScreenY(y) { return originY - y * scale; }
+        function toWorldX(px) { return (px - originX) / scale; }
+        function toWorldY(py) { return (originY - py) / scale; }
+
+        function calculatePhysics() {
+            targetX = parseFloat(sliderX.value);
+            targetY = parseFloat(sliderY.value);
+            simSpeedMultiplier = parseFloat(sliderSpeed.value);
+            g = parseFloat(sliderG.value);
+            customAngleDeg = parseFloat(sliderAngle.value);
+
+            lblX.textContent = targetX.toFixed(1) + " m";
+            lblY.textContent = targetY.toFixed(1) + " m";
+            lblSpeed.textContent = simSpeedMultiplier.toFixed(1) + "x";
+            lblG.textContent = g.toFixed(1) + " m/s²";
+            lblAngleCustom.textContent = customAngleDeg.toFixed(1) + "°";
+
+            const dist = Math.sqrt(targetX * targetX + targetY * targetY);
+            uMin = Math.sqrt(g * (targetY + dist));
+            thetaMin = Math.atan((targetY + dist) / targetX);
+
+            const sinTheta = Math.sin(thetaMin);
+            hMax = (uMin * uMin * sinTheta * sinTheta) / (2 * g);
+            rMax = (uMin * uMin) / g;
+
+            valUmin.textContent = uMin.toFixed(2) + " m/s";
+            valAngle.textContent = (thetaMin * 180 / Math.PI).toFixed(2) + "°";
+            valHmax.textContent = hMax.toFixed(2) + " m";
+            valRmax.textContent = rMax.toFixed(2) + " m";
+
+            updateScaleFactors();
+        }
+
+        function setMode(mode) {
+            displayMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(mode === 'min' ? 'modeMin' : mode === 'all' ? 'modeAll' : 'modeCustom').classList.add('active');
+            
+            customAngleGroup.style.display = (mode === 'custom') ? 'block' : 'none';
+            render();
+        }
+
+        function drawGrid() {
+            const width = canvas.parentElement.clientWidth;
+            const height = canvas.parentElement.clientHeight;
+
+            ctx.clearRect(0, 0, width, height);
+
+            ctx.strokeStyle = '#151926';
+            ctx.lineWidth = 1;
+
+            const stepGrid = 10;
+            for (let x = 0; x <= 200; x += stepGrid) {
+                let sx = toScreenX(x);
+                if (sx > width) break;
+                ctx.beginPath();
+                ctx.moveTo(sx, 0);
+                ctx.lineTo(sx, height);
+                ctx.stroke();
+
+                if (x > 0) {
+                    ctx.fillStyle = '#4a5568';
+                    ctx.font = '10px Inter';
+                    ctx.fillText(`${x}m`, sx - 8, originY + 16);
+                }
+            }
+
+            for (let y = 0; y <= 200; y += stepGrid) {
+                let sy = toScreenY(y);
+                if (sy < 0) break;
+                ctx.beginPath();
+                ctx.moveTo(0, sy);
+                ctx.lineTo(width, sy);
+                ctx.stroke();
+
+                if (y > 0) {
+                    ctx.fillStyle = '#4a5568';
+                    ctx.font = '10px Inter';
+                    ctx.fillText(`${y}m`, originX - 32, sy + 4);
+                }
+            }
+
+            ctx.strokeStyle = '#4a5568';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, height);
+            ctx.moveTo(0, originY);
+            ctx.lineTo(width, originY);
+            ctx.stroke();
+        }
+
+        function drawEnvelope() {
+            ctx.setLineDash([6, 6]);
+            ctx.strokeStyle = 'rgba(255, 8, 68, 0.4)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+
+            const maxX = Math.sqrt((2 * uMin * uMin * (uMin * uMin / (2 * g))) / g);
+            for (let px = 0; px <= maxX; px += 0.5) {
+                let py = (uMin * uMin / (2 * g)) - (g * px * px / (2 * uMin * uMin));
+                if (py < 0) break;
+                let sx = toScreenX(px);
+                let sy = toScreenY(py);
+                if (px === 0) ctx.moveTo(sx, sy);
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawPath(u, theta, color, width = 2, dashed = false) {
+            if (dashed) ctx.setLineDash([4, 4]);
+            else ctx.setLineDash([]);
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.beginPath();
+
+            const totalTime = (2 * u * Math.sin(theta)) / g;
+            const steps = 150;
+
+            for (let i = 0; i <= steps; i++) {
+                let t = (i / steps) * totalTime;
+                let px = u * Math.cos(theta) * t;
+                let py = u * Math.sin(theta) * t - 0.5 * g * t * t;
+
+                if (py < 0 && i > 0) break;
+
+                let sx = toScreenX(px);
+                let sy = toScreenY(py);
+
+                if (i === 0) ctx.moveTo(sx, sy);
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawTargetAndAnnotations() {
+            const tx = toScreenX(targetX);
+            const ty = toScreenY(targetY);
+
+            ctx.shadowColor = '#00f2fe';
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = '#00f2fe';
+            ctx.beginPath();
+            ctx.arc(tx, ty, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText(`Target P (${targetX.toFixed(0)}, ${targetY.toFixed(0)})`, tx + 12, ty - 8);
+
+            ctx.setLineDash([3, 3]);
+            ctx.strokeStyle = 'rgba(0, 242, 254, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(tx, ty);
+            ctx.lineTo(tx, originY);
+            ctx.moveTo(tx, ty);
+            ctx.lineTo(originX, ty);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function render() {
+            drawGrid();
+            drawEnvelope();
+            drawTargetAndAnnotations();
+
+            if (displayMode === 'min') {
+                drawPath(uMin, thetaMin, '#00f2fe', 3.5);
+
+                const peakX = (uMin * uMin * Math.sin(2 * thetaMin)) / (2 * g);
+                const psx = toScreenX(peakX);
+                const psy = toScreenY(hMax);
+                ctx.fillStyle = '#ffb199';
+                ctx.beginPath();
+                ctx.arc(psx, psy, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillText(`Hmax = ${hMax.toFixed(1)}m`, psx - 30, psy - 10);
+
+            } else if (displayMode === 'all') {
+                drawPath(uMin, thetaMin, '#00f2fe', 3);
+                drawPath(uMin * 1.2, thetaMin * 0.85, 'rgba(79, 172, 254, 0.6)', 2, true);
+                drawPath(uMin * 1.2, thetaMin * 1.15, 'rgba(255, 177, 153, 0.6)', 2, true);
+
+            } else if (displayMode === 'custom') {
+                const thetaRad = customAngleDeg * Math.PI / 180;
+                const cosT = Math.cos(thetaRad);
+                const denom = 2 * cosT * cosT * (targetX * Math.tan(thetaRad) - targetY);
+                
+                if (denom > 0) {
+                    const uCustom = Math.sqrt((g * targetX * targetX) / denom);
+                    drawPath(uCustom, thetaRad, '#ff0844', 3);
+                }
+            }
+
+            if (isAnimating) {
+                drawAnimatedParticle();
+            }
+        }
+
+        function drawAnimatedParticle() {
+            let activeU = uMin;
+            let activeTheta = thetaMin;
+
+            if (displayMode === 'custom') {
+                activeTheta = customAngleDeg * Math.PI / 180;
+                const cosT = Math.cos(activeTheta);
+                const denom = 2 * cosT * cosT * (targetX * Math.tan(activeTheta) - targetY);
+                if (denom > 0) activeU = Math.sqrt((g * targetX * targetX) / denom);
+            }
+
+            const totalTime = (2 * activeU * Math.sin(activeTheta)) / g;
+            let currentT = animProgress * totalTime;
+
+            let px = activeU * Math.cos(activeTheta) * currentT;
+            let py = activeU * Math.sin(activeTheta) * currentT - 0.5 * g * currentT * currentT;
+
+            let sx = toScreenX(px);
+            let sy = toScreenY(py);
+
+            ctx.shadowColor = '#00f2fe';
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(sx, sy, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function animate() {
+            if (!isAnimating) return;
+            
+            animProgress += 0.008 * simSpeedMultiplier;
+
+            if (animProgress > 1) {
+                animProgress = 0;
+                isAnimating = false;
+                btnLaunch.textContent = 'Launch Particle';
+            }
+
+            render();
+
+            if (isAnimating) {
+                animId = requestAnimationFrame(animate);
+            }
+        }
+
+        let isDraggingTarget = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const tx = toScreenX(targetX);
+            const ty = toScreenY(targetY);
+
+            if (Math.hypot(mouseX - tx, mouseY - ty) < 20) {
+                isDraggingTarget = true;
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDraggingTarget) return;
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            let newX = toWorldX(mouseX);
+            let newY = toWorldY(mouseY);
+
+            newX = Math.max(5, Math.min(75, newX));
+            newY = Math.max(5, Math.min(75, newY));
+
+            sliderX.value = newX.toFixed(0);
+            sliderY.value = newY.toFixed(0);
+
+            calculatePhysics();
+            render();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDraggingTarget = false;
+        });
+
+        [sliderX, sliderY, sliderSpeed, sliderG, sliderAngle].forEach(slider => {
+            slider.addEventListener('input', () => {
+                calculatePhysics();
+                if (slider !== sliderSpeed) {
+                    isAnimating = false;
+                    btnLaunch.textContent = 'Launch Particle';
+                }
+                render();
+            });
+        });
+
+        btnLaunch.addEventListener('click', () => {
+            isAnimating = !isAnimating;
+            if (isAnimating) {
+                btnLaunch.textContent = 'Pause Animation';
+                if (animProgress >= 1) animProgress = 0;
+                animate();
+            } else {
+                btnLaunch.textContent = 'Launch Particle';
+                cancelAnimationFrame(animId);
+                render();
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            sliderX.value = 30;
+            sliderY.value = 40;
+            sliderSpeed.value = 1.0;
+            sliderG.value = 10.0;
+            sliderAngle.value = 60;
+            setMode('min');
+            calculatePhysics();
+            isAnimating = false;
+            btnLaunch.textContent = 'Launch Particle';
+            render();
+        });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            render();
+        });
+
+        resizeCanvas();
+        calculatePhysics();
+        render();
+    </script>
+</body>
+</html>
