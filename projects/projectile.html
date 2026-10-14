@@ -1,23 +1,388 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Projectile Motion Simulation</title>
-    <style>
-        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; padding-top: 30px; }
-        canvas { background: #111; border: 2px solid #38bdf8; border-radius: 8px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b16">
+<meta name="description" content="Interactive projectile motion laboratory: calculate trajectories, range, flight time, maximum height, target angles and minimum launch speed with step-by-step physics.">
+<title>Projectile Motion Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--panel2:#151f36;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:.3px}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:35px 0 24px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750;letter-spacing:1.4px}.hero h1{font-size:clamp(30px,5vw,52px);letter-spacing:-1.6px;line-height:1.08;margin:14px 0 10px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{max-width:780px;color:var(--muted);margin:0}
+.layout{display:grid;grid-template-columns:minmax(290px,355px) minmax(0,1fr);gap:16px;align-items:start;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2eF2,#0d1324F7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h2,.panel-head h3{font-size:16px;margin:0}.panel-body{padding:17px}.field{margin-bottom:14px}.field label{display:flex;justify-content:space-between;gap:8px;color:#dce6fb;font-size:13px;margin-bottom:6px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:minmax(0,1fr) 83px;gap:9px;align-items:center}.inputrow input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number],select{width:100%;min-height:39px;padding:7px 9px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px}input[type=number]{font-variant-numeric:tabular-nums}.unit{color:var(--muted);font-size:11px}
+.modebar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}.modebtn,.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--muted);padding:10px 11px;cursor:pointer;font-size:12px;font-weight:750}.modebtn[aria-pressed=true]{background:#63e6ff14;color:var(--cyan);border-color:#63e6ff70}.btn{color:var(--text);font-size:13px;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.btn:hover,.modebtn:hover{border-color:var(--cyan)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.actions .btn{flex:1}.note{padding:10px 12px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:13px}.note strong{color:var(--cyan)}
+.maincol{display:grid;gap:16px;min-width:0}.canvasbox{padding:12px}.canvas-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 4px 10px}.canvas-top strong{font-size:14px}.canvas-top span{font-size:11px;color:var(--muted)}canvas{display:block;width:100%;height:350px;border-radius:13px;background:#080e1c;border:1px solid #24314b;touch-action:pan-y}.canvasfoot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 4px 0;color:var(--muted);font-size:11px}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:12px;padding:12px}.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.result strong{font-size:18px;font-variant-numeric:tabular-nums}
+.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan);font-size:12px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+@media(max-width:520px){canvas{height:280px}.hero h1{font-size:28px}}
+</style>
 </head>
 <body>
-    <h2>Projectile Motion Canvas</h2>
-    <canvas id="simCanvas" width="400" height="250"></canvas>
-    <script>
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#38bdf8';
-        ctx.font = '18px Arial';
-        ctx.fillText('यहाँ सिमुलेशन रन हो रहा है!', 80, 130);
-    </script>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../index.html">
+      <span class="logo">∑</span>
+      <span>VINIT SIMULATION HUB<small>PROJECTILE LAB</small></span>
+    </a>
+    <a href="../index.html">← Back to Hub</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">MECHANICS · KINEMATICS</div>
+    <h1>Projectile <span class="grad">Motion Lab</span></h1>
+    <p>Interactive trajectory calculator with real-time animation. Adjust speed, angle, height and gravity. Explore range, max height, flight time and target mode.</p>
+  </section>
+
+  <div class="layout">
+    <aside class="panel">
+      <div class="panel-head"><h2>Controls</h2></div>
+      <div class="panel-body">
+        <div class="modebar">
+          <button class="modebtn" data-mode="free" aria-pressed="true">Free Launch</button>
+          <button class="modebtn" data-mode="target" aria-pressed="false">Hit Target</button>
+        </div>
+
+        <div class="field">
+          <label>Launch Speed <span class="hint" id="speedVal">25 m/s</span></label>
+          <div class="inputrow">
+            <input type="range" id="speed" min="1" max="80" step="0.5" value="25">
+            <input type="number" id="speedNum" min="1" max="80" step="0.5" value="25">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Launch Angle <span class="hint" id="angleVal">45°</span></label>
+          <div class="inputrow">
+            <input type="range" id="angle" min="0" max="90" step="0.5" value="45">
+            <input type="number" id="angleNum" min="0" max="90" step="0.5" value="45">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Initial Height <span class="hint" id="heightVal">0 m</span></label>
+          <div class="inputrow">
+            <input type="range" id="height" min="0" max="40" step="0.5" value="0">
+            <input type="number" id="heightNum" min="0" max="40" step="0.5" value="0">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Gravity (g) <span class="hint" id="gVal">9.81 m/s²</span></label>
+          <div class="inputrow">
+            <input type="range" id="g" min="1" max="20" step="0.01" value="9.81">
+            <input type="number" id="gNum" min="1" max="20" step="0.01" value="9.81">
+          </div>
+        </div>
+
+        <div id="targetFields" style="display:none">
+          <div class="field">
+            <label>Target X <span class="hint" id="txVal">30 m</span></label>
+            <div class="inputrow">
+              <input type="range" id="tx" min="5" max="120" step="1" value="30">
+              <input type="number" id="txNum" min="5" max="120" step="1" value="30">
+            </div>
+          </div>
+          <div class="field">
+            <label>Target Y <span class="hint" id="tyVal">0 m</span></label>
+            <div class="inputrow">
+              <input type="range" id="ty" min="0" max="30" step="0.5" value="0">
+              <input type="number" id="tyNum" min="0" max="30" step="0.5" value="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="playBtn">Play</button>
+          <button class="btn" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="note">
+          <strong>Ideal model:</strong> No air resistance. Constant gravity. Flat ground.
+        </div>
+      </div>
+    </aside>
+
+    <div class="maincol">
+      <div class="panel">
+        <div class="canvasbox">
+          <div class="canvas-top">
+            <strong>Trajectory View</strong>
+            <span id="timeLabel">t = 0.00 s</span>
+          </div>
+          <canvas id="canvas" width="800" height="350"></canvas>
+          <div class="canvasfoot">
+            <span>Drag not required · Touch friendly</span>
+            <span id="scaleLabel">Scale auto</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Results</h3></div>
+        <div class="panel-body">
+          <div class="results" id="results">
+            <div class="result"><span>Range</span><strong id="rRange">—</strong></div>
+            <div class="result"><span>Max Height</span><strong id="rHeight">—</strong></div>
+            <div class="result"><span>Flight Time</span><strong id="rTime">—</strong></div>
+            <div class="result"><span>Time to Peak</span><strong id="rPeak">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Key Formulas</h3></div>
+        <div class="panel-body formulas">
+          <div>Horizontal: <code>x = (u cosθ) t</code></div>
+          <div>Vertical: <code>y = h + (u sinθ) t − ½ g t²</code></div>
+          <div>Range (h=0): <code>R = u² sin2θ / g</code></div>
+          <div>Max height: <code>H = h + (u sinθ)² / (2g)</code></div>
+          <div>Time of flight: solve quadratic for y=0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
+
+  let mode = 'free';
+  let playing = false;
+  let t = 0;
+  let animId = null;
+  let lastTs = 0;
+
+  const speed = $('speed'), speedNum = $('speedNum');
+  const angle = $('angle'), angleNum = $('angleNum');
+  const height = $('height'), heightNum = $('heightNum');
+  const gIn = $('g'), gNum = $('gNum');
+  const tx = $('tx'), txNum = $('txNum');
+  const ty = $('ty'), tyNum = $('tyNum');
+
+  function sync(range, num, label, suffix) {
+    range.addEventListener('input', () => {
+      num.value = range.value;
+      if(label) label.textContent = range.value + suffix;
+      resetAnim();
+    });
+    num.addEventListener('input', () => {
+      let v = parseFloat(num.value);
+      if(isNaN(v)) return;
+      v = Math.max(range.min, Math.min(range.max, v));
+      range.value = v;
+      num.value = v;
+      if(label) label.textContent = v + suffix;
+      resetAnim();
+    });
+  }
+
+  sync(speed, speedNum, $('speedVal'), ' m/s');
+  sync(angle, angleNum, $('angleVal'), '°');
+  sync(height, heightNum, $('heightVal'), ' m');
+  sync(gIn, gNum, $('gVal'), ' m/s²');
+  sync(tx, txNum, $('txVal'), ' m');
+  sync(ty, tyNum, $('tyVal'), ' m');
+
+  document.querySelectorAll('.modebtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.modebtn').forEach(b => b.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      mode = btn.dataset.mode;
+      $('targetFields').style.display = mode === 'target' ? 'block' : 'none';
+      resetAnim();
+    });
+  });
+
+  function getParams() {
+    return {
+      u: parseFloat(speed.value),
+      theta: parseFloat(angle.value) * Math.PI / 180,
+      h: parseFloat(height.value),
+      g: parseFloat(gIn.value),
+      targetX: parseFloat(tx.value),
+      targetY: parseFloat(ty.value)
+    };
+  }
+
+  function calc(p) {
+    const ux = p.u * Math.cos(p.theta);
+    const uy = p.u * Math.sin(p.theta);
+    // Time of flight (solve y=0)
+    // h + uy*t - 0.5*g*t^2 = 0
+    const a = -0.5 * p.g;
+    const b = uy;
+    const c = p.h;
+    const disc = b*b - 4*a*c;
+    let T = 0;
+    if (disc >= 0) {
+      const t1 = (-b + Math.sqrt(disc)) / (2*a);
+      const t2 = (-b - Math.sqrt(disc)) / (2*a);
+      T = Math.max(t1, t2);
+      if (T < 0) T = 0;
+    }
+    const range = ux * T;
+    const tPeak = uy > 0 ? uy / p.g : 0;
+    const maxH = p.h + (uy > 0 ? (uy*uy)/(2*p.g) : 0);
+    return { ux, uy, T, range, tPeak, maxH };
+  }
+
+  function posAt(p, calc, t) {
+    return {
+      x: calc.ux * t,
+      y: p.h + calc.uy * t - 0.5 * p.g * t * t
+    };
+  }
+
+  function updateResults(c) {
+    $('rRange').textContent = c.range.toFixed(2) + ' m';
+    $('rHeight').textContent = c.maxH.toFixed(2) + ' m';
+    $('rTime').textContent = c.T.toFixed(2) + ' s';
+    $('rPeak').textContent = c.tPeak.toFixed(2) + ' s';
+  }
+
+  function draw() {
+    const p = getParams();
+    const c = calc(p);
+    updateResults(c);
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = 350 * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const W = rect.width;
+    const H = 350;
+    ctx.clearRect(0, 0, W, H);
+
+    // Scale
+    const margin = 40;
+    const maxX = Math.max(c.range * 1.15, p.targetX * 1.2, 20);
+    const maxY = Math.max(c.maxH * 1.25, p.h + 5, p.targetY + 5, 10);
+    const scaleX = (W - 2 * margin) / maxX;
+    const scaleY = (H - 2 * margin) / maxY;
+    const scale = Math.min(scaleX, scaleY);
+
+    function toScreen(x, y) {
+      return {
+        sx: margin + x * scale,
+        sy: H - margin - y * scale
+      };
+    }
+
+    // Ground
+    ctx.strokeStyle = '#3a4a6a';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const g0 = toScreen(0, 0);
+    const g1 = toScreen(maxX, 0);
+    ctx.moveTo(0, g0.sy);
+    ctx.lineTo(W, g0.sy);
+    ctx.stroke();
+
+    // Trajectory path
+    ctx.strokeStyle = '#63e6ff';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    let started = false;
+    for (let tt = 0; tt <= c.T; tt += 0.01) {
+      const pos = posAt(p, c, tt);
+      if (pos.y < -0.01) break;
+      const s = toScreen(pos.x, pos.y);
+      if (!started) { ctx.moveTo(s.sx, s.sy); started = true; }
+      else ctx.lineTo(s.sx, s.sy);
+    }
+    ctx.stroke();
+
+    // Target
+    if (mode === 'target') {
+      const ts = toScreen(p.targetX, p.targetY);
+      ctx.fillStyle = '#ff8e9c';
+      ctx.beginPath();
+      ctx.arc(ts.sx, ts.sy, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ff8e9c88';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(ts.sx, ts.sy, 14, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Current position
+    const cur = posAt(p, c, Math.min(t, c.T));
+    const cs = toScreen(cur.x, Math.max(0, cur.y));
+    ctx.fillStyle = '#a78bfa';
+    ctx.beginPath();
+    ctx.arc(cs.sx, cs.sy, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Launch point
+    const ls = toScreen(0, p.h);
+    ctx.fillStyle = '#7cf0bd';
+    ctx.beginPath();
+    ctx.arc(ls.sx, ls.sy, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    $('timeLabel').textContent = 't = ' + t.toFixed(2) + ' s';
+    $('scaleLabel').textContent = 'Scale: ' + scale.toFixed(1) + ' px/m';
+  }
+
+  function resetAnim() {
+    playing = false;
+    t = 0;
+    $('playBtn').textContent = 'Play';
+    if (animId) cancelAnimationFrame(animId);
+    draw();
+  }
+
+  function tick(ts) {
+    if (!playing) return;
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min((ts - lastTs) / 1000, 0.05);
+    lastTs = ts;
+    const p = getParams();
+    const c = calc(p);
+    t += dt * 1.2; // slight speed-up for feel
+    if (t >= c.T) {
+      t = c.T;
+      playing = false;
+      $('playBtn').textContent = 'Play';
+    }
+    draw();
+    if (playing) animId = requestAnimationFrame(tick);
+  }
+
+  $('playBtn').addEventListener('click', () => {
+    if (playing) {
+      playing = false;
+      $('playBtn').textContent = 'Play';
+    } else {
+      const p = getParams();
+      const c = calc(p);
+      if (t >= c.T) t = 0;
+      playing = true;
+      lastTs = 0;
+      $('playBtn').textContent = 'Pause';
+      animId = requestAnimationFrame(tick);
+    }
+  });
+
+  $('resetBtn').addEventListener('click', resetAnim);
+
+  window.addEventListener('resize', draw);
+  draw();
+})();
+</script>
 </body>
 </html>
-
