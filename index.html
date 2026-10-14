@@ -288,7 +288,7 @@
           card.innerHTML = `
             <div class="card-top">
               <div class="card-icon" aria-hidden="true">${item.icon}</div>
-              <span class="badge \( {isLive ? "live" : "soon"}"> \){isLive ? "Live" : "Coming soon"}</span>
+              <span class="badge ${isLive ? "live" : "soon"}">${isLive ? "Live" : "Coming soon"}</span>
             </div>
             <h3>${item.title}</h3>
             <p>${item.desc}</p>
