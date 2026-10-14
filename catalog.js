@@ -1,9 +1,10 @@
 
 /* Vinit Simulation Hub — Activity Catalog */
+
 const CATALOG = [
   // KINEMATICS (14)
   { id: "projectile", title: "Projectile Motion Lab", desc: "Trajectories, range, max height, flight time, target angles & minimum launch speed.", category: "kinematics", tags: "projectile trajectory launch angle gravity range", status: "live", url: "projects/projectile.html", icon: "🚀" },
-{ id: "min-speed-target", title: "Minimum Speed to Hit Target", desc: "Find the smallest launch speed from (0,0) so the trajectory passes through a given point (x,y). Includes optimal angle and detailed analysis.", category: "kinematics", tags: "minimum speed target projectile trajectory", status: "live", url: "projects/min-speed-target.html", icon: "🎯" },
+  { id: "min-speed-target", title: "Minimum Speed to Hit Target", desc: "Find the smallest launch speed from (0,0) so the trajectory passes through a given point (x,y). Includes optimal angle and detailed analysis.", category: "kinematics", tags: "minimum speed target projectile trajectory", status: "live", url: "projects/min-speed-target.html", icon: "🎯" },
   { id: "kinematics-1d", title: "1D Motion Graphs", desc: "Position, velocity and acceleration graphs with interactive controls.", category: "kinematics", tags: "1d motion graphs velocity acceleration", status: "coming-soon", icon: "📈" },
   { id: "free-fall", title: "Free Fall & Gravity", desc: "Objects falling under gravity with air resistance options.", category: "kinematics", tags: "free fall gravity acceleration", status: "coming-soon", icon: "⬇️" },
   { id: "relative-motion", title: "Relative Velocity", desc: "Boat crossing river, rain on moving frame and relative velocity diagrams.", category: "kinematics", tags: "relative velocity boat river", status: "coming-soon", icon: "🛶" },
@@ -38,7 +39,7 @@ const CATALOG = [
   { id: "energy-conservation", title: "Mechanical Energy Conservation", desc: "KE + PE constant in conservative systems.", category: "conservation", tags: "mechanical energy conservation", status: "coming-soon", icon: "♻️" },
   { id: "rocket-momentum", title: "Variable Mass Systems", desc: "Rocket equation basics and thrust visualization.", category: "conservation", tags: "rocket variable mass thrust", status: "coming-soon", icon: "🚀" },
 
-  // WAVES (selected core 20 for now)
+  // WAVES (20)
   { id: "shm-basic", title: "Simple Harmonic Motion", desc: "Mass-spring and pendulum SHM with phase and energy.", category: "waves", tags: "shm simple harmonic motion spring", status: "coming-soon", icon: "〰️" },
   { id: "pendulum", title: "Simple Pendulum", desc: "Period, length and g measurement simulator.", category: "waves", tags: "pendulum period length gravity", status: "coming-soon", icon: "🕰️" },
   { id: "wave-on-string", title: "Wave on a String", desc: "Transverse wave speed, frequency and wavelength.", category: "waves", tags: "wave string transverse speed", status: "coming-soon", icon: "🎸" },
@@ -71,7 +72,7 @@ const CATALOG = [
   { id: "total-internal", title: "Total Internal Reflection", desc: "Critical angle and applications (optical fibre).", category: "optics", tags: "tir critical angle optical fibre", status: "coming-soon", icon: "💎" },
   { id: "dispersion", title: "Dispersion of Light", desc: "Prism spectrum and dispersive power.", category: "optics", tags: "dispersion spectrum prism", status: "coming-soon", icon: "🌈" },
   { id: "optical-instruments", title: "Microscope & Telescope", desc: "Simple ray diagrams and magnifying power.", category: "optics", tags: "microscope telescope magnification", status: "coming-soon", icon: "🔭" },
-  { id: "interference-young", title: "Young's Double Silt", desc: "Fringe width, path difference and intensity.", category: "optics", tags: "ydse fringe interference", status: "coming-soon", icon: "🔬" },
+  { id: "interference-young", title: "Young's Double Slit", desc: "Fringe width, path difference and intensity.", category: "optics", tags: "ydse fringe interference", status: "coming-soon", icon: "🔬" },
   { id: "diffraction", title: "Single Slit Diffraction", desc: "Central maxima and secondary minima pattern.", category: "optics", tags: "diffraction single slit", status: "coming-soon", icon: "✨" },
   { id: "polarization-optics", title: "Polarization of Light", desc: "Malus law and polarizer-analyzer setup.", category: "optics", tags: "polarization malus law", status: "coming-soon", icon: "🕶️" },
   { id: "lens-maker", title: "Lens Maker's Formula", desc: "Relation between R1, R2, μ and f.", category: "optics", tags: "lens maker formula radii", status: "coming-soon", icon: "🛠️" },
@@ -99,10 +100,9 @@ const CATALOG = [
   { id: "angular-accel", title: "Angular Acceleration", desc: "τ = Iα relation interactive.", category: "rotation", tags: "angular acceleration torque", status: "coming-soon", icon: "🔄" },
   { id: "rotation-quiz", title: "Rotation Concept Quiz", desc: "MCQs on torque, MI and rolling.", category: "rotation", tags: "quiz rotation mcq", status: "coming-soon", icon: "❓" },
 
-  // FLUIDS (5)
+  // FLUIDS (6)
   { id: "pressure", title: "Fluid Pressure", desc: "P = ρgh and variation with depth.", category: "fluids", tags: "pressure depth fluid", status: "coming-soon", icon: "🌊" },
   { id: "buoyancy", title: "Buoyancy & Archimedes", desc: "Upthrust, apparent weight and floating condition.", category: "fluids", tags: "buoyancy archimedes floating", status: "coming-soon", icon: "🚢" },
-  
   {
     id: "floating-ice-buoyancy",
     title: "Floating Ice & Rope Length Lab",
@@ -113,7 +113,6 @@ const CATALOG = [
     url: "projects/floating-ice-buoyancy.html",
     icon: "🧊"
   },
-  
   { id: "continuity", title: "Equation of Continuity", desc: "A₁v₁ = A₂v₂ for incompressible fluid.", category: "fluids", tags: "continuity equation flow", status: "coming-soon", icon: "🚰" },
   { id: "bernoulli", title: "Bernoulli's Principle", desc: "Pressure, speed and height relation with examples.", category: "fluids", tags: "bernoulli pressure speed", status: "coming-soon", icon: "✈️" },
   { id: "viscosity", title: "Viscosity & Stokes' Law", desc: "Terminal velocity and viscous force.", category: "fluids", tags: "viscosity stokes terminal velocity", status: "coming-soon", icon: "🍯" },
@@ -126,8 +125,8 @@ const CATALOG = [
   { id: "graphing-tool", title: "Graphing Calculator", desc: "Plot functions and experimental data points.", category: "tools", tags: "graph plot function data", status: "coming-soon", icon: "📊" },
   { id: "vector-draw", title: "Vector Diagram Tool", desc: "Draw and resolve vectors interactively.", category: "tools", tags: "vector diagram draw resolve", status: "coming-soon", icon: "✏️" },
   { id: "ray-draw", title: "Optical Ray Drawer", desc: "Sketch ray diagrams for mirrors and lenses.", category: "tools", tags: "ray diagram drawer optics", status: "coming-soon", icon: "🖊️" },
-  { id: "unit-converter", title: "Physics Unit Converter", desc: "Common physics units conversion helper.", category: "tools", tags: "unit converter physics", status: "coming-soon", icon: "🔄" },// FUN (8)
-  
+  { id: "unit-converter", title: "Physics Unit Converter", desc: "Common physics units conversion helper.", category: "tools", tags: "unit converter physics", status: "coming-soon", icon: "🔄" },
+
   // FUN (8)
   { id: "solar-system", title: "Simple Solar System", desc: "Orbital motion visualization (lightweight).", category: "fun", tags: "solar system orbit planets", status: "coming-soon", icon: "🪐" },
   { id: "pendulum-wave", title: "Pendulum Wave", desc: "Multiple pendulums creating wave pattern.", category: "fun", tags: "pendulum wave pattern", status: "coming-soon", icon: "🌊" },
