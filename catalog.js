@@ -1,6 +1,4 @@
-
 /* Vinit Simulation Hub — Activity Catalog */
-
 const CATALOG = [
   // KINEMATICS (14)
   { id: "projectile", title: "Projectile Motion Lab", desc: "Trajectories, range, max height, flight time, target angles & minimum launch speed.", category: "kinematics", tags: "projectile trajectory launch angle gravity range", status: "live", url: "projects/projectile.html", icon: "🚀" },
@@ -39,7 +37,7 @@ const CATALOG = [
   { id: "energy-conservation", title: "Mechanical Energy Conservation", desc: "KE + PE constant in conservative systems.", category: "conservation", tags: "mechanical energy conservation", status: "coming-soon", icon: "♻️" },
   { id: "rocket-momentum", title: "Variable Mass Systems", desc: "Rocket equation basics and thrust visualization.", category: "conservation", tags: "rocket variable mass thrust", status: "coming-soon", icon: "🚀" },
 
-  // WAVES (20)
+  // WAVES (selected core 20 for now)
   { id: "shm-basic", title: "Simple Harmonic Motion", desc: "Mass-spring and pendulum SHM with phase and energy.", category: "waves", tags: "shm simple harmonic motion spring", status: "coming-soon", icon: "〰️" },
   { id: "pendulum", title: "Simple Pendulum", desc: "Period, length and g measurement simulator.", category: "waves", tags: "pendulum period length gravity", status: "coming-soon", icon: "🕰️" },
   { id: "wave-on-string", title: "Wave on a String", desc: "Transverse wave speed, frequency and wavelength.", category: "waves", tags: "wave string transverse speed", status: "coming-soon", icon: "🎸" },
@@ -72,7 +70,7 @@ const CATALOG = [
   { id: "total-internal", title: "Total Internal Reflection", desc: "Critical angle and applications (optical fibre).", category: "optics", tags: "tir critical angle optical fibre", status: "coming-soon", icon: "💎" },
   { id: "dispersion", title: "Dispersion of Light", desc: "Prism spectrum and dispersive power.", category: "optics", tags: "dispersion spectrum prism", status: "coming-soon", icon: "🌈" },
   { id: "optical-instruments", title: "Microscope & Telescope", desc: "Simple ray diagrams and magnifying power.", category: "optics", tags: "microscope telescope magnification", status: "coming-soon", icon: "🔭" },
-  { id: "interference-young", title: "Young's Double Slit", desc: "Fringe width, path difference and intensity.", category: "optics", tags: "ydse fringe interference", status: "coming-soon", icon: "🔬" },
+  { id: "interference-young", title: "Young's Double Silt", desc: "Fringe width, path difference and intensity.", category: "optics", tags: "ydse fringe interference", status: "coming-soon", icon: "🔬" },
   { id: "diffraction", title: "Single Slit Diffraction", desc: "Central maxima and secondary minima pattern.", category: "optics", tags: "diffraction single slit", status: "coming-soon", icon: "✨" },
   { id: "polarization-optics", title: "Polarization of Light", desc: "Malus law and polarizer-analyzer setup.", category: "optics", tags: "polarization malus law", status: "coming-soon", icon: "🕶️" },
   { id: "lens-maker", title: "Lens Maker's Formula", desc: "Relation between R1, R2, μ and f.", category: "optics", tags: "lens maker formula radii", status: "coming-soon", icon: "🛠️" },
