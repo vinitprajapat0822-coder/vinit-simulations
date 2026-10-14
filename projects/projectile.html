@@ -1,296 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080b16">
-<meta name="description" content="Interactive projectile motion laboratory: calculate trajectories, range, flight time, maximum height, target angles and minimum launch speed with step-by-step physics.">
-<title>Projectile Motion Lab | Vinit Simulation Hub</title>
-<style>
-:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--panel2:#151f36;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:.3px}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
-.hero{padding:35px 0 24px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750;letter-spacing:1.4px}.hero h1{font-size:clamp(30px,5vw,52px);letter-spacing:-1.6px;line-height:1.08;margin:14px 0 10px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{max-width:780px;color:var(--muted);margin:0}
-.layout{display:grid;grid-template-columns:minmax(290px,355px) minmax(0,1fr);gap:16px;align-items:start;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2eF2,#0d1324F7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h2,.panel-head h3{font-size:16px;margin:0}.panel-body{padding:17px}.field{margin-bottom:14px}.field label{display:flex;justify-content:space-between;gap:8px;color:#dce6fb;font-size:13px;margin-bottom:6px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:minmax(0,1fr) 83px;gap:9px;align-items:center}.inputrow input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number],select{width:100%;min-height:39px;padding:7px 9px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px}input[type=number]{font-variant-numeric:tabular-nums}.unit{color:var(--muted);font-size:11px}
-.modebar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}.modebtn,.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--muted);padding:10px 11px;cursor:pointer;font-size:12px;font-weight:750}.modebtn[aria-pressed=true]{background:#63e6ff14;color:var(--cyan);border-color:#63e6ff70}.btn{color:var(--text);font-size:13px;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.btn:hover,.modebtn:hover{border-color:var(--cyan)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.actions .btn{flex:1}.note{padding:10px 12px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:13px}.note strong{color:var(--cyan)}
-.maincol{display:grid;gap:16px;min-width:0}.canvasbox{padding:12px}.canvas-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 4px 10px}.canvas-top strong{font-size:14px}.canvas-top span{font-size:11px;color:var(--muted)}canvas{display:block;width:100%;height:350px;border-radius:13px;background:#080e1c;border:1px solid #24314b;touch-action:pan-y}.canvasfoot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 4px 0;color:var(--muted);font-size:11px}
-.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{padding:13px 14px;border-radius:14px;border:1px solid var(--line);background:#11192b;min-width:0}.metric .label{font-size:11px;color:var(--muted)}.metric .value{font-size:clamp(17px,2vw,24px);font-weight:800;letter-spacing:-.5px;overflow-wrap:anywhere;margin-top:4px}.metric .unit{margin-top:1px}.metric:nth-child(1) .value{color:var(--cyan)}.metric:nth-child(2) .value{color:var(--violet)}.metric:nth-child(3) .value{color:var(--green)}
-.tabs{display:flex;gap:7px;overflow:auto;padding:12px 15px 0;border-bottom:1px solid var(--line)}.tab{white-space:nowrap;border:0;border-bottom:2px solid transparent;background:none;color:var(--muted);padding:8px 10px;cursor:pointer;font-size:12px;font-weight:750}.tab[aria-selected=true]{color:var(--cyan);border-color:var(--cyan)}.tabcontent{padding:17px}.tabcontent[hidden]{display:none}
-.status{padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:#0a1020;color:var(--muted);font-size:13px;margin-bottom:13px}.status.good{border-color:#7cf0bd55;color:#c9ffe7}.status.bad{border-color:#ff8e9c66;color:#ffc3cb}
-.formula{padding:12px;border:1px solid #354463;border-radius:12px;background:#0a1020;margin:10px 0;overflow-wrap:anywhere}.formula .eq{font-family:Cambria,Georgia,serif;font-size:18px;color:var(--cyan)}.formula small{display:block;color:var(--muted);font-family:system-ui,sans-serif;font-size:11px;margin-top:4px}.steps{padding-left:22px}.steps li{margin:9px 0;color:#d9e3f8}.steps code{color:var(--cyan);font-family:ui-monospace,monospace;overflow-wrap:anywhere}.pill{display:inline-block;border:1px solid var(--line);border-radius:7px;padding:3px 7px;color:var(--muted);font-size:10px}
-table{border-collapse:collapse;width:100%;font-size:12px}th,td{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:650}td{font-variant-numeric:tabular-nums}.scrolltable{overflow:auto}
-.faqgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.faq{border:1px solid var(--line);border-radius:13px;padding:13px;background:#10182b}.faq h4{margin:0 0 5px;font-size:13px}.faq p{margin:0;color:var(--muted);font-size:12px}
-footer{padding:22px 0 30px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}.footrow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-[hidden]{display:none!important}
-@media(max-width:930px){.layout{grid-template-columns:1fr}.layout>aside{order:1}.maincol{order:2}.layout>aside .panel-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.layout>aside .modebar,.layout>aside .actions,.layout>aside .note{grid-column:1/-1}.layout>aside .field{margin-bottom:10px}}
-@media(max-width:620px){.wrap{width:calc(100% - 20px)}.nav{min-height:58px}.brand{font-size:12px}.logo{width:34px;height:34px}.nav a:last-child{font-size:11px}.hero{padding-top:26px}.layout{gap:11px}.panel-head{padding:13px 14px}.panel-body{padding:13px}.layout>aside .panel-body{display:block}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{padding:11px}.metric .value{font-size:22px}canvas{height:280px}.faqgrid{grid-template-columns:1fr}.tabcontent{padding:13px}.formula .eq{font-size:16px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projectile Motion Lab — Vinit Simulation Hub</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #38bdf8;
+            --border: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding: 1rem; }
+        .nav-back { display: inline-block; color: var(--accent); text-decoration: none; margin-bottom: 1rem; font-weight: 600; }
+        .container { max-width: 900px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+        h2 { margin-bottom: 1rem; color: var(--accent); }
+        canvas { background: #020617; border: 1px solid var(--border); border-radius: 8px; width: 100%; height: 400px; display: block; margin-bottom: 1.5rem; }
+        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .control-group { display: flex; flex-direction: column; }
+        label { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+        input[type="range"] { width: 100%; accent-color: var(--accent); }
+        .btn-group { display: flex; gap: 1rem; }
+        button { background: var(--accent); color: var(--bg-color); border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; background: #0f172a; padding: 1rem; border-radius: 8px; }
+        .stat-item span { display: block; font-size: 0.8rem; color: var(--text-secondary); }
+        .stat-item strong { font-size: 1.1rem; color: var(--accent); }
+    </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>PROJECTILE MOTION LAB</small></span></a><a href="../index.html">← Back to Hub</a></div></header>
-<main class="wrap">
-<section class="hero"><span class="eyebrow">INTERACTIVE PHYSICS WORKSPACE</span><h1>Projectile Motion <span class="grad">Lab</span></h1><p>Calculate, visualize and understand projectile motion: trajectory, time of flight, range, apex, target-hit angles, minimum speed, horizontal launch and step-by-step derivations. Ideal model: uniform gravity, no air resistance.</p></section>
-<section class="layout">
-<aside class="panel">
-<div class="panel-head"><h2>Experiment controls</h2><span class="pill">SI units</span></div>
-<div class="panel-body">
-<div class="modebar" role="group" aria-label="Calculation mode">
-<button class="modebtn" id="modeSim" aria-pressed="true">Trajectory mode</button>
-<button class="modebtn" id="modeTarget" aria-pressed="false">Hit a target</button>
-</div>
-<div id="simControls">
-<div class="field"><label for="speed"><span>Initial speed, u</span><span class="unit">m/s</span></label><div class="inputrow"><input id="speedR" type="range" min="0" max="100" step=".5" value="25"><input id="speed" type="number" min="0" max="10000" step=".1" value="25"></div></div>
-<div class="field"><label for="angle"><span>Launch angle, θ</span><span class="unit">degrees</span></label><div class="inputrow"><input id="angleR" type="range" min="-90" max="90" step=".5" value="45"><input id="angle" type="number" min="-90" max="90" step=".1" value="45"></div></div>
-<div class="field"><label for="height"><span>Launch height, y₀</span><span class="unit">m</span></label><div class="inputrow"><input id="heightR" type="range" min="0" max="100" step=".5" value="0"><input id="height" type="number" min="0" max="10000" step=".1" value="0"></div></div>
-<div class="field"><label for="gravity"><span>Gravity, g</span><span class="unit">m/s²</span></label><div class="inputrow"><input id="gravityR" type="range" min="1" max="20" step=".01" value="9.81"><input id="gravity" type="number" min=".01" max="100" step=".01" value="9.81"></div><div class="hint">Earth default: 9.81 m/s²</div></div>
-</div>
-<div id="targetControls" hidden>
-<div class="field"><label for="tx"><span>Target horizontal position, x</span><span class="unit">m</span></label><input id="tx" type="number" min=".001" max="100000" step=".1" value="40"></div>
-<div class="field"><label for="ty"><span>Target vertical position, y</span><span class="unit">m</span></label><input id="ty" type="number" min="-10000" max="100000" step=".1" value="10"><div class="hint">Measured from the same ground reference as launch height.</div></div>
-<div class="field"><label for="targetSpeed"><span>Available launch speed, u</span><span class="unit">m/s</span></label><input id="targetSpeed" type="number" min=".001" max="10000" step=".1" value="25"><div class="hint">Used to calculate possible target-hit angles.</div></div>
-<div class="field"><label for="targetHeight"><span>Launch height, y₀</span><span class="unit">m</span></label><input id="targetHeight" type="number" min="0" max="10000" step=".1" value="0"></div>
-<div class="field"><label for="targetGravity"><span>Gravity, g</span><span class="unit">m/s²</span></label><input id="targetGravity" type="number" min=".01" max="100" step=".01" value="9.81"></div>
-</div>
-<div class="actions"><button class="btn primary" id="calculate">Calculate & explain</button><button class="btn" id="reset">Reset</button></div>
-<div class="note"><strong>Model limits:</strong> no air resistance, constant gravity, flat reference ground. Real-world drag, wind and spin are not included.</div>
-</div>
-</aside>
-<div class="maincol">
-<section class="panel">
-<div class="canvasbox"><div class="canvas-top"><strong>Trajectory visualizer</strong><span id="plotState">Live model · not to scale until fitted</span></div><canvas id="plot" aria-label="Projectile trajectory graph with horizontal and vertical axes"></canvas><div class="canvasfoot"><span>Horizontal: x (m) · Vertical: y (m)</span><span id="canvasLegend">● launch　● apex　● impact</span></div></div>
-</section>
-<section class="metrics" aria-label="Calculated results">
-<div class="metric"><div class="label" id="labelTime">Flight time</div><div class="value" id="mTime">—</div><div class="unit" id="unitTime">seconds</div></div>
-<div class="metric"><div class="label" id="labelRange">Horizontal range</div><div class="value" id="mRange">—</div><div class="unit" id="unitRange">metres</div></div>
-<div class="metric"><div class="label" id="labelHeight">Maximum height</div><div class="value" id="mHeight">—</div><div class="unit" id="unitHeight">metres</div></div>
-<div class="metric"><div class="label" id="labelApex">Apex time</div><div class="value" id="mApex">—</div><div class="unit" id="unitApex">seconds</div></div>
-</section>
-<section class="panel">
-<div class="tabs" role="tablist" aria-label="Physics explanation">
-<button class="tab" role="tab" aria-selected="true" data-tab="steps">Step-by-step</button>
-<button class="tab" role="tab" aria-selected="false" data-tab="formulas">Formula library</button>
-<button class="tab" role="tab" aria-selected="false" data-tab="table">Data table</button>
-<button class="tab" role="tab" aria-selected="false" data-tab="concepts">Concept guide</button>
-</div>
-<div class="tabcontent" id="tab-steps" role="tabpanel"><div id="status" class="status good">Ready. Adjust the controls and calculate.</div><h3>Solution method</h3><ol class="steps" id="steps"><li>Set the initial conditions, then select Calculate & explain.</li></ol></div>
-<div class="tabcontent" id="tab-formulas" role="tabpanel" hidden>
-<h3>Core equations</h3>
-<div class="formula"><div class="eq">uₓ = u cos θ　　uᵧ = u sin θ</div><small>Resolve initial velocity into independent horizontal and vertical components.</small></div>
-<div class="formula"><div class="eq">x(t) = u cos θ · t</div><small>Horizontal motion: constant velocity when air resistance is ignored.</small></div>
-<div class="formula"><div class="eq">y(t) = y₀ + u sin θ · t − ½gt²</div><small>Vertical motion: constant downward acceleration.</small></div>
-<div class="formula"><div class="eq">t<sub>apex</sub> = u sin θ / g</div><small>Time to apex applies when the vertical component is upward (u sin θ ≥ 0).</small></div>
-<div class="formula"><div class="eq">H<sub>max</sub> = y₀ + (u sin θ)² / (2g)</div><small>Maximum height above the reference ground for an upward launch.</small></div>
-<div class="formula"><div class="eq">T = [u sin θ + √((u sin θ)² + 2gy₀)] / g</div><small>Positive landing time at y = 0 for a launch from y₀ ≥ 0 with a non-negative initial vertical component.</small></div>
-<div class="formula"><div class="eq">R = u cos θ · T</div><small>Horizontal displacement at ground impact. For y₀ = 0 and same-height landing, R = u² sin(2θ)/g.</small></div>
-<div class="formula"><div class="eq">y = y₀ + x tan θ − gx² / (2u² cos² θ)</div><small>Trajectory equation when cos θ ≠ 0.</small></div>
-<div class="formula"><div class="eq">u<sub>min</sub> = √[g(Δy + √(x² + Δy²))]</div><small>Minimum speed to reach target displacement (x, Δy), for x &gt; 0 in ideal uniform gravity. Here Δy = y<sub>target</sub> − y₀.</small></div>
-</div>
-<div class="tabcontent" id="tab-table" role="tabpanel" hidden><h3>Sample trajectory points</h3><div class="scrolltable"><table><thead><tr><th>Time (s)</th><th>x (m)</th><th>y (m)</th><th>Vertical velocity (m/s)</th></tr></thead><tbody id="dataRows"></tbody></table></div><p class="hint">Points are sampled uniformly in time from launch to ground impact. If the trajectory never reaches y = 0 in the selected time direction, the table is limited to the modeled interval.</p></div>
-<div class="tabcontent" id="tab-concepts" role="tabpanel" hidden>
-<h3>Understand the common question types</h3><div class="faqgrid">
-<div class="faq"><h4>Horizontal projection</h4><p>Set θ = 0°. Vertical fall determines flight time; horizontal speed stays constant.</p></div>
-<div class="faq"><h4>Vertical projection</h4><p>At θ = +90°, horizontal range is zero. The projectile rises and returns to its launch height if u &gt; 0.</p></div>
-<div class="faq"><h4>Same-height landing</h4><p>For y₀ = 0 and 0° &lt; θ &lt; 90°, T = 2u sin θ/g and R = u² sin 2θ/g.</p></div>
-<div class="faq"><h4>Maximum range</h4><p>On level ground with fixed speed and no drag, range is maximum at 45°. This result changes if launch and landing heights differ.</p></div>
-<div class="faq"><h4>Target-hit angles</h4><p>For fixed speed, a target may have two launch angles, one tangent solution, or no real solution.</p></div>
-<div class="faq"><h4>Minimum speed</h4><p>For a target to the right (x &gt; 0), the minimum-speed path is tangent to the reachable envelope.</p></div>
-<div class="faq"><h4>Complementary angles</h4><p>On level ground with the same launch and landing height, θ and 90° − θ give the same range but different flight times and heights.</p></div>
-<div class="faq"><h4>When this model fails</h4><p>Air drag, wind, changing gravity, launch mechanisms and terrain require additional modeling.</p></div>
-</div>
-</div>
-</section>
-</div>
-</section>
-</main>
-<footer><div class="wrap footrow"><span>© <span id="year"></span> Vinit Simulation Hub</span><span>Ideal projectile model · SI units · Educational tool</span></div></footer>
-<script>
-(() => {
-"use strict";
-const $ = id => document.getElementById(id);
-const canvas = $("plot"), ctx = canvas.getContext("2d");
-let mode = "sim", current = null, currentPoints = [];
-const fmt = (v,d=3) => Number.isFinite(v) ? Number(v.toFixed(d)).toString() : "—";
-const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
-function number(id, fallback=NaN){const v=Number($(id).value);return Number.isFinite(v)?v:fallback}
-function setMetric(id,v){$(id).textContent=Number.isFinite(v)?fmt(v,3):"—"}
-function linkPair(rangeId,numberId){
- const r=$(rangeId),n=$(numberId);
- r.addEventListener("input",()=>{n.value=r.value;calculate()});
- n.addEventListener("change",()=>{let v=Number(n.value);if(Number.isFinite(v)){v=clamp(v,Number(n.min||-Infinity),Number(n.max||Infinity));n.value=v;if(v>=Number(r.min)&&v<=Number(r.max))r.value=v;}calculate()});
-}
-[["speedR","speed"],["angleR","angle"],["heightR","height"],["gravityR","gravity"]].forEach(p=>linkPair(...p));
-function getSim(){
- const u=number("speed"),deg=number("angle"),y0=number("height"),g=number("gravity");
- if(!(u>=0&&u<=10000&&deg>=-90&&deg<=90&&y0>=0&&g>0))throw Error("Enter valid values: u ≥ 0, angle from −90° to 90°, launch height ≥ 0 and gravity > 0.");
- return {u,deg,y0,g,rad:deg*Math.PI/180,mode:"sim"};
-}
-function trajectory(p,requestedEnd=null){
- const ux=p.u*Math.cos(p.rad),uy=p.u*Math.sin(p.rad),g=p.g;
- // Solve y0 + uy*t - g*t²/2 = 0; positive root is impact time.
- const disc=uy*uy+2*g*p.y0;
- const impact=(uy+Math.sqrt(Math.max(0,disc)))/g;
- const T=Number.isFinite(requestedEnd)?requestedEnd:Math.max(0,impact);
- const apexT=uy>0?uy/g:0;
- const apexY=uy>0?p.y0+uy*uy/(2*g):p.y0;
- const range=ux*T;
- const points=[];
- const samples=160;
- for(let i=0;i<=samples;i++){
-   const t=T*i/samples;
-   points.push({t,x:ux*t,y:p.y0+uy*t-.5*g*t*t,vy:uy-g*t});
- }
- return { ...p,ux,uy,T,apexT,apexY,range,points,impact };
-}
-function targetSolve(){
- const x=number("tx"),yt=number("ty"),u=number("targetSpeed"),y0=number("targetHeight"),g=number("targetGravity");
- if(!(x>0&&u>0&&g>0&&y0>=0))throw Error("Target x, launch speed and gravity must be positive; launch height must be non-negative.");
- const dy=yt-y0;
- const min2=g*(dy+Math.hypot(x,dy));
- if(min2<0)throw Error("This target geometry is invalid for a real minimum-speed solution.");
- const umin=Math.sqrt(Math.max(0,min2));
- const disc=u**4-g*(g*x*x+2*dy*u*u);
- const tolerance=1e-10*Math.max(1,u**4);
- let angles=[];
- if(disc>=-tolerance){
-   const root=Math.sqrt(Math.max(0,disc));
-   // Stable direct form for tan(theta); x > 0.
-   const t1=(u*u-root)/(g*x),t2=(u*u+root)/(g*x);
-   angles=[Math.atan(t1)*180/Math.PI];
-   if(Math.abs(t2-t1)>1e-8)angles.push(Math.atan(t2)*180/Math.PI);
-   angles.sort((a,b)=>a-b);
- }
- const p={u,deg:angles.length?angles[0]:Math.atan2(dy,x)*180/Math.PI,y0,g,rad:(angles.length?angles[0]:Math.atan2(dy,x)*180/Math.PI)*Math.PI/180,mode:"target"};
- const result=trajectory(p);
- // Build path through target at x; use its calculated angle if reachable.
- const paths=angles.map(deg=>{
-   const rad=deg*Math.PI/180,ux=u*Math.cos(rad),uy=u*Math.sin(rad);
-   const t=x/ux;
-   return {deg,t,y:y0+uy*t-.5*g*t*t};
- }).filter(q=>q.t>=0);
- const minAngle=Math.atan2(dy+Math.hypot(x,dy),x)*180/Math.PI;
- current={...result,target:{x,yt,dy,u,umin,g,y0,disc,angles,paths,minAngle}};
- currentPoints=angles.length?trajectory({...p,deg:angles[0],rad:angles[0]*Math.PI/180}).points:result.points;
- setMetric("mTime",paths.length?Math.min(...paths.map(q=>q.t)):NaN);
- setMetric("mRange",umin);
- setMetric("mHeight",Math.max(y0,yt));
- setMetric("mApex",minAngle);
- $("status").className="status "+(angles.length?"good":"bad");
- $("status").textContent=angles.length?`Target is reachable at ${angles.length} angle solution${angles.length===1?"":"s"} for the selected speed.`:"Target is not reachable at the selected speed. Increase the speed to at least the calculated minimum (subject to rounding).";
- const list=$("steps");list.innerHTML="";
- const add=t=>{const li=document.createElement("li");li.textContent=t;list.appendChild(li)};
- add(`Target displacement: Δy = ytarget − y₀ = ${fmt(yt)} − ${fmt(y0)} = ${fmt(dy)} m; horizontal distance x = ${fmt(x)} m.`);
- add(`Minimum speed: umin = √[g(Δy + √(x² + Δy²))] = ${fmt(umin)} m/s.`);
- add(`Reachability check: D = u⁴ − g(gx² + 2Δy·u²) = ${fmt(disc,4)}. D ≥ 0 indicates at least one real tangent-angle solution in this model.`);
- if(angles.length) add(`Launch angle solution${angles.length>1?"s":""}: ${angles.map(a=>fmt(a,4)+"°").join(" and ")}. The angles are measured above the horizontal.`);
- else add("No real launch angle exists at the selected speed. Increase speed to the minimum value or above, then recalculate.");
- if(angles.length) add(`At the first solution, predicted time to target ≈ ${fmt(paths[0].t)} s. This assumes the target lies at the specified coordinates and the projectile is unobstructed.`);
- $("plotState").textContent="Target mode · target marked in red";
- renderPlot();
- renderTable(currentPoints);
-}
-function simCalculate(){
- const p=getSim(),r=trajectory(p);
- current=r;currentPoints=r.points;
- setMetric("mTime",r.T);setMetric("mRange",r.range);setMetric("mHeight",r.apexY);setMetric("mApex",r.apexT);
- $("status").className="status good";
- $("status").textContent="Calculated using constant gravity and no air resistance. Landing time is the positive solution for y = 0.";
- const list=$("steps");list.innerHTML="";
- const add=t=>{const li=document.createElement("li");li.textContent=t;list.appendChild(li)};
- add(`Resolve the initial velocity: ux = u cos θ = ${fmt(r.u)} cos(${fmt(r.deg)}°) = ${fmt(r.ux)} m/s; uy = u sin θ = ${fmt(r.u)} sin(${fmt(r.deg)}°) = ${fmt(r.uy)} m/s.`);
- add(`Vertical position is y(t) = y₀ + uy·t − ½gt². Set y = 0 and take the non-negative root: T = (uy + √(uy² + 2gy₀))/g = ${fmt(r.T)} s.`);
- add(`Horizontal range to ground impact: R = ux·T = ${fmt(r.ux)} × ${fmt(r.T)} = ${fmt(r.range)} m.`);
- add(r.uy>0?`At the apex, vertical velocity is zero: tapex = uy/g = ${fmt(r.apexT)} s. Maximum height H = y₀ + uy²/(2g) = ${fmt(r.apexY)} m.`:"The launch has no positive upward vertical component, so the maximum height is the initial height y₀ = "+fmt(r.y0)+" m. The apex-time metric is 0 s.");
- if(Math.abs(Math.abs(r.deg)-90)<1e-8)add("Vertical launch: horizontal velocity is approximately zero, so the horizontal range is approximately zero.");
- else if(Math.abs(r.deg)<1e-8)add("Horizontal launch: uy = 0. From nonzero height, T = √(2y₀/g); from y₀ = 0 the projectile begins at ground level and the ideal model gives zero flight time.");
- else if(Math.abs(r.y0)<1e-8)add("For same-height launch and landing, the familiar formula T = 2u sin θ/g applies only for an upward launch (0° < θ ≤ 90°).");
- $("plotState").textContent="Trajectory mode · analytical model";
- renderPlot();renderTable(r.points);
-}
-function calculate(){try{if(mode==="sim")simCalculate();else targetSolve()}catch(e){$("status").className="status bad";$("status").textContent=e.message;}}
-function drawLine(x1,y1,x2,y2,color,width=1){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
-function renderPlot(){
- const rect=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
- canvas.width=Math.max(1,Math.round(rect.width*dpr));canvas.height=Math.max(1,Math.round(rect.height*dpr));
- ctx.setTransform(dpr,0,0,dpr,0,0);
- const W=rect.width,H=rect.height;
- ctx.clearRect(0,0,W,H);ctx.fillStyle="#080e1c";ctx.fillRect(0,0,W,H);
- const pad={l:48,r:20,t:20,b:36},pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
- let pts=currentPoints||[];
- if(!pts.length){ctx.fillStyle="#9cabc8";ctx.textAlign="center";ctx.fillText("Set parameters and calculate",W/2,H/2);return}
- let xmax=Math.max(1,...pts.map(p=>p.x)),ymax=Math.max(1,...pts.map(p=>p.y));
- if(current&&current.target){xmax=Math.max(xmax,current.target.x*1.12);ymax=Math.max(ymax,current.target.y*1.15,1)}
- else xmax*=1.08;
- ymax=Math.max(ymax*1.16,1);
- // Keep ground visible; show modest negative region for downward trajectories.
- const ymin=Math.min(0,...pts.map(p=>p.y));const ylo=ymin<0?ymin*1.15:0;
- const sx=x=>pad.l+x/xmax*pw, sy=y=>pad.t+(ymax-y)/(ymax-ylo)*ph;
- ctx.font="10px system-ui";ctx.textAlign="center";ctx.textBaseline="top";
- for(let i=0;i<=5;i++){
-   const x=xmax*i/5,px=sx(x);drawLine(px,pad.t,px,H-pad.b,"#24314a");
-   ctx.fillStyle="#9cabc8";ctx.fillText(fmt(x,1),px,H-pad.b+8);
- }
- ctx.textAlign="right";ctx.textBaseline="middle";
- for(let i=0;i<=5;i++){
-   const y=ylo+(ymax-ylo)*i/5,py=sy(y);drawLine(pad.l,py,W-pad.r,py,"#24314a");
-   ctx.fillStyle="#9cabc8";ctx.fillText(fmt(y,1),pad.l-8,py);
- }
- drawLine(pad.l,sy(0),W-pad.r,sy(0),"#7182a5",1.4);drawLine(pad.l,pad.t,pad.l,H-pad.b,"#7182a5",1.4);
- ctx.textAlign="center";ctx.fillStyle="#b8c6e2";ctx.textBaseline="bottom";ctx.fillText("x (m)",pad.l+pw/2,H-2);
- ctx.save();ctx.translate(12,pad.t+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign="center";ctx.textBaseline="top";ctx.fillText("y (m)",0,0);ctx.restore();
- // Path
- ctx.beginPath();pts.forEach((p,i)=>{const x=sx(p.x),y=sy(p.y);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});
- ctx.strokeStyle="#63e6ff";ctx.lineWidth=2.5;ctx.shadowColor="#63e6ff";ctx.shadowBlur=8;ctx.stroke();ctx.shadowBlur=0;
- const dot=(x,y,color,r=4)=>{ctx.beginPath();ctx.arc(sx(x),sy(y),r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()};
- dot(pts[0].x,pts[0].y,"#7cf0bd",4);
- if(current&&current.mode==="sim"){dot(current.ux*current.apexT,current.apexY,"#a78bfa",4);if(current.T>0)dot(current.range,0,"#7cf0bd",4)}
- if(current&&current.target){dot(current.target.x,current.target.yt,"#ff8e9c",5);ctx.fillStyle="#ff8e9c";ctx.textAlign="right";ctx.fillText("Target",sx(current.target.x)-7,sy(current.target.yt)-10)}
-}
-function renderTable(pts){
- const body=$("dataRows");body.innerHTML="";
- if(!pts||!pts.length)return;
- const count=Math.min(pts.length,9);
- for(let i=0;i<count;i++){
-   const p=pts[Math.round(i*(pts.length-1)/Math.max(1,count-1))];
-   const tr=document.createElement("tr");
-   [fmt(p.t),fmt(p.x),fmt(p.y),fmt(p.vy)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});
-   body.appendChild(tr);
- }
-}
-function setMode(next){
- mode=next;
- $("modeSim").setAttribute("aria-pressed",String(mode==="sim"));
- $("modeTarget").setAttribute("aria-pressed",String(mode==="target"));
- $("simControls").hidden=mode!=="sim";$("targetControls").hidden=mode!=="target";
- const target=mode==="target";
- $("labelTime").textContent=target?"Time to target":"Flight time";
- $("labelRange").textContent=target?"Minimum launch speed":"Horizontal range";
- $("labelHeight").textContent=target?"Target height":"Maximum height";
- $("labelApex").textContent=target?"Minimum-speed angle":"Apex time";
- $("unitTime").textContent="seconds";
- $("unitRange").textContent=target?"m/s":"metres";
- $("unitHeight").textContent="metres";
- $("unitApex").textContent=target?"degrees":"seconds";
- calculate();
-}
-$("modeSim").addEventListener("click",()=>setMode("sim"));
-$("modeTarget").addEventListener("click",()=>setMode("target"));
-$("calculate").addEventListener("click",calculate);
-$("reset").addEventListener("click",()=>{
- $("speed").value=25;$("speedR").value=25;
- $("angle").value=45;$("angleR").value=45;$("height").value=0;$("heightR").value=0;$("gravity").value=9.81;$("gravityR").value=9.81;
- $("tx").value=40;$("ty").value=10;$("targetSpeed").value=25;$("targetHeight").value=0;$("targetGravity").value=9.81;
- setMode("sim");
-});
-document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
- document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",String(b===btn)));
- document.querySelectorAll(".tabcontent").forEach(panel=>panel.hidden=panel.id!=="tab-"+btn.dataset.tab);
-}));
-window.addEventListener("resize",renderPlot);
-$("year").textContent=new Date().getFullYear();
-calculate();
-})();
-</script>
+    <div style="max-width: 900px; margin: 0 auto;">
+        <a href="../index.html" class="nav-back">← Back to Hub Catalog</a>
+    </div>
+    <div class="container">
+        <h2>Projectile Motion Lab</h2>
+        <canvas id="simCanvas" width="800" height="400"></canvas>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Initial Velocity ($v_0$): <span id="velVal">20</span> m/s</label>
+                <input type="range" id="velocity" min="5" max="50" value="20" oninput="updateParams()">
+            </div>
+            <div class="control-group">
+                <label>Launch Angle ($\theta$): <span id="angleVal">45</span>°</label>
+                <input type="range" id="angle" min="0" max="90" value="45" oninput="updateParams()">
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-bottom: 1.5rem;">
+            <button onclick="startSimulation()">Fire / Restart</button>
+            <button onclick="resetSimulation()" style="background: #334155; color: var(--text-color);">Reset</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span>Max Height ($H$)</span>
+                <strong id="maxHeight">0.00 m</strong>
+            </div>
+            <div class="stat-item">
+                <span>Total Range ($R$)</span>
+                <strong id="maxRange">0.00 m</strong>
+            </div>
+            <div class="stat-item">
+                <span>Time of Flight ($T$)</span>
+                <strong id="flightTime">0.00 s</strong>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let v0 = 20;
+        let angleDeg = 45;
+        let g = 9.81;
+
+        let t = 0;
+        let animationId = null;
+        let isRunning = false;
+
+        function updateParams() {
+            v0 = parseFloat(document.getElementById('velocity').value);
+            angleDeg = parseFloat(document.getElementById('angle').value);
+            document.getElementById('velVal').innerText = v0;
+            document.getElementById('angleVal').innerText = angleDeg;
+            calculateStats();
+            if (!isRunning) drawStatic();
+        }
+
+        function calculateStats() {
+            const rad = (angleDeg * Math.PI) / 180;
+            const H = (Math.pow(v0 * Math.sin(rad), 2)) / (2 * g);
+            const R = (Math.pow(v0, 2) * Math.sin(2 * rad)) / g;
+            const T = (2 * v0 * Math.sin(rad)) / g;
+
+            document.getElementById('maxHeight').innerText = H.toFixed(2) + ' m';
+            document.getElementById('maxRange').innerText = R.toFixed(2) + ' m';
+            document.getElementById('flightTime').innerText = T.toFixed(2) + ' s';
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            // Ground
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, 350); ctx.lineTo(canvas.width, 350); ctx.stroke();
+        }
+
+        function drawStatic() {
+            drawGrid();
+            // Draw launcher base
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(50, 330, 20, 20);
+        }
+
+        function startSimulation() {
+            cancelAnimationFrame(animationId);
+            t = 0;
+            isRunning = true;
+            animate();
+        }
+
+        function resetSimulation() {
+            cancelAnimationFrame(animationId);
+            isRunning = false;
+            t = 0;
+            drawStatic();
+        }
+
+        function animate() {
+            drawGrid();
+            const rad = (angleDeg * Math.PI) / 180;
+            const scale = 3; // pixels per meter factor roughly
+
+            const vx = v0 * Math.cos(rad);
+            const vy = v0 * Math.sin(rad);
+
+            const x = 50 + (vx * t) * scale;
+            const y = 350 - (vy * t - 0.5 * g * t * t) * scale;
+
+            // Draw trajectory trail/prediction could go here, let's draw projectile ball
+            if (y <= 350) {
+                ctx.fillStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                t += 0.05;
+                animationId = requestAnimationFrame(animate);
+            } else {
+                isRunning = false;
+            }
+        }
+
+        // Initial setup
+        updateParams();
+        drawStatic();
+    </script>
 </body>
 </html>
