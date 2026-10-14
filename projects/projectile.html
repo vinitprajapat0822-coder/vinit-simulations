@@ -253,89 +253,281 @@ header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blu
     const c = calc(p);
     updateResults(c);
 
+    // Add graph controls once. They survive every redraw.
+    if (!$('vectorControls')) {
+      const panel = document.createElement('section');
+      panel.id = 'vectorControls';
+      panel.style.cssText =
+        'margin:12px 0;padding:14px;border:1px solid #28445f;' +
+        'border-radius:12px;background:#0b1424;color:#e5f4ff;' +
+        'font:14px system-ui,sans-serif;';
+      panel.innerHTML = `
+        <strong style="display:block;margin-bottom:10px;font-size:16px">
+          Graph & Vector Controls
+        </strong>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+          <label><input id="graphTrajectory" type="checkbox" checked> Trajectory</label>
+          <label><input id="graphPosition" type="checkbox"> Position vector r</label>
+          <label><input id="graphVelocity" type="checkbox" checked> Velocity vector v</label>
+          <label><input id="graphComponents" type="checkbox" checked> vx and vy components</label>
+          <label><input id="graphAcceleration" type="checkbox" checked> Acceleration g</label>
+          <label><input id="graphSeconds" type="checkbox" checked> Every 1-second marker</label>
+        </div>
+        <label style="display:block;margin-top:12px">
+          Vector size
+          <input id="graphVectorScale" type="range" min="0.15" max="0.8"
+                 step="0.05" value="0.35" style="width:100%">
+        </label>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:12px">
+          <span style="color:#38bdf8">● Velocity</span>
+          <span style="color:#fbbf24">● Components</span>
+          <span style="color:#fb7185">● Acceleration</span>
+          <span style="color:#a78bfa">● Position</span>
+        </div>`;
+      const box = canvas.closest('.canvasbox') || canvas.parentElement;
+      box.insertAdjacentElement('afterend', panel);
+      panel.querySelectorAll('input').forEach(el => {
+        el.addEventListener('input', () => draw());
+        el.addEventListener('change', () => draw());
+      });
+    }
+
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = 350 * dpr;
+    const W = Math.max(1, rect.width);
+    const H = Math.max(1, rect.height || 350);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const W = rect.width;
-    const H = 350;
     ctx.clearRect(0, 0, W, H);
 
-    // Scale
-    const margin = 40;
-    const maxX = Math.max(c.range * 1.15, p.targetX * 1.2, 20);
-    const maxY = Math.max(c.maxH * 1.25, p.h + 5, p.targetY + 5, 10);
-    const scaleX = (W - 2 * margin) / maxX;
-    const scaleY = (H - 2 * margin) / maxY;
-    const scale = Math.min(scaleX, scaleY);
+    const L = 52, R = 18, TOP = 25, BOTTOM = 40;
+    const maxX = Math.max(c.range * 1.12, p.targetX * 1.15, 10);
+    const maxY = Math.max(c.maxH * 1.18, p.targetY * 1.12, p.h + 3, 8);
+    const scale = Math.max(0.01, Math.min(
+      (W - L - R) / maxX,
+      (H - TOP - BOTTOM) / maxY
+    ));
+    const originX = L;
+    const originY = H - BOTTOM;
 
-    function toScreen(x, y) {
-      return {
-        sx: margin + x * scale,
-        sy: H - margin - y * scale
-      };
+    function screen(x, y) {
+      return { x: originX + x * scale, y: originY - y * scale };
     }
 
-    // Ground
-    ctx.strokeStyle = '#3a4a6a';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    const g0 = toScreen(0, 0);
-    const g1 = toScreen(maxX, 0);
-    ctx.moveTo(0, g0.sy);
-    ctx.lineTo(W, g0.sy);
-    ctx.stroke();
-
-    // Trajectory path
-    ctx.strokeStyle = '#63e6ff';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    let started = false;
-    for (let tt = 0; tt <= c.T; tt += 0.01) {
-      const pos = posAt(p, c, tt);
-      if (pos.y < -0.01) break;
-      const s = toScreen(pos.x, pos.y);
-      if (!started) { ctx.moveTo(s.sx, s.sy); started = true; }
-      else ctx.lineTo(s.sx, s.sy);
+    function niceStep(max) {
+      const raw = max / 5;
+      const power = Math.pow(10, Math.floor(Math.log10(Math.max(raw, 0.001))));
+      const n = raw / power;
+      return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * power;
     }
-    ctx.stroke();
 
-    // Target
-    if (mode === 'target') {
-      const ts = toScreen(p.targetX, p.targetY);
-      ctx.fillStyle = '#ff8e9c';
+    const dx = niceStep(maxX);
+    const dy = niceStep(maxY);
+
+    // Background and scientific grid.
+    ctx.fillStyle = '#07101f';
+    ctx.fillRect(0, 0, W, H);
+    ctx.font = '11px system-ui,sans-serif';
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x <= maxX + dx * 0.01; x += dx) {
+      const q = screen(x, 0);
+      ctx.strokeStyle = '#1b2b40';
       ctx.beginPath();
-      ctx.arc(ts.sx, ts.sy, 7, 0, Math.PI * 2);
+      ctx.moveTo(q.x, TOP);
+      ctx.lineTo(q.x, originY);
+      ctx.stroke();
+      ctx.fillStyle = '#a9bfd5';
+      ctx.textAlign = 'center';
+      ctx.fillText(Number(x.toPrecision(4)).toString(), q.x, originY + 16);
+    }
+
+    for (let y = 0; y <= maxY + dy * 0.01; y += dy) {
+      const q = screen(0, y);
+      ctx.strokeStyle = '#1b2b40';
+      ctx.beginPath();
+      ctx.moveTo(originX, q.y);
+      ctx.lineTo(W - R, q.y);
+      ctx.stroke();
+      if (y > 0) {
+        ctx.fillStyle = '#a9bfd5';
+        ctx.textAlign = 'right';
+        ctx.fillText(Number(y.toPrecision(4)).toString(), originX - 8, q.y + 4);
+      }
+    }
+
+    // Axes.
+    ctx.strokeStyle = '#9bb4cc';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(originX, TOP);
+    ctx.lineTo(originX, originY);
+    ctx.lineTo(W - R, originY);
+    ctx.stroke();
+    ctx.fillStyle = '#e5f4ff';
+    ctx.textAlign = 'center';
+    ctx.fillText('Horizontal position x (m)', (originX + W - R) / 2, H - 7);
+    ctx.save();
+    ctx.translate(14, (TOP + originY) / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Vertical position y (m)', 0, 0);
+    ctx.restore();
+
+    // Arrow helper: endpoint = start + vector.
+    function arrow(x1, y1, vx, vy, color, width = 2.2) {
+      const x2 = x1 + vx, y2 = y1 + vy;
+      const len = Math.hypot(vx, vy);
+      if (len < 1) return;
+      const head = Math.min(9, Math.max(5, len * 0.22));
+      const a = Math.atan2(vy, vx);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - head * Math.cos(a - Math.PI / 6),
+                 y2 - head * Math.sin(a - Math.PI / 6));
+      ctx.lineTo(x2 - head * Math.cos(a + Math.PI / 6),
+                 y2 - head * Math.sin(a + Math.PI / 6));
+      ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = '#ff8e9c88';
-      ctx.lineWidth = 1;
+    }
+
+    const checked = id => !!($(id) && $(id).checked);
+    const vectorFactor = Number($('graphVectorScale')?.value || 0.35);
+    const vectorUnit = scale * vectorFactor;
+    const showTrajectory = checked('graphTrajectory');
+    const showPosition = checked('graphPosition');
+    const showVelocity = checked('graphVelocity');
+    const showComponents = checked('graphComponents');
+    const showAcceleration = checked('graphAcceleration');
+    const showSeconds = checked('graphSeconds');
+
+    // Smooth analytic trajectory with a bounded number of samples.
+    if (showTrajectory) {
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.arc(ts.sx, ts.sy, 14, 0, Math.PI * 2);
+      const samples = 180;
+      for (let i = 0; i <= samples; i++) {
+        const tt = c.T * i / samples;
+        const q = posAt(p, c, tt);
+        const spt = screen(q.x, Math.max(0, q.y));
+        if (i === 0) ctx.moveTo(spt.x, spt.y);
+        else ctx.lineTo(spt.x, spt.y);
+      }
       ctx.stroke();
     }
 
-    // Current position
-    const cur = posAt(p, c, Math.min(t, c.T));
-    const cs = toScreen(cur.x, Math.max(0, cur.y));
-    ctx.fillStyle = '#a78bfa';
+    // Launch point and apex.
+    const launch = screen(0, p.h);
+    ctx.fillStyle = '#e5f4ff';
     ctx.beginPath();
-    ctx.arc(cs.sx, cs.sy, 8, 0, Math.PI * 2);
+    ctx.arc(launch.x, launch.y, 4, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
+
+    const apex = posAt(p, c, c.tPeak);
+    const apexPt = screen(apex.x, Math.max(0, apex.y));
+    ctx.fillStyle = '#34d399';
+    ctx.beginPath();
+    ctx.arc(apexPt.x, apexPt.y, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#a7f3d0';
+    ctx.textAlign = 'left';
+    ctx.fillText('Apex', apexPt.x + 6, apexPt.y - 7);
+
+    // Target marker.
+    if (mode === 'target') {
+      const target = screen(p.targetX, p.targetY);
+      ctx.strokeStyle = '#fb7185';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(target.x, target.y, 7, 0, Math.PI * 2);
+      ctx.moveTo(target.x - 11, target.y);
+      ctx.lineTo(target.x + 11, target.y);
+      ctx.moveTo(target.x, target.y - 11);
+      ctx.lineTo(target.x, target.y + 11);
+      ctx.stroke();
+      ctx.fillStyle = '#fda4af';
+      ctx.fillText('Target', target.x + 9, target.y - 10);
+    }
+
+    // One marker per integer second; vectors are evaluated at that exact time.
+    const vectorTimes = [];
+    if (showSeconds) {
+      for (let sec = 0; sec <= Math.floor(c.T); sec++) vectorTimes.push(sec);
+      if (c.T > 0 && !vectorTimes.some(v => Math.abs(v - c.T) < 1e-8)) {
+        vectorTimes.push(c.T);
+      }
+    }
+    const currentT = Math.max(0, Math.min(t, c.T));
+    if (!vectorTimes.some(v => Math.abs(v - currentT) < 0.04)) {
+      vectorTimes.push(currentT);
+    }
+
+    vectorTimes.sort((a, b) => a - b);
+    const uniqueTimes = vectorTimes.filter((v, i, a) =>
+      i === 0 || Math.abs(v - a[i - 1]) > 0.04
+    );
+
+    uniqueTimes.forEach((tt, index) => {
+      const pos = posAt(p, c, tt);
+      if (pos.y < -0.01) return;
+      const point = screen(pos.x, Math.max(0, pos.y));
+      const isCurrent = Math.abs(tt - currentT) < 0.04;
+      const vx = c.ux;
+      const vy = c.uy - p.g * tt;
+
+      if (showPosition) {
+        const o = screen(0, 0);
+        arrow(o.x, o.y, point.x - o.x, point.y - o.y, '#a78bfa', 1.5);
+      }
+      if (showComponents) {
+        arrow(point.x, point.y, vx * vectorUnit, 0, '#fbbf24', 1.8);
+        arrow(point.x, point.y, 0, -vy * vectorUnit, '#f59e0b', 1.8);
+      }
+      if (showVelocity) {
+        arrow(point.x, point.y, vx * vectorUnit, -vy * vectorUnit, '#38bdf8', 2.3);
+      }
+      if (showAcceleration) {
+        const accScale = vectorUnit * 0.8;
+        arrow(point.x, point.y, 0, p.g * accScale, '#fb7185', 2);
+      }
+
+      ctx.fillStyle = isCurrent ? '#ffffff' : '#7dd3fc';
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, isCurrent ? 5 : 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (showSeconds && Math.abs(tt - Math.round(tt)) < 1e-7) {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '10px system-ui,sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${tt.toFixed(0)}s`, point.x + 5, point.y + (index % 2 ? 13 : -7));
+      }
+    });
+
+    // Current-time HUD and scale.
+    const current = posAt(p, c, currentT);
+    const currentPoint = screen(current.x, Math.max(0, current.y));
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(currentPoint.x, currentPoint.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(currentPoint.x, currentPoint.y, 9, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Launch point
-    const ls = toScreen(0, p.h);
-    ctx.fillStyle = '#7cf0bd';
-    ctx.beginPath();
-    ctx.arc(ls.sx, ls.sy, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    $('timeLabel').textContent = 't = ' + t.toFixed(2) + ' s';
-    $('scaleLabel').textContent = 'Scale: ' + scale.toFixed(1) + ' px/m';
+    $('timeLabel').textContent = 't = ' + currentT.toFixed(2) + ' s';
+    $('scaleLabel').textContent =
+      `Grid: ${dx.toPrecision(3)} m × ${dy.toPrecision(3)} m | ${scale.toFixed(2)} px/m`;
   }
 
   function resetAnim() {
@@ -384,5 +576,8 @@ header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blu
   draw();
 })();
 </script>
-</body>
+
+<script src="../physics-core.js"></script>
+<script src="projectile-enhancements.js"></script>
+\n</body>
 </html>
