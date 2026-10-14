@@ -3,6 +3,7 @@
 const CATALOG = [
   // KINEMATICS (14)
   { id: "projectile", title: "Projectile Motion Lab", desc: "Trajectories, range, max height, flight time, target angles & minimum launch speed.", category: "kinematics", tags: "projectile trajectory launch angle gravity range", status: "live", url: "projects/projectile.html", icon: "🚀" },
+{ id: "min-speed-target", title: "Minimum Speed to Hit Target", desc: "Find the smallest launch speed from (0,0) so the trajectory passes through a given point (x,y). Includes optimal angle and detailed analysis.", category: "kinematics", tags: "minimum speed target projectile trajectory", status: "live", url: "projects/min-speed-target.html", icon: "🎯" },
   { id: "kinematics-1d", title: "1D Motion Graphs", desc: "Position, velocity and acceleration graphs with interactive controls.", category: "kinematics", tags: "1d motion graphs velocity acceleration", status: "coming-soon", icon: "📈" },
   { id: "free-fall", title: "Free Fall & Gravity", desc: "Objects falling under gravity with air resistance options.", category: "kinematics", tags: "free fall gravity acceleration", status: "coming-soon", icon: "⬇️" },
   { id: "relative-motion", title: "Relative Velocity", desc: "Boat crossing river, rain on moving frame and relative velocity diagrams.", category: "kinematics", tags: "relative velocity boat river", status: "coming-soon", icon: "🛶" },

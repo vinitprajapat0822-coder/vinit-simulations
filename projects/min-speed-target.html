@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b16">
+<meta name="description" content="Minimum launch speed required so that a projectile from origin (0,0) passes through a given target point. Interactive calculation and visualization.">
+<title>Minimum Speed to Hit Target | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--panel2:#151f36;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--orange:#ffb86c;--line:#273451;--radius:18px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}a{color:inherit;text-decoration:none}
+.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16ef;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:850}
+.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}
+.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}
+.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:32px 0 20px}
+.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750;letter-spacing:1.4px}
+.hero h1{font-size:clamp(26px,4.8vw,44px);letter-spacing:-1.4px;line-height:1.1;margin:12px 0 8px}
+.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text;-webkit-background-clip:text}
+.hero p{max-width:720px;color:var(--muted);margin:0;font-size:14px}
+.layout{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:16px;align-items:start;padding-bottom:36px}
+.panel{background:linear-gradient(145deg,#111a2ef2,#0d1324f7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}
+.panel-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.panel-head h2,.panel-head h3{font-size:15px;margin:0}
+.panel-body{padding:16px}
+.field{margin-bottom:13px}
+.field label{display:flex;justify-content:space-between;gap:8px;color:#dce6fb;font-size:13px;margin-bottom:5px}
+.hint{color:var(--muted);font-size:11px}
+.inputrow{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:8px;align-items:center}
+.inputrow input[type=range]{width:100%;accent-color:var(--cyan)}
+input[type=number],select{width:100%;min-height:38px;padding:6px 9px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px;font-variant-numeric:tabular-nums}
+.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px 12px;cursor:pointer;font-size:13px;font-weight:700;min-height:42px}
+.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}
+.btn:hover{border-color:var(--cyan)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions .btn{flex:1}
+.note{padding:10px 12px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:12px;line-height:1.5}
+.note strong{color:var(--cyan)}
+.maincol{display:grid;gap:14px;min-width:0}
+.canvasbox{padding:12px}
+.canvas-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:2px 4px 8px}
+.canvas-top strong{font-size:14px}
+.canvas-top span{font-size:11px;color:var(--muted)}
+canvas{display:block;width:100%;height:360px;border-radius:12px;background:#080e1c;border:1px solid #24314b;touch-action:pan-y}
+.canvasfoot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:8px 4px 0;color:var(--muted);font-size:11px}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.result{background:#0c1426;border:1px solid #2a3a58;border-radius:11px;padding:11px}
+.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}
+.result strong{font-size:17px;font-variant-numeric:tabular-nums}
+.result.highlight{border-color:#63e6ff55;background:#63e6ff0c}
+.result.highlight strong{color:var(--cyan)}
+.formulas{font-size:13px;color:var(--muted);line-height:1.75}
+.formulas code{color:var(--cyan);font-size:12.5px;background:#0a1220;padding:1px 5px;border-radius:4px}
+.formulas .title{color:#dce6fb;font-weight:700;margin:10px 0 4px;font-size:13px}
+.analysis{font-size:13px;color:var(--muted);line-height:1.65}
+.analysis h4{color:#dce6fb;margin:12px 0 6px;font-size:13px}
+.analysis ul{margin:6px 0;padding-left:18px}
+.analysis li{margin-bottom:4px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+@media(max-width:520px){canvas{height:290px}.hero h1{font-size:26px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../index.html">
+      <span class="logo">∑</span>
+      <span>VINIT SIMULATION HUB<small>MIN SPEED TO TARGET</small></span>
+    </a>
+    <a href="../index.html">← Back to Hub</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">MECHANICS · PROJECTILE MOTION</div>
+    <h1>Minimum Speed to <span class="grad">Hit a Target</span></h1>
+    <p>Find the smallest launch speed from the origin (0,0) so that the trajectory passes through a given point (x, y). Visualize the optimal angle and both possible trajectories.</p>
+  </section>
+
+  <div class="layout">
+    <aside class="panel">
+      <div class="panel-head"><h2>Controls</h2></div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Target X <span class="hint" id="txVal">30 m</span></label>
+          <div class="inputrow">
+            <input type="range" id="tx" min="5" max="80" step="1" value="30">
+            <input type="number" id="txNum" min="5" max="80" step="1" value="30">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Target Y <span class="hint" id="tyVal">40 m</span></label>
+          <div class="inputrow">
+            <input type="range" id="ty" min="0" max="60" step="1" value="40">
+            <input type="number" id="tyNum" min="0" max="60" step="1" value="40">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Gravity g <span class="hint" id="gVal">9.81 m/s²</span></label>
+          <div class="inputrow">
+            <input type="range" id="g" min="1" max="20" step="0.01" value="9.81">
+            <input type="number" id="gNum" min="1" max="20" step="0.01" value="9.81">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Launch Speed (manual) <span class="hint" id="uVal">—</span></label>
+          <div class="inputrow">
+            <input type="range" id="u" min="5" max="60" step="0.1" value="35">
+            <input type="number" id="uNum" min="5" max="60" step="0.1" value="35">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="useMinBtn">Use Minimum Speed</button>
+          <button class="btn" id="playBtn">Play</button>
+          <button class="btn" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="note">
+          <strong>Question:</strong> Minimum speed required to project a particle from (0,0) so that its trajectory passes through the target point (30, 40).
+        </div>
+      </div>
+    </aside>
+
+    <div class="maincol">
+      <div class="panel">
+        <div class="canvasbox">
+          <div class="canvas-top">
+            <strong>Trajectory View</strong>
+            <span id="timeLabel">t = 0.00 s</span>
+          </div>
+          <canvas id="canvas" width="800" height="360"></canvas>
+          <div class="canvasfoot">
+            <span>Green = min-speed path · Cyan = current speed</span>
+            <span id="scaleLabel">Scale auto</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Calculated Results</h3></div>
+        <div class="panel-body">
+          <div class="results">
+            <div class="result highlight"><span>Minimum Speed u<sub>min</sub></span><strong id="rUmin">—</strong></div>
+            <div class="result"><span>Optimal Angle θ</span><strong id="rTheta">—</strong></div>
+            <div class="result"><span>Distance to Target r</span><strong id="rDist">—</strong></div>
+            <div class="result"><span>Time of Flight (min)</span><strong id="rT">—</strong></div>
+            <div class="result"><span>Current Speed</span><strong id="rU">—</strong></div>
+            <div class="result"><span>Status</span><strong id="rStatus" style="font-size:14px">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Key Formulas</h3></div>
+        <div class="panel-body formulas">
+          <div class="title">Trajectory equation</div>
+          <div><code>y = x tanθ − (g x² / 2u²) (1 + tan²θ)</code></div>
+
+          <div class="title">Minimum speed to pass through (x, y)</div>
+          <div><code>u<sub>min</sub> = √[ g ( y + √(x² + y²) ) ]</code></div>
+
+          <div class="title">Corresponding optimal angle</div>
+          <div><code>θ<sub>opt</sub> = arctan( (y + r) / x )</code> where <code>r = √(x² + y²)</code></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Detailed Analysis</h3></div>
+        <div class="panel-body analysis">
+          <h4>1. What does “minimum speed” mean?</h4>
+          <p>For a fixed target (x, y) there is a continuous range of speeds that can hit the point (by choosing suitable angles). The <strong>smallest</strong> of those speeds is called u<sub>min</sub>. Below this speed no real angle exists that makes the trajectory pass through the target.</p>
+
+          <h4>2. Geometric insight</h4>
+          <ul>
+            <li>The point (x, y) lies at a distance <code>r = √(x² + y²)</code> from the origin.</li>
+            <li>The formula <code>u<sub>min</sub> = √[g(y + r)]</code> comes from the condition that the discriminant of the quadratic in tanθ becomes zero.</li>
+            <li>At this critical speed only <strong>one</strong> angle works — the trajectory just “touches” the required condition.</li>
+          </ul>
+
+          <h4>3. Two possible angles (when u > u<sub>min</sub>)</h4>
+          <p>When the launch speed is greater than the minimum, two different angles can hit the same point (high trajectory and low trajectory). The simulation shows the lower-angle path for the current speed.</p>
+
+          <h4>4. Special cases</h4>
+          <ul>
+            <li>If the target is on the ground (y = 0), then <code>u<sub>min</sub> = √(g x)</code> and θ = 45°.</li>
+            <li>If the target is directly above the origin (x → 0), the formula still holds but the angle approaches 90°.</li>
+          </ul>
+
+          <h4>5. How to use this lab</h4>
+          <ul>
+            <li>Move the Target X / Y sliders to any point.</li>
+            <li>Click <strong>Use Minimum Speed</strong> — the speed slider jumps to the exact theoretical minimum and the green path appears.</li>
+            <li>Increase the speed above minimum and press Play to see the actual flight.</li>
+            <li>Watch the Status indicator: it tells you whether the current speed can reach the target or not.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
+
+  let playing = false;
+  let t = 0;
+  let animId = null;
+  let lastTs = 0;
+
+  const tx = $('tx'), txNum = $('txNum');
+  const ty = $('ty'), tyNum = $('tyNum');
+  const gIn = $('g'), gNum = $('gNum');
+  const uIn = $('u'), uNum = $('uNum');
+
+  function sync(range, num, label, suffix) {
+    const update = () => {
+      const v = parseFloat(range.value);
+      num.value = v;
+      if (label) label.textContent = v + suffix;
+      resetAnim();
+    };
+    range.addEventListener('input', update);
+    num.addEventListener('input', () => {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.max(+range.min, Math.min(+range.max, v));
+      range.value = v;
+      num.value = v;
+      if (label) label.textContent = v + suffix;
+      resetAnim();
+    });
+  }
+
+  sync(tx, txNum, $('txVal'), ' m');
+  sync(ty, tyNum, $('tyVal'), ' m');
+  sync(gIn, gNum, $('gVal'), ' m/s²');
+  sync(uIn, uNum, $('uVal'), ' m/s');
+
+  function getP() {
+    return {
+      x: parseFloat(tx.value),
+      y: parseFloat(ty.value),
+      g: parseFloat(gIn.value),
+      u: parseFloat(uIn.value)
+    };
+  }
+
+  function calcUmin(p) {
+    const r = Math.sqrt(p.x * p.x + p.y * p.y);
+    return Math.sqrt(p.g * (p.y + r));
+  }
+
+  function calcThetaOpt(p) {
+    const r = Math.sqrt(p.x * p.x + p.y * p.y);
+    return Math.atan((p.y + r) / p.x);
+  }
+
+  function calcAngles(p) {
+    const A = (p.g * p.x * p.x) / (2 * p.u * p.u);
+    const B = -p.x;
+    const C = A + p.y;
+    const disc = B * B - 4 * A * C;
+    if (disc < 0) return null;
+    const t1 = (-B + Math.sqrt(disc)) / (2 * A);
+    const t2 = (-B - Math.sqrt(disc)) / (2 * A);
+    const angles = [Math.atan(t1), Math.atan(t2)].filter(a => a > 0 && a < Math.PI / 2);
+    angles.sort((a, b) => a - b);
+    return angles.length ? angles : null;
+  }
+
+  function flightTime(p, theta) {
+    return p.x / (p.u * Math.cos(theta));
+  }
+
+  function updateResults() {
+    const p = getP();
+    const umin = calcUmin(p);
+    const thetaOpt = calcThetaOpt(p);
+    const r = Math.sqrt(p.x * p.x + p.y * p.y);
+    const angles = calcAngles(p);
+
+    $('rUmin').textContent = umin.toFixed(2) + ' m/s';
+    $('rTheta').textContent = (thetaOpt * 180 / Math.PI).toFixed(1) + '°';
+    $('rDist').textContent = r.toFixed(2) + ' m';
+    $('rU').textContent = p.u.toFixed(2) + ' m/s';
+
+    if (angles) {
+      const T = flightTime(p, angles[0]);
+      $('rT').textContent = T.toFixed(2) + ' s';
+      $('rStatus').textContent = p.u >= umin - 0.05 ? 'Can reach' : 'Too slow';
+      $('rStatus').style.color = p.u >= umin - 0.05 ? 'var(--green)' : 'var(--red)';
+    } else {
+      $('rT').textContent = '—';
+      $('rStatus').textContent = 'Impossible';
+      $('rStatus').style.color = 'var(--red)';
+    }
+  }
+
+  function draw() {
+    const p = getP();
+    const umin = calcUmin(p);
+    const thetaOpt = calcThetaOpt(p);
+    const angles = calcAngles(p);
+
+    updateResults();
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = 360 * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const W = rect.width;
+    const H = 360;
+    ctx.clearRect(0, 0, W, H);
+
+    const margin = 45;
+    const maxX = Math.max(p.x * 1.25, 20);
+    const maxY = Math.max(p.y * 1.35, 15);
+    const scale = Math.min((W - 2 * margin) / maxX, (H - 2 * margin) / maxY);
+
+    function toS(x, y) {
+      return { sx: margin + x * scale, sy: H - margin - y * scale };
+    }
+
+    ctx.strokeStyle = '#3a4a6a';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const g0 = toS(0, 0);
+    ctx.moveTo(0, g0.sy);
+    ctx.lineTo(W, g0.sy);
+    ctx.stroke();
+
+    ctx.fillStyle = '#6b7a9a';
+    ctx.font = '11px system-ui';
+    ctx.fillText('0', margin - 12, g0.sy + 14);
+    ctx.fillText('x', W - 20, g0.sy + 14);
+    ctx.fillText('y', margin - 18, 20);
+
+    // Green = minimum speed path
+    ctx.strokeStyle = '#7cf0bd';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    let started = false;
+    const Tmin = flightTime({ ...p, u: umin }, thetaOpt);
+    for (let tt = 0; tt <= Tmin + 0.02; tt += 0.015) {
+      const xx = umin * Math.cos(thetaOpt) * tt;
+      const yy = umin * Math.sin(thetaOpt) * tt - 0.5 * p.g * tt * tt;
+      if (yy < -0.5) break;
+      const s = toS(xx, yy);
+      if (!started) { ctx.moveTo(s.sx, s.sy); started = true; }
+      else ctx.lineTo(s.sx, s.sy);
+    }
+    ctx.stroke();
+
+    // Cyan = current speed path
+    if (angles) {
+      const theta = angles[0];
+      const T = flightTime(p, theta);
+      ctx.strokeStyle = '#63e6ff';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      started = false;
+      for (let tt = 0; tt <= T + 0.02; tt += 0.015) {
+        const xx = p.u * Math.cos(theta) * tt;
+        const yy = p.u * Math.sin(theta) * tt - 0.5 * p.g * tt * tt;
+        if (yy < -0.5) break;
+        const s = toS(xx, yy);
+        if (!started) { ctx.moveTo(s.sx, s.sy); started = true; }
+        else ctx.lineTo(s.sx, s.sy);
+      }
+      ctx.stroke();
+
+      const curT = Math.min(t, T);
+      const cx = p.u * Math.cos(theta) * curT;
+      const cy = p.u * Math.sin(theta) * curT - 0.5 * p.g * curT * curT;
+      const cs = toS(cx, Math.max(0, cy));
+      ctx.fillStyle = '#a78bfa';
+      ctx.beginPath();
+      ctx.arc(cs.sx, cs.sy, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // Target
+    const ts = toS(p.x, p.y);
+    ctx.fillStyle = '#ff8e9c';
+    ctx.beginPath();
+    ctx.arc(ts.sx, ts.sy, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ff8e9c99';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(ts.sx, ts.sy, 15, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#ff8e9c';
+    ctx.font = '11px system-ui';
+    ctx.fillText('(' + p.x + ', ' + p.y + ')', ts.sx + 12, ts.sy - 8);
+
+    // Origin
+    const os = toS(0, 0);
+    ctx.fillStyle = '#7cf0bd';
+    ctx.beginPath();
+    ctx.arc(os.sx, os.sy, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    $('timeLabel').textContent = 't = ' + t.toFixed(2) + ' s';
+    $('scaleLabel').textContent = 'Scale ≈ ' + scale.toFixed(1) + ' px/m';
+  }
+
+  function resetAnim() {
+    playing = false;
+    t = 0;
+    $('playBtn').textContent = 'Play';
+    if (animId) cancelAnimationFrame(animId);
+    draw();
+  }
+
+  function tick(ts) {
+    if (!playing) return;
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min((ts - lastTs) / 1000, 0.05);
+    lastTs = ts;
+
+    const p = getP();
+    const angles = calcAngles(p);
+    if (!angles) { playing = false; $('playBtn').textContent = 'Play'; return; }
+
+    const T = flightTime(p, angles[0]);
+    t += dt * 1.1;
+    if (t >= T) {
+      t = T;
+      playing = false;
+      $('playBtn').textContent = 'Play';
+    }
+    draw();
+    if (playing) animId = requestAnimationFrame(tick);
+  }
+
+  $('useMinBtn').addEventListener('click', () => {
+    const p = getP();
+    const umin = calcUmin(p);
+    uIn.value = umin.toFixed(2);
+    uNum.value = umin.toFixed(2);
+    $('uVal').textContent = umin.toFixed(2) + ' m/s';
+    resetAnim();
+  });
+
+  $('playBtn').addEventListener('click', () => {
+    if (playing) {
+      playing = false;
+      $('playBtn').textContent = 'Play';
+    } else {
+      const p = getP();
+      if (!calcAngles(p)) return;
+      if (t > 0) t = 0;
+      playing = true;
+      lastTs = 0;
+      $('playBtn').textContent = 'Pause';
+      animId = requestAnimationFrame(tick);
+    }
+  });
+
+  $('resetBtn').addEventListener('click', resetAnim);
+  window.addEventListener('resize', draw);
+  draw();
+})();
+</script>
+</body>
+</html>
