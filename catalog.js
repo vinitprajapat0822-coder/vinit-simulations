@@ -102,6 +102,18 @@ const CATALOG = [
   // FLUIDS (5)
   { id: "pressure", title: "Fluid Pressure", desc: "P = ρgh and variation with depth.", category: "fluids", tags: "pressure depth fluid", status: "coming-soon", icon: "🌊" },
   { id: "buoyancy", title: "Buoyancy & Archimedes", desc: "Upthrust, apparent weight and floating condition.", category: "fluids", tags: "buoyancy archimedes floating", status: "coming-soon", icon: "🚢" },
+  
+  {
+    id: "floating-ice-buoyancy",
+    title: "Floating Ice & Rope Length Lab",
+    desc: "Explore floating ice, submerged depth, exposed thickness, rope length and Archimedes' principle with interactive controls.",
+    category: "fluids",
+    tags: "floating ice buoyancy rope length submerged depth density archimedes jee",
+    status: "live",
+    url: "projects/floating-ice-buoyancy.html",
+    icon: "🧊"
+  },
+  
   { id: "continuity", title: "Equation of Continuity", desc: "A₁v₁ = A₂v₂ for incompressible fluid.", category: "fluids", tags: "continuity equation flow", status: "coming-soon", icon: "🚰" },
   { id: "bernoulli", title: "Bernoulli's Principle", desc: "Pressure, speed and height relation with examples.", category: "fluids", tags: "bernoulli pressure speed", status: "coming-soon", icon: "✈️" },
   { id: "viscosity", title: "Viscosity & Stokes' Law", desc: "Terminal velocity and viscous force.", category: "fluids", tags: "viscosity stokes terminal velocity", status: "coming-soon", icon: "🍯" },
