@@ -1,0 +1,650 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<meta name="theme-color" content="#071526">
+<title>Vinit Simulation Hub | Floating Ice Lab</title>
+
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#071526;--panel:#10243a;--line:#294861;
+  --text:#eff8ff;--muted:#a9bfd3;--cyan:#58dcf5;
+  --gold:#ffd166;--green:#76e3b4;--red:#ff9f9f;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.55 system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{
+  outline:3px solid var(--gold);outline-offset:3px
+}
+.wrap{max-width:1400px;margin:auto;padding:clamp(12px,2vw,28px)}
+header{padding:10px 0 20px}
+.eyebrow{color:var(--cyan);font-weight:800;letter-spacing:2px;font-size:.75rem}
+h1{font-size:clamp(1.8rem,4vw,3rem);line-height:1.15;margin:8px 0}
+h2{font-size:1.12rem;margin:0 0 14px}
+p{margin:8px 0}
+.muted{color:var(--muted)}
+.tag{
+  display:inline-block;padding:4px 10px;margin:3px;
+  border:1px solid #365c76;border-radius:20px;color:#c7efff;font-size:.78rem
+}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:16px}
+.panel{
+  background:linear-gradient(145deg,#10243a,#0b1b2c);
+  border:1px solid var(--line);border-radius:16px;padding:18px;
+  min-width:0;box-shadow:0 8px 28px #0002
+}
+.visual{padding:0;overflow:hidden}
+.visual-head{padding:18px 18px 0;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.live{color:var(--green);font-size:.8rem;font-weight:700}
+canvas{display:block;width:100%;height:auto;touch-action:pan-y}
+.canvas-wrap{padding:8px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;padding:4px 18px 16px;color:var(--muted);font-size:.8rem}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.controls{display:grid;gap:18px}
+.control label{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+output{color:var(--cyan);font-variant-numeric:tabular-nums;text-align:right}
+input[type=range]{width:100%;accent-color:var(--cyan);margin:12px 0 0;cursor:pointer}
+.hint{font-size:.82rem;color:var(--muted);margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:18px}
+.stat{background:#071827;border:1px solid #213d55;border-radius:11px;padding:12px;min-width:0}
+.stat span{display:block;font-size:.78rem;color:var(--muted)}
+.stat strong{font-size:clamp(1rem,2vw,1.4rem);color:var(--cyan);overflow-wrap:anywhere}
+.stat.answer strong{color:var(--gold)}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+button{
+  color:var(--text);background:#16415d;border:1px solid #36718e;
+  border-radius:10px;padding:10px 13px;font-weight:700
+}
+button:hover{background:#205675}
+.secondary{background:transparent}
+.warning{color:var(--gold);font-size:.85rem;margin-top:12px}
+.lower{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.eq{
+  background:#061522;border:1px solid #25435b;border-radius:10px;
+  padding:12px;margin:10px 0;overflow-wrap:anywhere;
+  font-family:ui-monospace,Consolas,monospace;font-size:clamp(.9rem,2vw,1rem)
+}
+.step{display:flex;gap:10px;margin:13px 0}
+.number{
+  flex:0 0 28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;background:#1a4d68;color:#c7f1ff;font-weight:800
+}
+.step p{margin:0}
+.answer-text{color:var(--green);font-weight:700}
+.quiz button{margin:5px 4px 0 0;text-align:left}
+.feedback{min-height:48px;margin-top:12px;font-weight:700}
+footer{text-align:center;color:#819bb0;font-size:.8rem;padding:24px 0 6px}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+@media(max-width:850px){
+  .grid,.lower{grid-template-columns:1fr}
+  .wrap{padding:12px}
+  .panel{padding:14px}
+  .visual{padding:0}
+  .visual-head{padding:14px 14px 0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">VINIT SIMULATION HUB · PHYSICS LAB</div>
+  <h1>Floating Ice &amp; Minimum Rope Length</h1>
+  <p class="muted">
+    Explore floating equilibrium, buoyancy, density and the minimum rope
+    length. Change the variables, lower the bucket and observe the physics.
+  </p>
+  <span class="tag">JEE Main</span>
+  <span class="tag">Fluid Mechanics</span>
+  <span class="tag">Archimedes' Principle</span>
+  <span class="tag">Interactive Experiment</span>
+</header>
+
+<main>
+<div class="grid">
+
+<section class="panel visual">
+  <div class="visual-head">
+    <h2>Live experiment</h2>
+    <span class="live">● LIVE MODEL</span>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="scene" width="900" height="610"
+      role="img"
+      aria-label="Cross-section of floating ice with waterline, force arrows,
+      submerged depth, exposed depth, rope and a movable bucket.">
+    </canvas>
+  </div>
+  <div class="legend">
+    <span><i class="dot" style="background:#b8eaff"></i>Ice</span>
+    <span><i class="dot" style="background:#2189c7"></i>Water</span>
+    <span><i class="dot" style="background:#ffd166"></i>Rope/bucket</span>
+    <span><i class="dot" style="background:#76e3b4"></i>Buoyancy</span>
+    <span><i class="dot" style="background:#ff9f9f"></i>Weight</span>
+  </div>
+</section>
+
+<aside class="panel">
+  <h2>Experiment controls</h2>
+
+  <div class="controls">
+    <div class="control">
+      <label for="thickness">
+        Ice thickness <output id="tOut">15 m</output>
+      </label>
+      <input id="thickness" type="range" min="1" max="30"
+        step="0.5" value="15">
+      <div class="hint">Total vertical thickness of the ice sheet.</div>
+    </div>
+
+    <div class="control">
+      <label for="iceDensity">
+        Ice density <output id="rhoIOut">800 kg/m³</output>
+      </label>
+      <input id="iceDensity" type="range" min="400" max="1200"
+        step="10" value="800">
+      <div class="hint">Increase density to observe how floating depth changes.</div>
+    </div>
+
+    <div class="control">
+      <label for="waterDensity">
+        Water density <output id="rhoWOut">1000 kg/m³</output>
+      </label>
+      <input id="waterDensity" type="range" min="800" max="1300"
+        step="10" value="1000">
+      <div class="hint">Fresh water is approximately 1000 kg/m³.</div>
+    </div>
+
+    <div class="control">
+      <label for="bucket">
+        Lower the bucket <output id="bucketOut">100%</output>
+      </label>
+      <input id="bucket" type="range" min="0" max="100"
+        step="1" value="100">
+      <div class="hint">
+        0% = bucket at the top. 100% = bucket just touches the water.
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span>Submerged depth</span>
+      <strong id="submerged">12.00 m</strong>
+    </div>
+    <div class="stat">
+      <span>Ice above water</span>
+      <strong id="exposed">3.00 m</strong>
+    </div>
+    <div class="stat answer">
+      <span>Minimum rope length</span>
+      <strong id="rope">3.00 m</strong>
+    </div>
+    <div class="stat">
+      <span>Fraction submerged</span>
+      <strong id="fraction">80.0%</strong>
+    </div>
+    <div class="stat">
+      <span>Weight per m² of ice</span>
+      <strong id="weight">117.72 kN</strong>
+    </div>
+    <div class="stat">
+      <span>Buoyant force per m²</span>
+      <strong id="buoyancy">117.72 kN</strong>
+    </div>
+  </div>
+
+  <div id="warning" class="warning" aria-live="polite"></div>
+
+  <div class="buttons">
+    <button id="reset" type="button">Reset experiment</button>
+    <button id="toggleForces" class="secondary" type="button"
+      aria-pressed="true">Hide force arrows</button>
+    <button id="toggleLabels" class="secondary" type="button"
+      aria-pressed="true">Hide labels</button>
+  </div>
+</aside>
+</div>
+
+<div class="lower">
+
+<section class="panel">
+  <h2>Physics derivation</h2>
+
+  <div class="step">
+    <span class="number">1</span>
+    <p><b>Condition for floating equilibrium</b><br>
+    The ice is at rest, so the upward buoyant force equals its weight.</p>
+  </div>
+
+  <div class="eq">F<sub>B</sub> = mg</div>
+
+  <div class="step">
+    <span class="number">2</span>
+    <p><b>Apply density = mass / volume</b><br>
+    Let A be the horizontal area, t the total thickness and x the submerged
+    depth.</p>
+  </div>
+
+  <div class="eq">
+    ρ<sub>ice</sub> · A · t · g
+    = ρ<sub>water</sub> · A · x · g
+  </div>
+
+  <div class="step">
+    <span class="number">3</span>
+    <p><b>Calculate submerged depth</b><br>
+    Cancel A and g from both sides.</p>
+  </div>
+
+  <div class="eq">
+    x = (ρ<sub>ice</sub> / ρ<sub>water</sub>) × t
+  </div>
+
+  <div class="step">
+    <span class="number">4</span>
+    <p><b>Calculate the rope length</b><br>
+    The water surface is above the submerged portion and below the top
+    surface of the ice.</p>
+  </div>
+
+  <div class="eq">
+    L<sub>min</sub> = t − x
+    = t × (1 − ρ<sub>ice</sub> / ρ<sub>water</sub>)
+  </div>
+
+  <p class="answer-text" id="derivationResult">
+    For the given values, the minimum rope length is 3.00 m.
+  </p>
+  <p class="muted">
+    Assumptions: uniform ice, uniform water density, freely floating ice,
+    negligible rope thickness and bucket size, and no waves or acceleration.
+  </p>
+</section>
+
+<section class="panel">
+  <h2>Force analysis</h2>
+  <p>The force arrows in the experiment represent these forces:</p>
+
+  <div class="eq">
+    Weight: W = ρ<sub>ice</sub> × A × t × g
+  </div>
+  <p class="muted">
+    Gravity acts vertically downward through the centre of mass.
+  </p>
+
+  <div class="eq">
+    Buoyancy: F<sub>B</sub> = ρ<sub>water</sub> × V<sub>displaced</sub> × g
+  </div>
+  <p class="muted">
+    Buoyancy acts upward. Its magnitude equals the weight of displaced water.
+  </p>
+
+  <div class="eq">
+    Net force = F<sub>B</sub> − W = 0
+  </div>
+  <p>
+    <b>Why do the forces balance?</b> The ice is floating at rest. If it were
+    accelerating vertically, the net force would not be zero.
+  </p>
+
+  <hr>
+
+  <h2>Check your understanding</h2>
+  <p><b>For the original values, what is the minimum rope length?</b></p>
+
+  <button type="button" data-answer="a">A. 12 m</button>
+  <button type="button" data-answer="b">B. 3 m</button>
+  <button type="button" data-answer="c">C. 15 m</button>
+
+  <div id="feedback" class="feedback" aria-live="polite"></div>
+
+  <p class="muted">
+    Common mistake: 12 m is the submerged ice depth, not the rope length.
+    The rope only needs to reach from the top of the ice to the water surface.
+  </p>
+</section>
+</div>
+</main>
+
+<footer>
+  Vinit Simulation Hub · Self-contained HTML5 Canvas experiment ·
+  No external libraries or network requests
+</footer>
+</div>
+
+<script>
+"use strict";
+
+(() => {
+  const $ = id => document.getElementById(id);
+
+  const canvas = $("scene");
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    $("warning").textContent =
+      "Canvas is unavailable in this browser. Try an updated browser.";
+    return;
+  }
+
+  const controls = {
+    t: $("thickness"),
+    ri: $("iceDensity"),
+    rw: $("waterDensity"),
+    bucket: $("bucket")
+  };
+
+  let showForces = true;
+  let showLabels = true;
+
+  const fmt = (n, d = 2) =>
+    Number.isFinite(n) ? n.toFixed(d) : "—";
+
+  function getModel() {
+    const t = Number(controls.t.value);
+    const ri = Number(controls.ri.value);
+    const rw = Number(controls.rw.value);
+    const g = 9.81;
+    const valid = t > 0 && ri > 0 && rw > 0 && ri < rw;
+
+    const submerged = valid ? t * ri / rw : t;
+    const exposed = valid ? t - submerged : 0;
+    const weight = ri * t * g;
+    const buoyancy = valid ? rw * submerged * g : rw * t * g;
+
+    return {
+      t, ri, rw, g, valid, submerged, exposed,
+      weight, buoyancy,
+      bucketFraction: Number(controls.bucket.value) / 100
+    };
+  }
+
+  function roundRect(x, y, w, h, r, fill, stroke) {
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    if (fill) {
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
+    if (stroke) {
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+
+  function drawArrow(x1, y1, x2, y2, color, width = 3) {
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const head = 10;
+
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(
+      x2 - head * Math.cos(angle - Math.PI / 6),
+      y2 - head * Math.sin(angle - Math.PI / 6)
+    );
+    ctx.lineTo(
+      x2 - head * Math.cos(angle + Math.PI / 6),
+      y2 - head * Math.sin(angle + Math.PI / 6)
+    );
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawScene(m) {
+    const W = canvas.width;
+    const H = canvas.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#0b2138");
+    bg.addColorStop(1, "#102e48");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Subtle background particles. Static positions avoid animation lag.
+    for (let i = 0; i < 35; i++) {
+      ctx.fillStyle = "rgba(190,230,255,0.17)";
+      ctx.beginPath();
+      ctx.arc((i * 97 + 23) % W, (i * 61 + 17) % H, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const left = 105;
+    const right = 795;
+    const top = 105;
+    const maxIceHeight = 310;
+    const scale = maxIceHeight / Math.max(m.t, 1);
+    const iceH = m.t * scale;
+    const bottom = top + iceH;
+    const waterY = top + m.exposed * scale;
+
+    // Water
+    const waterGrad = ctx.createLinearGradient(0, waterY, 0, H);
+    waterGrad.addColorStop(0, "#238dcc");
+    waterGrad.addColorStop(1, "#0a456f");
+    ctx.fillStyle = waterGrad;
+    ctx.fillRect(25, waterY, W - 50, H - waterY);
+
+    // Water surface
+    ctx.strokeStyle = "#9ee7ff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 25; x <= W - 25; x += 8) {
+      const y = waterY + Math.sin(x * 0.035) * 2;
+      if (x === 25) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Ice
+    const iceGrad = ctx.createLinearGradient(0, top, 0, bottom);
+    iceGrad.addColorStop(0, "#e7faff");
+    iceGrad.addColorStop(1, "#80c9e9");
+    roundRect(left, top, right - left, iceH, 8, iceGrad, "#d8f5ff");
+
+    // A visual cutaway of the submerged part
+    if (m.valid) {
+      ctx.fillStyle = "rgba(26,126,181,0.16)";
+      ctx.fillRect(left, waterY, right - left, bottom - waterY);
+      ctx.strokeStyle = "rgba(255,255,255,0.45)";
+      ctx.setLineDash([7, 6]);
+      ctx.beginPath();
+      ctx.moveTo(left, waterY);
+      ctx.lineTo(right, waterY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Vertical drilled shaft
+    const shaftX = 455;
+    const shaftW = 28;
+    ctx.fillStyle = "#18364b";
+    ctx.fillRect(shaftX - shaftW / 2, top, shaftW, iceH);
+    ctx.strokeStyle = "#ecfbff";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(shaftX - shaftW / 2, top, shaftW, iceH);
+
+    // Bucket position: from the ice top to the water surface
+    const targetY = m.valid ? waterY : top;
+    const bucketCenterY = top + (targetY - top) * m.bucketFraction;
+    const bucketTop = bucketCenterY - 24;
+
+    ctx.strokeStyle = "#ffd166";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(shaftX, top + 2);
+    ctx.lineTo(shaftX, bucketTop);
+    ctx.stroke();
+
+    // Bucket body and handle
+    ctx.fillStyle = "#ffd166";
+    ctx.strokeStyle = "#fff0bd";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(shaftX - 17, bucketTop);
+    ctx.lineTo(shaftX - 12, bucketCenterY + 9);
+    ctx.lineTo(shaftX + 12, bucketCenterY + 9);
+    ctx.lineTo(shaftX + 17, bucketTop);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(shaftX, bucketTop, 17, Math.PI, 0);
+    ctx.stroke();
+
+    // Force arrows on a representative portion of the ice
+    if (showForces && m.valid) {
+      const fx = 700;
+      const centerY = top + iceH / 2;
+      const arrowSize = 50;
+
+      drawArrow(fx, centerY - arrowSize, fx, centerY - 8, "#ff9f9f");
+      drawArrow(fx + 34, centerY + arrowSize, fx + 34, centerY + 8, "#76e3b4");
+
+      if (showLabels) {
+        ctx.font = "bold 13px system-ui";
+        ctx.fillStyle = "#ffb2b2";
+        ctx.fillText("Weight ↓", fx - 26, centerY - arrowSize - 10);
+        ctx.fillStyle = "#9df2cf";
+        ctx.fillText("Buoyancy ↑", fx - 28, centerY + arrowSize + 20);
+      }
+    }
+
+    if (showLabels) {
+      ctx.font = "bold 15px system-ui";
+      ctx.fillStyle = "#eff8ff";
+      ctx.fillText("AIR", 35, 55);
+      ctx.fillStyle = "#bcecff";
+      ctx.fillText("WATER", 38, Math.min(H - 25, waterY + 43));
+      ctx.fillStyle = "#15364e";
+      ctx.fillText("ICE", left + 18, top + 27);
+
+      ctx.fillStyle = "#eff8ff";
+      ctx.font = "13px system-ui";
+      ctx.fillText("Water surface", right - 115, waterY - 12);
+
+      // Total thickness dimension
+      drawArrow(75, top + 4, 75, bottom - 3, "#d6f3ff", 2);
+      drawArrow(91, bottom - 3, 91, top + 4, "#d6f3ff", 2);
+      ctx.fillStyle = "#eff8ff";
+      ctx.font = "bold 13px system-ui";
+      ctx.fillText("t = " + fmt(m.t, 1) + " m", 14, top + iceH / 2);
+
+      if (m.valid) {
+        ctx.fillStyle = "#ffd166";
+        ctx.fillText(
+          "Minimum rope = " + fmt(m.exposed) + " m",
+          shaftX + 28, top + Math.max(17, m.exposed * scale / 2)
+        );
+
+        ctx.fillStyle = "#e6f8ff";
+        ctx.fillText(
+          "Submerged = " + fmt(m.submerged) + " m",
+          right - 205, waterY + Math.max(25, (bottom - waterY) / 2)
+        );
+
+        const remaining = m.exposed * (1 - m.bucketFraction);
+        ctx.fillStyle = "#ffd166";
+        ctx.fillText(
+          m.bucketFraction >= 1 ? "Bucket touches water" :
+          "Distance to water: " + fmt(remaining) + " m",
+          35, H - 42
+        );
+      } else {
+        ctx.fillStyle = "#ffd166";
+        ctx.fillText("Floating condition not satisfied", 35, H - 42);
+      }
+    }
+
+    // Scale note
+    ctx.fillStyle = "rgba(3,16,28,0.7)";
+    roundRect(570, H - 34, 310, 23, 6, "rgba(3,16,28,0.7)");
+    ctx.fillStyle = "#b9d7e9";
+    ctx.font = "11px system-ui";
+    ctx.fillText("Schematic illustration — not to scale", 581, H - 18);
+  }
+
+  function update() {
+    const m = getModel();
+
+    $("tOut").textContent = fmt(m.t, 1) + " m";
+    $("rhoIOut").textContent = Math.round(m.ri) + " kg/m³";
+    $("rhoWOut").textContent = Math.round(m.rw) + " kg/m³";
+    $("bucketOut").textContent = Math.round(m.bucketFraction * 100) + "%";
+
+    $("submerged").textContent = m.valid
+      ? fmt(m.submerged) + " m" : "Not floating";
+    $("exposed").textContent = m.valid
+      ? fmt(m.exposed) + " m" : "—";
+    $("rope").textContent = m.valid
+      ? fmt(m.exposed) + " m" : "Not applicable";
+    $("fraction").textContent = m.valid
+      ? fmt(100 * m.submerged / m.t, 1) + "%" : "—";
+
+    $("weight").textContent = fmt(m.weight / 1000) + " kN";
+    $("buoyancy").textContent = m.valid
+      ? fmt(m.buoyancy / 1000) + " kN" : "—";
+
+    $("warning").textContent = m.valid
+      ? (m.bucketFraction >= 1
+        ? "The bucket is at the water surface."
+        : "Bucket is " + fmt(m.exposed * (1 - m.bucketFraction)) +
+          " m above the water surface.")
+      : "Ice density must be lower than water density for this freely floating equilibrium model. The displayed rope formula is not valid for these values.";
+
+    $("derivationResult").textContent = m.valid
+      ? "Current result: minimum rope length = " + fmt(m.exposed) + " m."
+      : "No floating equilibrium with these density values; the standard formula does not apply.";
+
+    drawScene(m);
+  }
+
+  [controls.t, controls.ri, controls.rw, controls.bucket].forEach(input => {
+    input.addEventListener("input", update);
+  });
+
+  $("reset").addEventListener("click", () => {
+    controls.t.value = "15";
+    controls.ri.value = "800";
+    controls.rw.value = "1000";
+    controls.bucket.value = "100";
+    update();
+  });
+
+  
+  // Initial render: calculate values and draw the scene.
+  update();
+
+  // Keep the canvas sharp on mobile screens and smartboards.
+  window.addEventListener("resize", () => {
+    const m = calculate();
+    drawScene(m);
+  });
+</script>
+</body>
+</html>
+
