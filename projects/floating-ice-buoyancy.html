@@ -322,6 +322,39 @@
           </div>
         </div>
 
+        <h3>Interactive motion lab</h3>
+        <div class="controls">
+          <div>
+            <div class="control-head">
+              <label for="displacement">Ice displacement</label>
+              <output id="displacementOut">0.50 m</output>
+            </div>
+            <input id="displacement" type="range" min="-1.5" max="1.5" step="0.05" value="0.5">
+            <div class="range-labels"><span>Up 1.5 m</span><span>Down 1.5 m</span></div>
+          </div>
+          <div>
+            <div class="control-head">
+              <label for="ropeLength">Rope length setting</label>
+              <output id="ropeLengthOut">3.0 m</output>
+            </div>
+            <input id="ropeLength" type="range" min="0" max="5" step="0.25" value="3">
+            <div class="range-labels"><span>0 m</span><span>5 m</span></div>
+          </div>
+          <div>
+            <div class="control-head">
+              <label for="shaftOffset">Shaft horizontal position</label>
+              <output id="shaftOffsetOut">0 px</output>
+            </div>
+            <input id="shaftOffset" type="range" min="-80" max="80" step="5" value="0">
+            <div class="range-labels"><span>Left</span><span>Right</span></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="nudge" type="button">↕ Nudge ice</button>
+          <button id="releaseIce" type="button">↩ Release to equilibrium</button>
+        </div>
+        <p class="small">Motion is an illustrative damped-response model. Rope/shaft controls change the drawing; rope tension and drilling forces are not solved by this model.</p>
+
         <div class="formula">
           <div class="small">Archimedes’ principle · floating equilibrium</div>
           <div class="equation">ρᵢ Vᵢ g = ρw Vₛ g</div>
@@ -333,6 +366,7 @@
         </div>
 
         <div class="actions">
+          <button id="playPause" type="button">⏸ Pause motion</button>
           <button id="reset" type="button">↺ Reset values</button>
           <button id="example" type="button">Load example</button>
         </div>
@@ -376,6 +410,11 @@
       };
 
       const defaults = { thickness: 15, iceDensity: 800, waterDensity: 1000 };
+      let motionOn = true;
+      let lastFrame = 0;
+      let previousTimestamp = 0;
+      let displacementM = 0.5;
+      let velocityMps = 0;
 
       function calculate() {
         const H = Number(controls.thickness.value);
@@ -390,7 +429,7 @@
         return { H, ri, rw, canFloat, submerged, exposed, fraction };
       }
 
-      function drawScene(m) {
+      function drawScene(m, animationPhase = 0) {
         const rect = canvas.getBoundingClientRect();
         if (!rect.width || !rect.height) return;
 
@@ -441,7 +480,35 @@
         const blockH = Math.min(h * 0.63, 190);
         const blockX = w * 0.46 - blockW / 2;
         const ratio = m.canFloat ? m.exposed / m.H : 0;
-        const topY = waterY - blockH * ratio;
+        const topY = waterY - blockH * ratio + displacementM * 18;
+
+        // Interactive shaft and tether. Geometry is illustrative, not a tension solver.
+        const ropeLengthM = Number($("ropeLength").value);
+        const shaftOffsetPx = Number($("shaftOffset").value);
+        const anchorX = blockX + blockW / 2;
+        const shaftX = anchorX + shaftOffsetPx;
+        const shaftBottomY = topY - ropeLengthM * 16;
+        const shaftTopY = shaftBottomY - 48;
+
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "#d5e4f2";
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.moveTo(shaftX, shaftTopY);
+        ctx.lineTo(shaftX, shaftBottomY);
+        ctx.stroke();
+        ctx.strokeStyle = "#7dffca";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(shaftX, shaftBottomY);
+        ctx.lineTo(anchorX, topY + 3);
+        ctx.stroke();
+        ctx.fillStyle = "#eaf7ff";
+        ctx.font = "bold 10px system-ui";
+        ctx.textAlign = "center";
+        ctx.fillText("SHAFT", shaftX, Math.max(11, shaftTopY - 5));
+        ctx.restore();
 
         // Ice body.
         const ice = ctx.createLinearGradient(blockX, topY, blockX + blockW, topY + blockH);
@@ -478,6 +545,39 @@
         ctx.font = "700 13px system-ui";
         ctx.textAlign = "center";
         ctx.fillText("ICE", blockX + blockW / 2, Math.max(16, topY + blockH * 0.48));
+
+        // Force arrows: weight downward, buoyancy upward.
+        function forceArrow(x, y1, y2, color, label) {
+          ctx.save();
+          ctx.strokeStyle = color;
+          ctx.fillStyle = color;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(x, y1);
+          ctx.lineTo(x, y2);
+          ctx.stroke();
+          const dir = y2 > y1 ? 1 : -1;
+          ctx.beginPath();
+          ctx.moveTo(x, y2);
+          ctx.lineTo(x - 6, y2 - dir * 10);
+          ctx.lineTo(x + 6, y2 - dir * 10);
+          ctx.closePath();
+          ctx.fill();
+          ctx.font = "bold 11px system-ui";
+          ctx.textAlign = "center";
+          ctx.fillText(label, x, dir > 0 ? y2 + 14 : y2 - 8);
+          ctx.restore();
+        }
+
+        const forceLen = Math.min(48, blockH * 0.28);
+        forceArrow(blockX - 17, topY + blockH * 0.36,
+                   topY + blockH * 0.36 + forceLen, "#ffb36b", "Weight ↓");
+        if (m.canFloat) {
+          forceArrow(blockX + blockW + 17,
+                     waterY + Math.min(24, blockH * 0.12) + forceLen,
+                     waterY + Math.min(24, blockH * 0.12),
+                     "#7dffca", "Buoyancy ↑");
+        }
 
         // Waterline label.
         ctx.fillStyle = "#e4fbff";
@@ -531,6 +631,9 @@
         $("exposed").textContent = m.exposed.toFixed(2);
         $("rope").textContent = m.exposed.toFixed(2);
         $("fraction").textContent = m.fraction.toFixed(1);
+        $("displacementOut").textContent = `${displacementM.toFixed(2)} m`;
+        $("ropeLengthOut").textContent = `${Number($("ropeLength").value).toFixed(2)} m`;
+        $("shaftOffsetOut").textContent = `${Number($("shaftOffset").value)} px`;
 
         const status = $("status");
         if (m.canFloat) {
@@ -552,6 +655,11 @@
         Object.entries(defaults).forEach(([key, value]) => {
           controls[key].value = value;
         });
+        $("displacement").value = 0;
+        $("ropeLength").value = 3;
+        $("shaftOffset").value = 0;
+        displacementM = 0;
+        velocityMps = 0;
         update();
       });
 
@@ -559,6 +667,13 @@
         controls.thickness.value = 15;
         controls.iceDensity.value = 800;
         controls.waterDensity.value = 1000;
+        $("displacement").value = 0.5;
+        $("ropeLength").value = 3;
+        $("shaftOffset").value = 0;
+        displacementM = 0.5;
+        velocityMps = 0;
+        motionOn = true;
+        $("playPause").textContent = "⏸ Pause motion";
         update();
       });
 
@@ -568,7 +683,61 @@
         window.addEventListener("resize", () => drawScene(calculate()));
       }
 
+      $("displacement").addEventListener("input", () => {
+        displacementM = Number($("displacement").value);
+        velocityMps = 0;
+        update();
+      });
+
+      ["ropeLength", "shaftOffset"].forEach((id) => {
+        $(id).addEventListener("input", update);
+      });
+
+      $("nudge").addEventListener("click", () => {
+        velocityMps = displacementM >= 0 ? 2.4 : -2.4;
+        motionOn = true;
+        $("playPause").textContent = "⏸ Pause motion";
+      });
+
+      $("releaseIce").addEventListener("click", () => {
+        velocityMps = 0;
+        motionOn = true;
+        $("playPause").textContent = "⏸ Pause motion";
+      });
+
+      $("playPause").addEventListener("click", () => {
+        motionOn = !motionOn;
+        $("playPause").textContent = motionOn ? "⏸ Pause motion" : "▶ Play motion";
+      });
+
+      function animate(timestamp) {
+        requestAnimationFrame(animate);
+        if (!motionOn || timestamp - lastFrame < 33) return;
+
+        const dt = previousTimestamp
+          ? Math.min((timestamp - previousTimestamp) / 1000, 0.04)
+          : 0.016;
+        previousTimestamp = timestamp;
+        lastFrame = timestamp;
+
+        // Educational damped spring response toward equilibrium.
+        if ($("displacement") && Math.abs(displacementM) > 0.002) {
+          const acceleration = -7 * displacementM - 2.6 * velocityMps;
+          velocityMps += acceleration * dt;
+          displacementM += velocityMps * dt;
+
+          if (Math.abs(displacementM) < 0.008 && Math.abs(velocityMps) < 0.025) {
+            displacementM = 0;
+            velocityMps = 0;
+          }
+          $("displacement").value = displacementM.toFixed(2);
+        }
+
+        update();
+      }
+
       update();
+      requestAnimationFrame(animate);
     })();
   </script>
 </body>
