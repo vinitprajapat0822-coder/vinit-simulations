@@ -4,24 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080b16">
-<meta name="description" content="Interactive Free Fall Lab with clear height scale, trajectory and analysis.">
 <title>Free Fall Lab | Vinit Simulation Hub</title>
 <style>
 :root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:#080b16ef;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
-.hero{padding:32px 0 22px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750;letter-spacing:1.4px}.hero h1{font-size:clamp(28px,5vw,48px);letter-spacing:-1.4px;line-height:1.1;margin:12px 0 8px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{max-width:720px;color:var(--muted);margin:0}
-.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:16px;align-items:start;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2ef2,#0d1324f7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:15px 17px;border-bottom:1px solid var(--line)}.panel-head h2,.panel-head h3{font-size:16px;margin:0}.panel-body{padding:16px}
-.field{margin-bottom:14px}.field label{display:flex;justify-content:space-between;color:#dce6fb;font-size:13px;margin-bottom:5px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 80px;gap:8px;align-items:center}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number]{width:100%;min-height:38px;padding:6px 8px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px}
-.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px;cursor:pointer;font-size:13px;font-weight:750;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.actions{display:flex;gap:8px;margin-top:14px}.actions .btn{flex:1}
-.note{padding:10px 12px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:12px}
-.canvasbox{padding:12px}.canvas-top{display:flex;justify-content:space-between;align-items:center;padding:0 4px 8px}.canvas-top strong{font-size:14px}.canvas-top span{font-size:12px;color:var(--muted)}
-canvas{display:block;width:100%;height:420px;border-radius:13px;background:#080e1c;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:12px;padding:12px}.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}.result strong{font-size:17px}
-.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan);font-size:12px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-@media(max-width:520px){canvas{height:320px}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+button,input{font:inherit}a{color:inherit;text-decoration:none}
+.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16f2;border-bottom:1px solid var(--line)}
+.nav{min-height:60px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}
+.logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#17334b;color:var(--cyan);font-size:20px}
+.brand small{display:block;font-size:10px;color:var(--muted);letter-spacing:1px}
+.nav a{color:var(--cyan);font-size:13px}
+.hero{padding:28px 0 18px}
+.eyebrow{display:inline-block;border:1px solid #63e6ff44;background:#63e6ff11;color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(26px,5vw,42px);margin:10px 0 6px}
+.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin:0;max-width:600px}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:16px;padding-bottom:30px}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.panel-head{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700}
+.panel-body{padding:16px}
+.field{margin-bottom:14px}
+.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.hint{color:var(--muted);font-size:12px}
+.inputrow{display:grid;grid-template-columns:1fr 76px;gap:8px}
+input[type=range]{width:100%;accent-color:var(--cyan)}
+input[type=number]{width:100%;padding:8px;border-radius:8px;border:1px solid #31415f;background:#080e1d;color:var(--text)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{flex:1;padding:11px;border-radius:10px;border:1px solid #34425e;background:#141e33;color:var(--text);font-weight:700;cursor:pointer}
+.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}
+.note{margin-top:12px;padding:10px;border-radius:8px;background:#63e6ff0d;border:1px solid #63e6ff22;font-size:12px;color:var(--muted)}
+canvas{display:block;width:100%;height:400px;background:#0a1220;border-radius:12px}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result{background:#0c1426;border:1px solid #2a3a58;border-radius:10px;padding:12px}
+.result span{display:block;font-size:11px;color:var(--muted)}
+.result strong{font-size:18px}
+.formulas{font-size:13px;color:var(--muted);line-height:1.8}
+.formulas code{color:var(--cyan)}
 </style>
 </head>
 <body>
@@ -39,25 +60,25 @@ canvas{display:block;width:100%;height:420px;border-radius:13px;background:#080e
   <section class="hero">
     <div class="eyebrow">KINEMATICS · GRAVITY</div>
     <h1>Free Fall <span class="grad">Lab</span></h1>
-    <p>Motion under gravity. Change height, initial velocity and g. Clear height scale + trajectory for easy analysis.</p>
+    <p>Motion under gravity. Adjust height, initial velocity and g. Press Play to see the motion.</p>
   </section>
 
   <div class="layout">
     <aside class="panel">
-      <div class="panel-head"><h2>Controls</h2></div>
+      <div class="panel-head">Controls</div>
       <div class="panel-body">
         <div class="field">
-          <label>Initial Height (h) <span class="hint" id="hVal">40 m</span></label>
+          <label>Height (h) <span class="hint" id="hVal">40 m</span></label>
           <div class="inputrow">
-            <input type="range" id="h" min="5" max="120" step="1" value="40">
-            <input type="number" id="hNum" min="5" max="120" value="40">
+            <input type="range" id="h" min="5" max="100" step="1" value="40">
+            <input type="number" id="hNum" min="5" max="100" value="40">
           </div>
         </div>
         <div class="field">
           <label>Initial Velocity (u) <span class="hint" id="uVal">0 m/s</span></label>
           <div class="inputrow">
-            <input type="range" id="u" min="-25" max="25" step="0.5" value="0">
-            <input type="number" id="uNum" min="-25" max="25" step="0.5" value="0">
+            <input type="range" id="u" min="-20" max="20" step="0.5" value="0">
+            <input type="number" id="uNum" min="-20" max="20" step="0.5" value="0">
           </div>
         </div>
         <div class="field">
@@ -71,41 +92,40 @@ canvas{display:block;width:100%;height:420px;border-radius:13px;background:#080e
           <button class="btn primary" id="playBtn">Play</button>
           <button class="btn" id="resetBtn">Reset</button>
         </div>
-        <div class="note"><strong>Downward is positive.</strong> Air resistance neglected. Height scale on left helps analysis.</div>
+        <div class="note">Downward is positive. Air resistance is neglected.</div>
       </div>
     </aside>
 
-    <div class="maincol">
-      <div class="panel">
-        <div class="canvasbox">
-          <div class="canvas-top">
-            <strong>Free Fall Analysis View</strong>
-            <span id="timeLabel">t = 0.00 s</span>
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-body">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <strong>Simulation</strong>
+            <span id="timeLabel" style="color:var(--muted)">t = 0.00 s</span>
           </div>
-          <canvas id="canvas" width="800" height="420"></canvas>
+          <canvas id="canvas" width="700" height="400"></canvas>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-head"><h3>Results</h3></div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head">Results</div>
         <div class="panel-body">
           <div class="results">
             <div class="result"><span>Time of Flight</span><strong id="rT">—</strong></div>
-            <div class="result"><span>Impact Velocity</span><strong id="rV">—</strong></div>
+            <div class="result"><span>Impact Speed</span><strong id="rV">—</strong></div>
             <div class="result"><span>Current Height</span><strong id="rY">—</strong></div>
-            <div class="result"><span>Max Height*</span><strong id="rMax">—</strong></div>
+            <div class="result"><span>Max Height</span><strong id="rMax">—</strong></div>
           </div>
-          <p style="font-size:12px;color:var(--muted);margin:10px 0 0">* Shown only when thrown upward (u negative).</p>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-head"><h3>Formulas</h3></div>
+        <div class="panel-head">Formulas</div>
         <div class="panel-body formulas">
           <div>y = h + u t + ½ g t²</div>
           <div>v = u + g t</div>
-          <div>v² = u² + 2 g (y − h)</div>
-          <div>Time of flight: solve y = 0 (quadratic)</div>
+          <div>v² = u² + 2g(y − h)</div>
+          <div>Time of flight from quadratic equation (y = 0)</div>
         </div>
       </div>
     </div>
@@ -113,56 +133,68 @@ canvas{display:block;width:100%;height:420px;border-radius:13px;background:#080e
 </main>
 
 <script>
-(function () {
+(function(){
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
-  const $ = id => document.getElementById(id);
 
   let playing = false;
   let t = 0;
   let lastTs = 0;
-  let trail = [];   // path history for analysis
 
-  const hIn = $('h'), hNum = $('hNum');
-  const uIn = $('u'), uNum = $('uNum');
-  const gIn = $('g'), gNum = $('gNum');
+  const hEl = document.getElementById('h');
+  const hNum = document.getElementById('hNum');
+  const uEl = document.getElementById('u');
+  const uNum = document.getElementById('uNum');
+  const gEl = document.getElementById('g');
+  const gNum = document.getElementById('gNum');
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const timeLabel = document.getElementById('timeLabel');
+  const rT = document.getElementById('rT');
+  const rV = document.getElementById('rV');
+  const rY = document.getElementById('rY');
+  const rMax = document.getElementById('rMax');
+  const hVal = document.getElementById('hVal');
+  const uVal = document.getElementById('uVal');
+  const gVal = document.getElementById('gVal');
 
-  function sync(range, num, label, suffix, decimals) {
-    range.addEventListener('input', () => {
+  function sync(range, num, label, unit, dec) {
+    range.addEventListener('input', function() {
       num.value = range.value;
-      label.textContent = Number(range.value).toFixed(decimals) + suffix;
-      resetAnim();
+      label.textContent = Number(range.value).toFixed(dec) + unit;
+      reset();
     });
-    num.addEventListener('input', () => {
-      let v = parseFloat(num.value);
+    num.addEventListener('input', function() {
+      var v = parseFloat(num.value);
       if (isNaN(v)) return;
       v = Math.max(+range.min, Math.min(+range.max, v));
       range.value = num.value = v;
-      label.textContent = v.toFixed(decimals) + suffix;
-      resetAnim();
+      label.textContent = v.toFixed(dec) + unit;
+      reset();
     });
   }
 
-  sync(hIn, hNum, $('hVal'), ' m', 0);
-  sync(uIn, uNum, $('uVal'), ' m/s', 1);
-  sync(gIn, gNum, $('gVal'), ' m/s²', 1);
+  sync(hEl, hNum, hVal, ' m', 0);
+  sync(uEl, uNum, uVal, ' m/s', 1);
+  sync(gEl, gNum, gVal, ' m/s²', 1);
 
   function getP() {
     return {
-      h: parseFloat(hIn.value),
-      u: parseFloat(uIn.value),
-      g: parseFloat(gIn.value)
+      h: parseFloat(hEl.value) || 40,
+      u: parseFloat(uEl.value) || 0,
+      g: parseFloat(gEl.value) || 9.8
     };
   }
 
   function flightTime(p) {
-    const a = 0.5 * p.g;
-    const b = p.u;
-    const c = p.h;
-    const disc = b * b - 4 * a * c;
+    // h + u*t + 0.5*g*t² = 0
+    var a = 0.5 * p.g;
+    var b = p.u;
+    var c = p.h;
+    var disc = b*b - 4*a*c;
     if (disc < 0) return 0;
-    const t1 = (-b + Math.sqrt(disc)) / (2 * a);
-    const t2 = (-b - Math.sqrt(disc)) / (2 * a);
+    var t1 = (-b + Math.sqrt(disc)) / (2*a);
+    var t2 = (-b - Math.sqrt(disc)) / (2*a);
     return Math.max(t1, t2, 0);
   }
 
@@ -174,264 +206,156 @@ canvas{display:block;width:100%;height:420px;border-radius:13px;background:#080e
     return p.u + p.g * t;
   }
 
-  function resetAnim() {
+  function reset() {
     playing = false;
     t = 0;
-    trail = [];
-    $('playBtn').textContent = 'Play';
-    $('timeLabel').textContent = 't = 0.00 s';
+    playBtn.textContent = 'Play';
+    timeLabel.textContent = 't = 0.00 s';
     update();
   }
 
-  $('playBtn').addEventListener('click', () => {
+  playBtn.addEventListener('click', function() {
     playing = !playing;
-    $('playBtn').textContent = playing ? 'Pause' : 'Play';
+    playBtn.textContent = playing ? 'Pause' : 'Play';
     if (playing) {
       lastTs = 0;
       requestAnimationFrame(loop);
     }
   });
 
-  $('resetBtn').addEventListener('click', () => {
-    hIn.value = hNum.value = 40;
-    uIn.value = uNum.value = 0;
-    gIn.value = gNum.value = 9.8;
-    $('hVal').textContent = '40 m';
-    $('uVal').textContent = '0.0 m/s';
-    $('gVal').textContent = '9.8 m/s²';
-    resetAnim();
+  resetBtn.addEventListener('click', function() {
+    hEl.value = hNum.value = 40;
+    uEl.value = uNum.value = 0;
+    gEl.value = gNum.value = 9.8;
+    hVal.textContent = '40 m';
+    uVal.textContent = '0.0 m/s';
+    gVal.textContent = '9.8 m/s²';
+    reset();
   });
 
   function loop(ts) {
     if (!playing) return;
     if (!lastTs) lastTs = ts;
-    const dt = Math.min((ts - lastTs) / 1000, 0.05);
+    var dt = Math.min((ts - lastTs) / 1000, 0.05);
     lastTs = ts;
 
-    const p = getP();
-    const T = flightTime(p);
+    var p = getP();
+    var T = flightTime(p);
     t += dt;
     if (t >= T) {
       t = T;
       playing = false;
-      $('playBtn').textContent = 'Play';
+      playBtn.textContent = 'Play';
     }
-    $('timeLabel').textContent = 't = ' + t.toFixed(2) + ' s';
+    timeLabel.textContent = 't = ' + t.toFixed(2) + ' s';
     update();
     if (playing) requestAnimationFrame(loop);
   }
 
   function update() {
-    const p = getP();
-    const T = flightTime(p);
-    const y = Math.max(0, pos(p, t));
-    const vImp = vel(p, T);
+    var p = getP();
+    var T = flightTime(p);
+    var y = Math.max(0, pos(p, t));
+    var vImp = vel(p, T);
 
-    $('rT').textContent = T.toFixed(2) + ' s';
-    $('rV').textContent = vImp.toFixed(2) + ' m/s';
-    $('rY').textContent = y.toFixed(2) + ' m';
+    rT.textContent = T.toFixed(2) + ' s';
+    rV.textContent = Math.abs(vImp).toFixed(2) + ' m/s';
+    rY.textContent = y.toFixed(2) + ' m';
 
     if (p.u < 0) {
-      const tPeak = -p.u / p.g;
-      const maxH = p.h + p.u * tPeak + 0.5 * p.g * tPeak * tPeak;
-      $('rMax').textContent = Math.max(0, maxH).toFixed(2) + ' m';
+      var tPeak = -p.u / p.g;
+      var maxH = p.h + p.u * tPeak + 0.5 * p.g * tPeak * tPeak;
+      rMax.textContent = Math.max(0, maxH).toFixed(2) + ' m';
     } else {
-      $('rMax').textContent = '—';
-    }
-
-    // Store trail for analysis
-    if (playing || t > 0) {
-      trail.push({ t, y });
-      if (trail.length > 300) trail.shift();
+      rMax.textContent = '—';
     }
 
     draw(p, y);
   }
 
   function draw(p, y) {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(1, rect.width);
-    const H = Math.max(1, rect.height || 420);
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var rect = canvas.getBoundingClientRect();
+    var W = Math.max(300, rect.width);
+    var H = Math.max(300, rect.height || 400);
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // ===== SKY GRADIENT BACKGROUND =====
-    const sky = ctx.createLinearGradient(0, 0, 0, H);
-    sky.addColorStop(0, '#0b1a33');
-    sky.addColorStop(0.55, '#132a4f');
-    sky.addColorStop(0.75, '#1a2f4a');
-    sky.addColorStop(1, '#0f2740');
-    ctx.fillStyle = sky;
+    // Background
+    ctx.fillStyle = '#0a1220';
     ctx.fillRect(0, 0, W, H);
 
-    // Soft clouds (very subtle)
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
-    ctx.beginPath(); ctx.ellipse(W*0.2, H*0.15, 60, 18, 0, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(W*0.7, H*0.22, 80, 22, 0, 0, Math.PI*2); ctx.fill();
-
-    // ===== GROUND =====
-    const groundY = H * 0.88;
-    const groundGrad = ctx.createLinearGradient(0, groundY, 0, H);
-    groundGrad.addColorStop(0, '#1e3a2f');
-    groundGrad.addColorStop(1, '#0f241c');
-    ctx.fillStyle = groundGrad;
+    // Ground
+    var groundY = H * 0.88;
+    ctx.fillStyle = '#1a2e22';
     ctx.fillRect(0, groundY, W, H - groundY);
-
-    // Ground line
     ctx.strokeStyle = '#3d6b54';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, groundY);
     ctx.lineTo(W, groundY);
     ctx.stroke();
 
-    // Grass dots
-    ctx.fillStyle = '#2d5a40';
-    for (let i = 0; i < 40; i++) {
-      const gx = (i * 37 + 10) % W;
-      ctx.fillRect(gx, groundY + 4, 3, 6);
-    }
-
-    // ===== HEIGHT SCALE (left side) =====
-    const maxH = Math.max(p.h * 1.15, 15);
-    const usableH = groundY - 50;
-    const scaleX = 48;
-
-    ctx.strokeStyle = 'rgba(148,163,184,0.5)';
-    ctx.fillStyle = '#94a3b8';
+    // Height scale
+    var maxH = Math.max(p.h * 1.2, 20);
+    var usable = groundY - 40;
+    ctx.strokeStyle = '#445';
+    ctx.fillStyle = '#8af';
     ctx.font = '11px system-ui';
     ctx.textAlign = 'right';
-    ctx.lineWidth = 1;
-
-    // Major ticks every 10 m or appropriate step
-    const step = maxH > 80 ? 20 : maxH > 40 ? 10 : 5;
-    for (let h = 0; h <= maxH; h += step) {
-      const py = groundY - (h / maxH) * usableH;
+    var step = maxH > 60 ? 20 : 10;
+    for (var hh = 0; hh <= maxH; hh += step) {
+      var py = groundY - (hh / maxH) * usable;
       ctx.beginPath();
-      ctx.moveTo(scaleX - 6, py);
-      ctx.lineTo(scaleX, py);
+      ctx.moveTo(36, py);
+      ctx.lineTo(44, py);
       ctx.stroke();
-      ctx.fillText(h + ' m', scaleX - 10, py + 4);
+      ctx.fillText(hh + 'm', 34, py + 4);
     }
-
-    // Vertical scale line
     ctx.beginPath();
-    ctx.moveTo(scaleX, 45);
-    ctx.lineTo(scaleX, groundY);
+    ctx.moveTo(44, 40);
+    ctx.lineTo(44, groundY);
     ctx.stroke();
 
-    // ===== REFERENCE BUILDING (right side) for scale =====
-    const bldgH = Math.min(usableH * 0.7, (30 / maxH) * usableH);
-    const bldgX = W - 90;
-    const bldgW = 42;
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(bldgX, groundY - bldgH, bldgW, bldgH);
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(bldgX, groundY - bldgH, bldgW, bldgH);
-    // windows
-    ctx.fillStyle = '#334155';
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 2; col++) {
-        ctx.fillRect(bldgX + 8 + col * 16, groundY - bldgH + 12 + row * (bldgH/6), 10, 8);
-      }
-    }
-    ctx.fillStyle = '#64748b';
-    ctx.font = '10px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('~30m', bldgX + bldgW/2, groundY - bldgH - 6);
-
-    // ===== TRAJECTORY TRAIL =====
-    if (trail.length > 1) {
-      ctx.strokeStyle = 'rgba(99,230,255,0.35)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      trail.forEach((pt, i) => {
-        const py = groundY - (pt.y / maxH) * usableH;
-        const px = W / 2;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      });
-      ctx.stroke();
-    }
-
-    // ===== OBJECT =====
-    const yPx = groundY - (y / maxH) * usableH;
-
-    // Soft glow
+    // Object
+    var yPx = groundY - (y / maxH) * usable;
     ctx.beginPath();
-    ctx.arc(W / 2, yPx, 18, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(99,230,255,0.15)';
+    ctx.arc(W / 2, yPx, 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#63e6ff';
     ctx.fill();
-
-    // Ball
-    const ballGrad = ctx.createRadialGradient(W/2 - 3, yPx - 3, 1, W/2, yPx, 12);
-    ballGrad.addColorStop(0, '#a5f3fc');
-    ballGrad.addColorStop(1, '#0891b2');
-    ctx.fillStyle = ballGrad;
-    ctx.beginPath();
-    ctx.arc(W / 2, yPx, 11, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#e0f2fe';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Height label near ball
-    ctx.fillStyle = '#e0f2fe';
-    ctx.font = 'bold 13px system-ui';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 12px system-ui';
     ctx.textAlign = 'left';
-    ctx.fillText('y = ' + y.toFixed(1) + ' m', W / 2 + 20, yPx + 5);
+    ctx.fillText('y = ' + y.toFixed(1) + ' m', W / 2 + 18, yPx + 4);
 
-    // ===== VELOCITY ARROW =====
-    const v = vel(p, t);
+    // Velocity arrow
+    var v = vel(p, t);
     if (Math.abs(v) > 0.3) {
-      const len = Math.min(55, Math.abs(v) * 2.5);
-      const dir = v > 0 ? 1 : -1;
-      const ax = W / 2 - 35;
+      var len = Math.min(50, Math.abs(v) * 2);
+      var dir = v > 0 ? 1 : -1;
+      var ax = W / 2 - 30;
       ctx.strokeStyle = '#ff8e9c';
       ctx.fillStyle = '#ff8e9c';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(ax, yPx);
       ctx.lineTo(ax, yPx + dir * len);
       ctx.stroke();
-      // head
       ctx.beginPath();
       ctx.moveTo(ax, yPx + dir * len);
-      ctx.lineTo(ax - 6, yPx + dir * len - dir * 9);
-      ctx.lineTo(ax + 6, yPx + dir * len - dir * 9);
-      ctx.closePath();
+      ctx.lineTo(ax - 5, yPx + dir * len - dir * 8);
+      ctx.lineTo(ax + 5, yPx + dir * len - dir * 8);
       ctx.fill();
-      ctx.font = '11px system-ui';
-      ctx.textAlign = 'center';
-      ctx.fillText('v', ax, yPx + dir * len + dir * 14);
     }
-
-    // Launch height dashed line
-    const launchY = groundY - (p.h / maxH) * usableH;
-    ctx.setLineDash([4, 4]);
-    ctx.strokeStyle = 'rgba(167,139,250,0.5)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(scaleX + 5, launchY);
-    ctx.lineTo(W - 20, launchY);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = '#a78bfa';
-    ctx.font = '11px system-ui';
-    ctx.textAlign = 'left';
-    ctx.fillText('Launch h = ' + p.h + ' m', scaleX + 10, launchY - 6);
   }
 
-  if (window.ResizeObserver) {
-    new ResizeObserver(update).observe(canvas);
-  } else {
-    window.addEventListener('resize', update);
-  }
-
+  // Initial draw
   update();
+
+  window.addEventListener('resize', function() {
+    update();
+  });
 })();
 </script>
 </body>
