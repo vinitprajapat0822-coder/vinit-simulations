@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b16">
+<meta name="description" content="Interactive Motion on Incline Lab: acceleration, forces, friction and time to slide down an inclined plane.">
+<title>Motion on Incline Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:30px 0 20px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750}.hero h1{font-size:clamp(28px,5vw,46px);margin:12px 0 8px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{color:var(--muted);max-width:720px}
+.layout{display:grid;grid-template-columns:minmax(280px,330px) 1fr;gap:16px;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2eF2,#0d1324F7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:14px 16px;border-bottom:1px solid var(--line)}.panel-head h2,.panel-head h3{margin:0;font-size:15px}.panel-body{padding:15px}
+.field{margin-bottom:12px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;color:#dce6fb}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 78px;gap:8px}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number]{width:100%;min-height:36px;padding:6px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:9px}
+.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:9px;cursor:pointer;font-weight:750;font-size:13px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.actions{display:flex;gap:8px;margin-top:10px}.actions .btn{flex:1}
+.note{padding:9px;border-radius:9px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:10px}
+canvas{display:block;width:100%;height:360px;border-radius:12px;background:#080e1c;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:11px;padding:10px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:15px}
+.formulas{font-size:13px;color:var(--muted);line-height:1.65}.formulas code{color:var(--cyan)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>INCLINE MOTION</small></span></a><a href="../index.html">← Back to Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">KINEMATICS · INCLINED PLANE</div><h1>Motion on <span class="grad">Incline</span></h1><p>Acceleration down the plane, friction effects, time to reach bottom and force components.</p></section>
+<div class="layout">
+<aside class="panel"><div class="panel-head"><h2>Controls</h2></div><div class="panel-body">
+<div class="field"><label>Incline Angle (θ) <span class="hint" id="thetaVal">30°</span></label><div class="inputrow"><input type="range" id="theta" min="5" max="60" step="1" value="30"><input type="number" id="thetaNum" min="5" max="60" value="30"></div></div>
+<div class="field"><label>Length of Incline <span class="hint" id="LVal">10 m</span></label><div class="inputrow"><input type="range" id="L" min="3" max="25" step="0.5" value="10"><input type="number" id="LNum" min="3" max="25" step="0.5" value="10"></div></div>
+<div class="field"><label>Friction μ <span class="hint" id="muVal">0.20</span></label><div class="inputrow"><input type="range" id="mu" min="0" max="0.8" step="0.05" value="0.2"><input type="number" id="muNum" min="0" max="0.8" step="0.05" value="0.2"></div></div>
+<div class="field"><label>Gravity (g) <span class="hint" id="gVal">9.8 m/s²</span></label><div class="inputrow"><input type="range" id="g" min="5" max="15" step="0.1" value="9.8"><input type="number" id="gNum" min="5" max="15" step="0.1" value="9.8"></div></div>
+<div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div>
+<div class="note"><strong>Kinetic friction</strong> assumed once motion starts. Object starts from rest.</div>
+</div></aside>
+<div>
+<div class="panel" style="margin-bottom:16px"><div style="padding:12px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong>Incline View</strong><span id="timeLabel">t = 0.00 s</span></div><canvas id="canvas" width="800" height="360"></canvas></div></div>
+<div class="panel"><div class="panel-head"><h3>Results</h3></div><div class="panel-body"><div class="results">
+<div class="result"><span>Acceleration</span><strong id="rA">—</strong></div>
+<div class="result"><span>Time to bottom</span><strong id="rT">—</strong></div>
+<div class="result"><span>Final Speed</span><strong id="rV">—</strong></div>
+<div class="result"><span>Net Force / m</span><strong id="rF">—</strong></div>
+</div></div></div>
+<div class="panel" style="margin-top:16px"><div class="panel-head"><h3>Formulas</h3></div><div class="panel-body formulas">
+<div>a = g (sinθ − μ cosθ)</div>
+<div>s = ½ a t² → t = √(2L / a)</div>
+<div>v = √(2 a L)</div>
+<div>Component parallel: mg sinθ</div>
+<div>Friction: μ mg cosθ</div>
+</div></div>
+</div></div>
+</main>
+<script>
+(function(){
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
+let playing=false,t=0,lastTs=0;
+const theta=$('theta'),thetaNum=$('thetaNum'),L=$('L'),LNum=$('LNum'),mu=$('mu'),muNum=$('muNum'),g=$('g'),gNum=$('gNum');
+function sync(r,n,l,s,d=1){r.oninput=()=>{n.value=r.value;l.textContent=Number(r.value).toFixed(d)+s;reset()};n.oninput=()=>{let v=parseFloat(n.value);if(isNaN(v))return;v=Math.max(+r.min,Math.min(+r.max,v));r.value=n.value=v;l.textContent=v.toFixed(d)+s;reset()}}
+sync(theta,thetaNum,$('thetaVal'),'°',0);sync(L,LNum,$('LVal'),' m',1);sync(mu,muNum,$('muVal'),'',2);sync(g,gNum,$('gVal'),' m/s²',1);
+function getP(){return{θ:+theta.value*Math.PI/180,L:+L.value,μ:+mu.value,g:+g.value}}
+function accel(p){return p.g*(Math.sin(p.θ)-p.μ*Math.cos(p.θ))}
+function timeToBottom(p){const a=accel(p);return a>0.01?Math.sqrt(2*p.L/a):Infinity}
+function reset(){playing=false;t=0;$('playBtn').textContent='Play';$('timeLabel').textContent='t = 0.00 s';update()}
+$('playBtn').onclick=()=>{playing=!playing;$('playBtn').textContent=playing?'Pause':'Play';if(playing){lastTs=0;requestAnimationFrame(loop)}};
+$('resetBtn').onclick=()=>{theta.value=thetaNum.value=30;L.value=LNum.value=10;mu.value=muNum.value=0.2;g.value=gNum.value=9.8;$('thetaVal').textContent='30°';$('LVal').textContent='10.0 m';$('muVal').textContent='0.20';$('gVal').textContent='9.8 m/s²';reset()};
+function loop(ts){if(!playing)return;if(!lastTs)lastTs=ts;const dt=Math.min((ts-lastTs)/1000,0.04);lastTs=ts;const p=getP();const T=timeToBottom(p);t+=dt;if(t>=T){t=T;playing=false;$('playBtn').textContent='Play'}$('timeLabel').textContent='t = '+t.toFixed(2)+' s';update();if(playing)requestAnimationFrame(loop)}
+function update(){
+const p=getP();const a=accel(p);const T=timeToBottom(p);const v=a>0?Math.sqrt(2*a*p.L):0;
+$('rA').textContent=(a>0?a.toFixed(2):'0.00')+' m/s²';$('rT').textContent=isFinite(T)?T.toFixed(2)+' s':'∞';$('rV').textContent=v.toFixed(2)+' m/s';$('rF').textContent=a.toFixed(2)+' m/s²';
+const dpr=Math.min(devicePixelRatio||1,2),rect=canvas.getBoundingClientRect(),W=rect.width,H=rect.height||360;
+canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#07101f';ctx.fillRect(0,0,W,H);
+// Incline geometry
+const margin=40;const base=W-2*margin;const height=base*Math.tan(p.θ);const scale=Math.min((W-2*margin)/p.L,(H-80)/ (p.L*Math.sin(p.θ)+20));
+const x1=margin,y1=H-40;const x2=x1+p.L*Math.cos(p.θ)*scale,y2=y1-p.L*Math.sin(p.θ)*scale;
+// Plane
+ctx.strokeStyle='#64748b';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+ctx.fillStyle='#1e293b';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x2,y1);ctx.closePath();ctx.fill();
+// Object position along incline
+const s=Math.min(0.5*a*t*t,p.L);const frac=s/p.L;
+const ox=x1+frac*(x2-x1),oy=y1+frac*(y2-y1);
+ctx.fillStyle='#63e6ff';ctx.beginPath();ctx.arc(ox,oy,10,0,Math.PI*2);ctx.fill();
+// Angle arc
+ctx.strokeStyle='#63e6ff';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x1,y1,35, -p.θ,0);ctx.stroke();
+ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('θ='+(+theta.value)+'°',x1+40,y1-8);
+}
+update();
+})();
+</script>
+</body></html>
