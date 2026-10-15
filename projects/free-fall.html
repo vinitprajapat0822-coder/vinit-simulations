@@ -140,6 +140,7 @@ canvas{display:block;width:100%;height:400px;background:#0a1220;border-radius:12
   let playing = false;
   let t = 0;
   let lastTs = 0;
+  let animId = null;
 
   const hEl = document.getElementById('h');
   const hNum = document.getElementById('hNum');
@@ -209,17 +210,29 @@ canvas{display:block;width:100%;height:400px;background:#0a1220;border-radius:12
   function reset() {
     playing = false;
     t = 0;
+    if (animId) {
+      cancelAnimationFrame(animId);
+      animId = null;
+    }
     playBtn.textContent = 'Play';
     timeLabel.textContent = 't = 0.00 s';
     update();
   }
 
   playBtn.addEventListener('click', function() {
-    playing = !playing;
-    playBtn.textContent = playing ? 'Pause' : 'Play';
+    // toggle play/pause and manage RAF handle to avoid duplicate loops
     if (playing) {
+      playing = false;
+      playBtn.textContent = 'Play';
+      if (animId) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    } else {
+      playing = true;
+      playBtn.textContent = 'Pause';
       lastTs = 0;
-      requestAnimationFrame(loop);
+      animId = requestAnimationFrame(loop);
     }
   });
 
@@ -246,10 +259,11 @@ canvas{display:block;width:100%;height:400px;background:#0a1220;border-radius:12
       t = T;
       playing = false;
       playBtn.textContent = 'Play';
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
     }
     timeLabel.textContent = 't = ' + t.toFixed(2) + ' s';
     update();
-    if (playing) requestAnimationFrame(loop);
+    if (playing) animId = requestAnimationFrame(loop);
   }
 
   function update() {
