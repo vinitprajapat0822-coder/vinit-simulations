@@ -1,745 +1,351 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071426">
-  <title>Floating Ice & Rope Length Lab | Vinit Simulation Hub</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #071426;
-      --panel: #101f35;
-      --panel2: #142741;
-      --text: #edf6ff;
-      --muted: #a9bfd5;
-      --cyan: #61e3ff;
-      --green: #73efbd;
-      --border: #2b4360;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: radial-gradient(ellipse at top, #153452 0%, var(--bg) 58%);
-      color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      line-height: 1.55;
-    }
-
-    button, input { font: inherit; }
-
-    .wrap {
-      width: min(1100px, 100%);
-      margin: auto;
-      padding: 18px;
-    }
-
-    .top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
-
-    .brand {
-      color: var(--cyan);
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 1.8px;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      font-size: clamp(25px, 5vw, 40px);
-      line-height: 1.15;
-      margin: 8px 0;
-    }
-
-    .intro { color: var(--muted); margin: 0; }
-
-    .pill {
-      border: 1px solid #287b72;
-      background: #103b3a;
-      color: #a7ffe4;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 750;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(280px, .8fr);
-      gap: 16px;
-      align-items: start;
-    }
-
-    .panel {
-      min-width: 0;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 17px;
-      background: linear-gradient(155deg, #132741, #0b192c);
-      box-shadow: 0 12px 35px #0003;
-    }
-
-    h2 { font-size: 19px; margin: 0 0 12px; }
-
-    canvas {
-      display: block;
-      width: 100%;
-      height: 310px;
-      border-radius: 13px;
-      background: #0b1d31;
-      border: 1px solid #274660;
-    }
-
-    .scene-caption {
-      color: var(--muted);
-      font-size: 12px;
-      margin: 9px 0 0;
-    }
-
-    .controls { display: grid; gap: 18px; }
-
-    .control-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 10px;
-      margin-bottom: 7px;
-    }
-
-    label { font-weight: 650; font-size: 14px; }
-
-    output {
-      color: var(--cyan);
-      font-weight: 800;
-      white-space: nowrap;
-      font-variant-numeric: tabular-nums;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--cyan);
-      cursor: pointer;
-    }
-
-    .range-labels {
-      display: flex;
-      justify-content: space-between;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 12px;
-      margin: 5px 0 0;
-    }
-
-    .results {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .metric {
-      padding: 13px;
-      background: #0b1a2d;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      min-width: 0;
-    }
-
-    .metric .name { color: var(--muted); font-size: 12px; }
-    .metric .value {
-      margin-top: 4px;
-      color: var(--green);
-      font-size: clamp(19px, 3.3vw, 26px);
-      font-weight: 850;
-      overflow-wrap: anywhere;
-      font-variant-numeric: tabular-nums;
-    }
-    .metric .unit { font-size: 12px; color: var(--muted); }
-
-    .status {
-      padding: 12px;
-      margin-top: 12px;
-      border-radius: 11px;
-      background: #10372f;
-      border: 1px solid #246b58;
-      color: #b8ffe8;
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .status.warning {
-      background: #432b19;
-      border-color: #8a5928;
-      color: #ffe0b0;
-    }
-
-    .formula {
-      padding: 13px;
-      margin-top: 14px;
-      background: #09182a;
-      border-left: 3px solid var(--cyan);
-      border-radius: 8px;
-      overflow-wrap: anywhere;
-    }
-
-    .equation {
-      font-size: clamp(17px, 3.5vw, 22px);
-      font-weight: 800;
-      color: var(--cyan);
-      margin: 5px 0;
-    }
-
-    .small { color: var(--muted); font-size: 13px; }
-
-    .actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 15px; }
-
-    button {
-      border: 1px solid #3a6685;
-      border-radius: 10px;
-      padding: 10px 14px;
-      background: #153653;
-      color: var(--text);
-      font-weight: 750;
-      cursor: pointer;
-    }
-
-    button:hover { background: #1b496c; }
-    button:focus-visible, input:focus-visible {
-      outline: 2px solid var(--cyan);
-      outline-offset: 3px;
-    }
-
-    .lesson { margin-top: 16px; }
-    .lesson p { color: var(--muted); margin: 7px 0; }
-    .lesson strong { color: var(--text); }
-
-    .footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      padding: 24px 0 8px;
-    }
-
-    @media (max-width: 720px) {
-      .wrap { padding: 12px; }
-      .layout { grid-template-columns: 1fr; }
-      canvas { height: 275px; }
-      .panel { padding: 14px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b16">
+<meta name="description" content="Interactive Floating Ice & Buoyancy Lab: explore Archimedes principle, submerged depth, exposed height and density effects with real-time visualization.">
+<title>Floating Ice & Buoyancy Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--panel2:#151f36;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:.3px}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:35px 0 24px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750;letter-spacing:1.4px}.hero h1{font-size:clamp(30px,5vw,52px);letter-spacing:-1.6px;line-height:1.08;margin:14px 0 10px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{max-width:780px;color:var(--muted);margin:0}
+.layout{display:grid;grid-template-columns:minmax(290px,355px) minmax(0,1fr);gap:16px;align-items:start;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2eF2,#0d1324F7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h2,.panel-head h3{font-size:16px;margin:0}.panel-body{padding:17px}
+.field{margin-bottom:14px}.field label{display:flex;justify-content:space-between;gap:8px;color:#dce6fb;font-size:13px;margin-bottom:6px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:minmax(0,1fr) 83px;gap:9px;align-items:center}.inputrow input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number],select{width:100%;min-height:39px;padding:7px 9px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px}input[type=number]{font-variant-numeric:tabular-nums}
+.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px 11px;cursor:pointer;font-size:13px;font-weight:750;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.btn:hover{border-color:var(--cyan)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.actions .btn{flex:1}
+.note{padding:10px 12px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:13px}.note strong{color:var(--cyan)}
+.maincol{display:grid;gap:16px;min-width:0}.canvasbox{padding:12px}.canvas-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 4px 10px}.canvas-top strong{font-size:14px}.canvas-top span{font-size:11px;color:var(--muted)}canvas{display:block;width:100%;height:360px;border-radius:13px;background:#080e1c;border:1px solid #24314b;touch-action:pan-y}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:12px;padding:12px}.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.result strong{font-size:18px;font-variant-numeric:tabular-nums}
+.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan);font-size:12px}
+.status{padding:11px 13px;border-radius:10px;font-size:13px;font-weight:700;margin-top:12px}.status.ok{background:#0d2e28;border:1px solid #1f6b55;color:#7cf0bd}.status.warn{background:#3a2218;border:1px solid #8a4f2a;color:#ffc89c}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+@media(max-width:520px){canvas{height:280px}.hero h1{font-size:28px}}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <header class="top">
-      <div>
-        <div class="brand">Vinit Simulation Hub · Physics Lab</div>
-        <h1>🧊 Floating Ice & Rope Length Lab</h1>
-        <p class="intro">Investigate buoyancy, submerged depth and exposed height.</p>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../index.html">
+      <span class="logo">∑</span>
+      <span>VINIT SIMULATION HUB<small>FLOATING ICE LAB</small></span>
+    </a>
+    <a href="../index.html">← Back to Hub</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">FLUIDS · BUOYANCY</div>
+    <h1>Floating Ice <span class="grad">& Buoyancy Lab</span></h1>
+    <p>Explore Archimedes’ principle in real time. Change ice density, water density and thickness. Watch submerged depth, exposed height and floating condition update instantly.</p>
+  </section>
+
+  <div class="layout">
+    <aside class="panel">
+      <div class="panel-head"><h2>Controls</h2></div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Ice Thickness <span class="hint" id="thickVal">15.0 cm</span></label>
+          <div class="inputrow">
+            <input type="range" id="thickness" min="5" max="40" step="0.5" value="15">
+            <input type="number" id="thicknessNum" min="5" max="40" step="0.5" value="15">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Ice Density (ρᵢ) <span class="hint" id="iceVal">920 kg/m³</span></label>
+          <div class="inputrow">
+            <input type="range" id="iceDensity" min="700" max="1100" step="5" value="920">
+            <input type="number" id="iceDensityNum" min="700" max="1100" step="5" value="920">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Water Density (ρw) <span class="hint" id="waterVal">1000 kg/m³</span></label>
+          <div class="inputrow">
+            <input type="range" id="waterDensity" min="900" max="1200" step="5" value="1000">
+            <input type="number" id="waterDensityNum" min="900" max="1200" step="5" value="1000">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="note">
+          <strong>Ideal model:</strong> No viscosity, no waves, uniform density. Pure Archimedes floating equilibrium.
+        </div>
       </div>
-      <span class="pill">INTERACTIVE SIMULATION</span>
-    </header>
+    </aside>
 
-    <div class="layout">
-      <section class="panel">
-        <h2>Live Ice Model</h2>
-        <canvas id="scene" aria-label="Diagram of an ice block floating in water"></canvas>
-        <p class="scene-caption">
-          Schematic view, not to scale. Change the sliders to see the floating level update.
-          The exposed-height measurement represents the rope length in this model.
-        </p>
-
-        <div class="results" aria-live="polite">
-          <div class="metric">
-            <div class="name">Submerged depth</div>
-            <div class="value" id="submerged">12.00</div>
-            <div class="unit">metres</div>
+    <div class="maincol">
+      <div class="panel">
+        <div class="canvasbox">
+          <div class="canvas-top">
+            <strong>Buoyancy View</strong>
+            <span id="statusLabel">Floating · stable</span>
           </div>
-          <div class="metric">
-            <div class="name">Exposed height</div>
-            <div class="value" id="exposed">3.00</div>
-            <div class="unit">metres</div>
-          </div>
-          <div class="metric">
-            <div class="name">Model rope length*</div>
-            <div class="value" id="rope">3.00</div>
-            <div class="unit">metres</div>
-          </div>
-          <div class="metric">
-            <div class="name">Submerged fraction</div>
-            <div class="value" id="fraction">80.0</div>
-            <div class="unit">percent of ice thickness</div>
-          </div>
+          <canvas id="canvas" width="800" height="360"></canvas>
         </div>
+      </div>
 
-        <div id="status" class="status">Floating equilibrium: stable in this ideal model.</div>
-      </section>
-
-      <section class="panel">
-        <h2>Experiment Controls</h2>
-        <div class="controls">
-          <div>
-            <div class="control-head">
-              <label for="thickness">Ice thickness</label>
-              <output id="thicknessOut" for="thickness">15.0 m</output>
-            </div>
-            <input id="thickness" type="range" min="1" max="30" step="0.5" value="15">
-            <div class="range-labels"><span>1 m</span><span>30 m</span></div>
+      <div class="panel">
+        <div class="panel-head"><h3>Results</h3></div>
+        <div class="panel-body">
+          <div class="results" id="results">
+            <div class="result"><span>Submerged Depth</span><strong id="rSub">—</strong></div>
+            <div class="result"><span>Exposed Height</span><strong id="rExp">—</strong></div>
+            <div class="result"><span>Submerged %</span><strong id="rFrac">—</strong></div>
+            <div class="result"><span>Density Ratio (ρᵢ/ρw)</span><strong id="rRatio">—</strong></div>
           </div>
-
-          <div>
-            <div class="control-head">
-              <label for="iceDensity">Ice density</label>
-              <output id="iceDensityOut" for="iceDensity">800 kg/m³</output>
-            </div>
-            <input id="iceDensity" type="range" min="100" max="1200" step="10" value="800">
-            <div class="range-labels"><span>100 kg/m³</span><span>1200 kg/m³</span></div>
-          </div>
-
-          <div>
-            <div class="control-head">
-              <label for="waterDensity">Water density</label>
-              <output id="waterDensityOut" for="waterDensity">1000 kg/m³</output>
-            </div>
-            <input id="waterDensity" type="range" min="500" max="1500" step="10" value="1000">
-            <div class="range-labels"><span>500 kg/m³</span><span>1500 kg/m³</span></div>
-          </div>
+          <div id="statusBox" class="status ok">Ice is floating in equilibrium.</div>
         </div>
+      </div>
 
-        <h3>Interactive motion lab</h3>
-        <div class="controls">
-          <div>
-            <div class="control-head">
-              <label for="displacement">Ice displacement</label>
-              <output id="displacementOut">0.50 m</output>
-            </div>
-            <input id="displacement" type="range" min="-1.5" max="1.5" step="0.05" value="0.5">
-            <div class="range-labels"><span>Up 1.5 m</span><span>Down 1.5 m</span></div>
-          </div>
-          <div>
-            <div class="control-head">
-              <label for="ropeLength">Rope length setting</label>
-              <output id="ropeLengthOut">3.0 m</output>
-            </div>
-            <input id="ropeLength" type="range" min="0" max="5" step="0.25" value="3">
-            <div class="range-labels"><span>0 m</span><span>5 m</span></div>
-          </div>
-          <div>
-            <div class="control-head">
-              <label for="shaftOffset">Shaft horizontal position</label>
-              <output id="shaftOffsetOut">0 px</output>
-            </div>
-            <input id="shaftOffset" type="range" min="-80" max="80" step="5" value="0">
-            <div class="range-labels"><span>Left</span><span>Right</span></div>
-          </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Key Formulas</h3></div>
+        <div class="panel-body formulas">
+          <div>Archimedes: <code>Weight of ice = Weight of displaced water</code></div>
+          <div>Submerged fraction: <code>hₛ / H = ρᵢ / ρw</code></div>
+          <div>Submerged depth: <code>hₛ = H × (ρᵢ / ρw)</code></div>
+          <div>Exposed height: <code>hₑ = H − hₛ</code></div>
+          <div>Condition for floating: <code>ρᵢ &lt; ρw</code></div>
         </div>
-        <div class="actions">
-          <button id="nudge" type="button">↕ Nudge ice</button>
-          <button id="releaseIce" type="button">↩ Release to equilibrium</button>
-        </div>
-        <p class="small">Motion is an illustrative damped-response model. Rope/shaft controls change the drawing; rope tension and drilling forces are not solved by this model.</p>
-
-        <div class="formula">
-          <div class="small">Archimedes’ principle · floating equilibrium</div>
-          <div class="equation">ρᵢ Vᵢ g = ρw Vₛ g</div>
-          <div class="equation">hₛ = H × (ρᵢ / ρw)</div>
-          <div class="small">
-            H = total ice thickness; hₛ = submerged depth;
-            ρᵢ = ice density; ρw = water density.
-          </div>
-        </div>
-
-        <div class="actions">
-          <button id="playPause" type="button">⏸ Pause motion</button>
-          <button id="reset" type="button">↺ Reset values</button>
-          <button id="example" type="button">Load example</button>
-        </div>
-
-        <div class="lesson">
-          <h2>What should you observe?</h2>
-          <p><strong>1. Ice density increases:</strong> a larger fraction of the ice goes underwater.</p>
-          <p><strong>2. Water density increases:</strong> less of the ice needs to be submerged.</p>
-          <p><strong>3. Ice thickness increases:</strong> both submerged depth and exposed height increase proportionally if densities stay constant.</p>
-          <p><strong>4. Ice density ≥ water density:</strong> a freely floating equilibrium is not possible in this ideal model.</p>
-          <p class="small">*Rope-length convention: this model defines the measured length as the vertical distance from the water surface to the top of the ice. A separate physical rope could require different geometry and boundary conditions.</p>
-        </div>
-      </section>
+      </div>
     </div>
+  </div>
+</main>
 
-    <section class="panel lesson">
-      <h2>Worked Example</h2>
-      <p>Given: H = 15 m, ρᵢ = 800 kg/m³ and ρw = 1000 kg/m³.</p>
-      <div class="equation">hₛ = 15 × (800 / 1000) = 12 m</div>
-      <div class="equation">Exposed height = 15 − 12 = 3 m</div>
-      <p>Therefore, the ice is 80% submerged and 20% above the waterline. In this model, the surface-to-top measurement is 3 m.</p>
-    </section>
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
 
-    <footer class="footer">
-      Vinit Simulation Hub · Idealised physics model · Educational use
-    </footer>
-  </main>
+  const thickness = $('thickness'), thicknessNum = $('thicknessNum');
+  const iceDensity = $('iceDensity'), iceDensityNum = $('iceDensityNum');
+  const waterDensity = $('waterDensity'), waterDensityNum = $('waterDensityNum');
 
-  <script>
-    (() => {
-      "use strict";
-
-      const $ = (id) => document.getElementById(id);
-      const canvas = $("scene");
-      const ctx = canvas.getContext("2d");
-
-      const controls = {
-        thickness: $("thickness"),
-        iceDensity: $("iceDensity"),
-        waterDensity: $("waterDensity")
-      };
-
-      const defaults = { thickness: 15, iceDensity: 800, waterDensity: 1000 };
-      let motionOn = true;
-      let lastFrame = 0;
-      let previousTimestamp = 0;
-      let displacementM = 0.5;
-      let velocityMps = 0;
-
-      function calculate() {
-        const H = Number(controls.thickness.value);
-        const ri = Number(controls.iceDensity.value);
-        const rw = Number(controls.waterDensity.value);
-
-        const canFloat = ri < rw;
-        const submerged = canFloat ? H * ri / rw : H;
-        const exposed = canFloat ? H - submerged : 0;
-        const fraction = canFloat ? (submerged / H) * 100 : 100;
-
-        return { H, ri, rw, canFloat, submerged, exposed, fraction };
-      }
-
-      function drawScene(m, animationPhase = 0) {
-        const rect = canvas.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
-
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const width = Math.round(rect.width * dpr);
-        const height = Math.round(rect.height * dpr);
-
-        if (canvas.width !== width || canvas.height !== height) {
-          canvas.width = width;
-          canvas.height = height;
-        }
-
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        const w = rect.width;
-        const h = rect.height;
-
-        const bg = ctx.createLinearGradient(0, 0, 0, h);
-        bg.addColorStop(0, "#102943");
-        bg.addColorStop(1, "#081729");
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, w, h);
-
-        const waterY = h * 0.60;
-        const water = ctx.createLinearGradient(0, waterY, 0, h);
-        water.addColorStop(0, "rgba(27, 160, 207, .58)");
-        water.addColorStop(1, "rgba(15, 73, 135, .86)");
-        ctx.fillStyle = water;
-        ctx.fillRect(0, waterY, w, h - waterY);
-
-        ctx.strokeStyle = "#69e6ff";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(0, waterY);
-        ctx.lineTo(w, waterY);
-        ctx.stroke();
-
-        // Small, deterministic wave marks.
-        ctx.strokeStyle = "rgba(146, 231, 255, .35)";
-        ctx.lineWidth = 1;
-        for (let x = 10; x < w; x += 38) {
-          ctx.beginPath();
-          ctx.moveTo(x, waterY + 14);
-          ctx.quadraticCurveTo(x + 8, waterY + 9, x + 16, waterY + 14);
-          ctx.stroke();
-        }
-
-        const blockW = Math.min(w * 0.39, 160);
-        const blockH = Math.min(h * 0.63, 190);
-        const blockX = w * 0.46 - blockW / 2;
-        const ratio = m.canFloat ? m.exposed / m.H : 0;
-        const topY = waterY - blockH * ratio + displacementM * 18;
-
-        // Interactive shaft and tether. Geometry is illustrative, not a tension solver.
-        const ropeLengthM = Number($("ropeLength").value);
-        const shaftOffsetPx = Number($("shaftOffset").value);
-        const anchorX = blockX + blockW / 2;
-        const shaftX = anchorX + shaftOffsetPx;
-        const shaftBottomY = topY - ropeLengthM * 16;
-        const shaftTopY = shaftBottomY - 48;
-
-        ctx.save();
-        ctx.lineCap = "round";
-        ctx.strokeStyle = "#d5e4f2";
-        ctx.lineWidth = 7;
-        ctx.beginPath();
-        ctx.moveTo(shaftX, shaftTopY);
-        ctx.lineTo(shaftX, shaftBottomY);
-        ctx.stroke();
-        ctx.strokeStyle = "#7dffca";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(shaftX, shaftBottomY);
-        ctx.lineTo(anchorX, topY + 3);
-        ctx.stroke();
-        ctx.fillStyle = "#eaf7ff";
-        ctx.font = "bold 10px system-ui";
-        ctx.textAlign = "center";
-        ctx.fillText("SHAFT", shaftX, Math.max(11, shaftTopY - 5));
-        ctx.restore();
-
-        // Ice body.
-        const ice = ctx.createLinearGradient(blockX, topY, blockX + blockW, topY + blockH);
-        ice.addColorStop(0, "#f2fdff");
-        ice.addColorStop(0.5, "#a9ecff");
-        ice.addColorStop(1, "#65b9e4");
-        ctx.fillStyle = ice;
-        ctx.strokeStyle = "#e4fbff";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(blockX, topY, blockW, blockH, 9);
-        ctx.fill();
-        ctx.stroke();
-
-        // Underwater tint for the submerged portion.
-        const submergedH = blockH * (m.canFloat ? m.submerged / m.H : 1);
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(blockX - 1, waterY, blockW + 2, Math.max(0, h - waterY));
-        ctx.clip();
-        ctx.fillStyle = "rgba(24, 100, 171, .35)";
-        ctx.fillRect(blockX, topY, blockW, blockH);
-        ctx.restore();
-
-        // Ice highlights.
-        ctx.strokeStyle = "rgba(255,255,255,.65)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(blockX + 14, topY + 18);
-        ctx.lineTo(blockX + 14, topY + blockH - 16);
-        ctx.stroke();
-
-        ctx.fillStyle = "#0b3550";
-        ctx.font = "700 13px system-ui";
-        ctx.textAlign = "center";
-        ctx.fillText("ICE", blockX + blockW / 2, Math.max(16, topY + blockH * 0.48));
-
-        // Force arrows: weight downward, buoyancy upward.
-        function forceArrow(x, y1, y2, color, label) {
-          ctx.save();
-          ctx.strokeStyle = color;
-          ctx.fillStyle = color;
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.moveTo(x, y1);
-          ctx.lineTo(x, y2);
-          ctx.stroke();
-          const dir = y2 > y1 ? 1 : -1;
-          ctx.beginPath();
-          ctx.moveTo(x, y2);
-          ctx.lineTo(x - 6, y2 - dir * 10);
-          ctx.lineTo(x + 6, y2 - dir * 10);
-          ctx.closePath();
-          ctx.fill();
-          ctx.font = "bold 11px system-ui";
-          ctx.textAlign = "center";
-          ctx.fillText(label, x, dir > 0 ? y2 + 14 : y2 - 8);
-          ctx.restore();
-        }
-
-        const forceLen = Math.min(48, blockH * 0.28);
-        forceArrow(blockX - 17, topY + blockH * 0.36,
-                   topY + blockH * 0.36 + forceLen, "#ffb36b", "Weight ↓");
-        if (m.canFloat) {
-          forceArrow(blockX + blockW + 17,
-                     waterY + Math.min(24, blockH * 0.12) + forceLen,
-                     waterY + Math.min(24, blockH * 0.12),
-                     "#7dffca", "Buoyancy ↑");
-        }
-
-        // Waterline label.
-        ctx.fillStyle = "#e4fbff";
-        ctx.textAlign = "left";
-        ctx.font = "700 11px system-ui";
-        ctx.fillText("WATER LEVEL", 10, waterY - 9);
-
-        // Measurement line from water level to ice top.
-        const measureX = Math.min(w - 12, blockX + blockW + 24);
-        ctx.strokeStyle = "#a8ffdc";
-        ctx.fillStyle = "#a8ffdc";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(measureX, topY);
-        ctx.lineTo(measureX, waterY);
-        ctx.moveTo(measureX - 5, topY + 5);
-        ctx.lineTo(measureX, topY);
-        ctx.lineTo(measureX + 5, topY + 5);
-        ctx.moveTo(measureX - 5, waterY - 5);
-        ctx.lineTo(measureX, waterY);
-        ctx.lineTo(measureX + 5, waterY - 5);
-        ctx.stroke();
-
-        const labelY = Math.max(14, Math.min(h - 8, (topY + waterY) / 2));
-        ctx.font = "700 11px system-ui";
-        ctx.textAlign = measureX > w * 0.7 ? "right" : "left";
-        const labelX = measureX > w * 0.7 ? measureX - 8 : measureX + 8;
-        ctx.fillText(m.canFloat ? `${m.exposed.toFixed(2)} m above` : "No exposed height", labelX, labelY);
-
-        if (!m.canFloat) {
-          ctx.fillStyle = "#ffdb9e";
-          ctx.textAlign = "center";
-          ctx.font = "700 12px system-ui";
-          ctx.fillText("NO FLOATING EQUILIBRIUM", w / 2, h - 12);
-        } else {
-          ctx.fillStyle = "#e1f6ff";
-          ctx.textAlign = "center";
-          ctx.font = "12px system-ui";
-          ctx.fillText(`${m.submerged.toFixed(2)} m submerged`, w / 2, h - 12);
-        }
-      }
-
-      function update() {
-        const m = calculate();
-
-        $("thicknessOut").textContent = `${m.H.toFixed(1)} m`;
-        $("iceDensityOut").textContent = `${m.ri} kg/m³`;
-        $("waterDensityOut").textContent = `${m.rw} kg/m³`;
-
-        $("submerged").textContent = m.submerged.toFixed(2);
-        $("exposed").textContent = m.exposed.toFixed(2);
-        $("rope").textContent = m.exposed.toFixed(2);
-        $("fraction").textContent = m.fraction.toFixed(1);
-        $("displacementOut").textContent = `${displacementM.toFixed(2)} m`;
-        $("ropeLengthOut").textContent = `${Number($("ropeLength").value).toFixed(2)} m`;
-        $("shaftOffsetOut").textContent = `${Number($("shaftOffset").value)} px`;
-
-        const status = $("status");
-        if (m.canFloat) {
-          status.className = "status";
-          status.textContent = "Floating equilibrium: stable in this ideal model.";
-        } else {
-          status.className = "status warning";
-          status.textContent = "No free-floating equilibrium: ice density is equal to or greater than water density.";
-        }
-
-        drawScene(m);
-      }
-
-      Object.values(controls).forEach((input) => {
-        input.addEventListener("input", update);
-      });
-
-      $("reset").addEventListener("click", () => {
-        Object.entries(defaults).forEach(([key, value]) => {
-          controls[key].value = value;
-        });
-        $("displacement").value = 0;
-        $("ropeLength").value = 3;
-        $("shaftOffset").value = 0;
-        displacementM = 0;
-        velocityMps = 0;
-        update();
-      });
-
-      $("example").addEventListener("click", () => {
-        controls.thickness.value = 15;
-        controls.iceDensity.value = 800;
-        controls.waterDensity.value = 1000;
-        $("displacement").value = 0.5;
-        $("ropeLength").value = 3;
-        $("shaftOffset").value = 0;
-        displacementM = 0.5;
-        velocityMps = 0;
-        motionOn = true;
-        $("playPause").textContent = "⏸ Pause motion";
-        update();
-      });
-
-      if ("ResizeObserver" in window) {
-        new ResizeObserver(() => drawScene(calculate())).observe(canvas);
-      } else {
-        window.addEventListener("resize", () => drawScene(calculate()));
-      }
-
-      $("displacement").addEventListener("input", () => {
-        displacementM = Number($("displacement").value);
-        velocityMps = 0;
-        update();
-      });
-
-      ["ropeLength", "shaftOffset"].forEach((id) => {
-        $(id).addEventListener("input", update);
-      });
-
-      $("nudge").addEventListener("click", () => {
-        velocityMps = displacementM >= 0 ? 2.4 : -2.4;
-        motionOn = true;
-        $("playPause").textContent = "⏸ Pause motion";
-      });
-
-      $("releaseIce").addEventListener("click", () => {
-        velocityMps = 0;
-        motionOn = true;
-        $("playPause").textContent = "⏸ Pause motion";
-      });
-
-      $("playPause").addEventListener("click", () => {
-        motionOn = !motionOn;
-        $("playPause").textContent = motionOn ? "⏸ Pause motion" : "▶ Play motion";
-      });
-
-      function animate(timestamp) {
-        requestAnimationFrame(animate);
-        if (!motionOn || timestamp - lastFrame < 33) return;
-
-        const dt = previousTimestamp
-          ? Math.min((timestamp - previousTimestamp) / 1000, 0.04)
-          : 0.016;
-        previousTimestamp = timestamp;
-        lastFrame = timestamp;
-
-        // Educational damped spring response toward equilibrium.
-        if ($("displacement") && Math.abs(displacementM) > 0.002) {
-          const acceleration = -7 * displacementM - 2.6 * velocityMps;
-          velocityMps += acceleration * dt;
-          displacementM += velocityMps * dt;
-
-          if (Math.abs(displacementM) < 0.008 && Math.abs(velocityMps) < 0.025) {
-            displacementM = 0;
-            velocityMps = 0;
-          }
-          $("displacement").value = displacementM.toFixed(2);
-        }
-
-        update();
-      }
-
+  function sync(range, num, label, suffix, decimals=1) {
+    range.addEventListener('input', () => {
+      num.value = range.value;
+      if(label) label.textContent = Number(range.value).toFixed(decimals) + suffix;
       update();
-      requestAnimationFrame(animate);
-    })();
-  </script>
+    });
+    num.addEventListener('input', () => {
+      let v = parseFloat(num.value);
+      if(isNaN(v)) return;
+      v = Math.max(+range.min, Math.min(+range.max, v));
+      range.value = v;
+      num.value = v;
+      if(label) label.textContent = v.toFixed(decimals) + suffix;
+      update();
+    });
+  }
+
+  sync(thickness, thicknessNum, $('thickVal'), ' cm', 1);
+  sync(iceDensity, iceDensityNum, $('iceVal'), ' kg/m³', 0);
+  sync(waterDensity, waterDensityNum, $('waterVal'), ' kg/m³', 0);
+
+  $('resetBtn').addEventListener('click', () => {
+    thickness.value = thicknessNum.value = 15;
+    iceDensity.value = iceDensityNum.value = 920;
+    waterDensity.value = waterDensityNum.value = 1000;
+    $('thickVal').textContent = '15.0 cm';
+    $('iceVal').textContent = '920 kg/m³';
+    $('waterVal').textContent = '1000 kg/m³';
+    update();
+  });
+
+  function calculate() {
+    const H = parseFloat(thickness.value);          // cm
+    const ri = parseFloat(iceDensity.value);        // kg/m³
+    const rw = parseFloat(waterDensity.value);      // kg/m³
+    const canFloat = ri < rw;
+    const ratio = ri / rw;
+    const submerged = canFloat ? H * ratio : H;
+    const exposed = canFloat ? H - submerged : 0;
+    const fraction = canFloat ? ratio * 100 : 100;
+    return { H, ri, rw, canFloat, submerged, exposed, fraction, ratio };
+  }
+
+  function updateResults(m) {
+    $('rSub').textContent = m.submerged.toFixed(2) + ' cm';
+    $('rExp').textContent = m.exposed.toFixed(2) + ' cm';
+    $('rFrac').textContent = m.fraction.toFixed(1) + ' %';
+    $('rRatio').textContent = m.ratio.toFixed(3);
+
+    const box = $('statusBox');
+    const label = $('statusLabel');
+    if (m.canFloat) {
+      box.className = 'status ok';
+      box.textContent = 'Ice is floating in equilibrium (ρᵢ < ρw).';
+      label.textContent = 'Floating · stable';
+    } else {
+      box.className = 'status warn';
+      box.textContent = 'Ice density ≥ water density → sinks completely.';
+      label.textContent = 'Sinking · no float';
+    }
+  }
+
+  function draw(m) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(1, rect.width);
+    const H = Math.max(1, rect.height || 360);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#07101f';
+    ctx.fillRect(0, 0, W, H);
+
+    // Water region
+    const waterY = H * 0.55;
+    const waterGrad = ctx.createLinearGradient(0, waterY, 0, H);
+    waterGrad.addColorStop(0, '#0c4a6e');
+    waterGrad.addColorStop(1, '#082f49');
+    ctx.fillStyle = waterGrad;
+    ctx.fillRect(0, waterY, W, H - waterY);
+
+    // Water surface line
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, waterY);
+    ctx.lineTo(W, waterY);
+    ctx.stroke();
+    ctx.fillStyle = '#7dd3fc';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('Water surface', 12, waterY - 8);
+
+    // Ice block geometry
+    const maxBlockH = H * 0.42;
+    const blockH = Math.max(30, (m.H / 40) * maxBlockH);
+    const blockW = Math.min(W * 0.38, 220);
+    const blockX = (W - blockW) / 2;
+
+    // Position: bottom of ice sits at waterY when fully submerged, otherwise partially above
+    const submergedPx = m.canFloat ? blockH * (m.submerged / m.H) : blockH;
+    const topY = waterY - (blockH - submergedPx);
+
+    // Ice body
+    const iceGrad = ctx.createLinearGradient(blockX, topY, blockX, topY + blockH);
+    iceGrad.addColorStop(0, '#f0f9ff');
+    iceGrad.addColorStop(0.45, '#bae6fd');
+    iceGrad.addColorStop(1, '#7dd3fc');
+    ctx.fillStyle = iceGrad;
+    ctx.strokeStyle = '#e0f2fe';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(blockX, topY, blockW, blockH, 10);
+    } else {
+      ctx.rect(blockX, topY, blockW, blockH);
+    }
+    ctx.fill();
+    ctx.stroke();
+
+    // Underwater tint
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, waterY, W, H - waterY);
+    ctx.clip();
+    ctx.fillStyle = 'rgba(14, 116, 144, 0.35)';
+    ctx.fillRect(blockX, topY, blockW, blockH);
+    ctx.restore();
+
+    // Label
+    ctx.fillStyle = '#0c4a6e';
+    ctx.font = 'bold 14px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('ICE', blockX + blockW / 2, topY + blockH * 0.55);
+
+    // Dimension lines
+    ctx.strokeStyle = '#94a3b8';
+    ctx.fillStyle = '#cbd5e1';
+    ctx.lineWidth = 1;
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'left';
+
+    // Total thickness arrow
+    const dimX = blockX + blockW + 18;
+    ctx.beginPath();
+    ctx.moveTo(dimX, topY);
+    ctx.lineTo(dimX, topY + blockH);
+    ctx.stroke();
+    ctx.fillText('H = ' + m.H.toFixed(1) + ' cm', dimX + 8, topY + blockH / 2);
+
+    // Submerged label
+    if (m.canFloat && m.submerged > 0.5) {
+      ctx.fillStyle = '#7dd3fc';
+      ctx.fillText('hₛ = ' + m.submerged.toFixed(1) + ' cm', blockX + 10, waterY + 18);
+    }
+    if (m.canFloat && m.exposed > 0.5) {
+      ctx.fillStyle = '#e0f2fe';
+      ctx.fillText('hₑ = ' + m.exposed.toFixed(1) + ' cm', blockX + 10, topY + 16);
+    }
+
+    // Force arrows
+    const midX = blockX + blockW / 2;
+    const arrowLen = 48;
+
+    // Weight (down)
+    ctx.strokeStyle = '#ff8e9c';
+    ctx.fillStyle = '#ff8e9c';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(midX - 40, topY + blockH * 0.35);
+    ctx.lineTo(midX - 40, topY + blockH * 0.35 + arrowLen);
+    ctx.stroke();
+    // arrow head
+    ctx.beginPath();
+    ctx.moveTo(midX - 40, topY + blockH * 0.35 + arrowLen);
+    ctx.lineTo(midX - 46, topY + blockH * 0.35 + arrowLen - 10);
+    ctx.lineTo(midX - 34, topY + blockH * 0.35 + arrowLen - 10);
+    ctx.closePath();
+    ctx.fill();
+    ctx.font = 'bold 11px system-ui';
+    ctx.fillText('Weight', midX - 70, topY + blockH * 0.35 + arrowLen / 2);
+
+    // Buoyancy (up) – only if floating
+    if (m.canFloat) {
+      ctx.strokeStyle = '#7cf0bd';
+      ctx.fillStyle = '#7cf0bd';
+      ctx.beginPath();
+      ctx.moveTo(midX + 40, waterY + 10);
+      ctx.lineTo(midX + 40, waterY + 10 - arrowLen);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(midX + 40, waterY + 10 - arrowLen);
+      ctx.lineTo(midX + 34, waterY + 10 - arrowLen + 10);
+      ctx.lineTo(midX + 46, waterY + 10 - arrowLen + 10);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillText('Buoyancy', midX + 50, waterY + 10 - arrowLen / 2);
+    }
+  }
+
+  function update() {
+    const m = calculate();
+    updateResults(m);
+    draw(m);
+  }
+
+  // Resize handling
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(update).observe(canvas);
+  } else {
+    window.addEventListener('resize', update);
+  }
+
+  update();
+})();
+</script>
 </body>
-  </html>
-                                                  
+</html>
