@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080b16">
-<meta name="description" content="Interactive Free Fall Lab: motion under gravity with height, initial velocity and real-time animation.">
+<meta name="description" content="Interactive Free Fall Lab with clear height scale, trajectory and analysis.">
 <title>Free Fall Lab | Vinit Simulation Hub</title>
 <style>
 :root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
@@ -17,11 +17,11 @@ header{position:sticky;top:0;z-index:10;background:#080b16ef;backdrop-filter:blu
 .btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px;cursor:pointer;font-size:13px;font-weight:750;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.actions{display:flex;gap:8px;margin-top:14px}.actions .btn{flex:1}
 .note{padding:10px 12px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:12px}
 .canvasbox{padding:12px}.canvas-top{display:flex;justify-content:space-between;align-items:center;padding:0 4px 8px}.canvas-top strong{font-size:14px}.canvas-top span{font-size:12px;color:var(--muted)}
-canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e1c;border:1px solid #24314b}
+canvas{display:block;width:100%;height:420px;border-radius:13px;background:#080e1c;border:1px solid #24314b}
 .results{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:12px;padding:12px}.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}.result strong{font-size:17px}
 .formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan);font-size:12px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}}
-@media(max-width:520px){canvas{height:300px}}
+@media(max-width:520px){canvas{height:320px}}
 </style>
 </head>
 <body>
@@ -39,7 +39,7 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
   <section class="hero">
     <div class="eyebrow">KINEMATICS · GRAVITY</div>
     <h1>Free Fall <span class="grad">Lab</span></h1>
-    <p>Motion under gravity. Change height, initial velocity and g. Watch the object fall with live position and velocity.</p>
+    <p>Motion under gravity. Change height, initial velocity and g. Clear height scale + trajectory for easy analysis.</p>
   </section>
 
   <div class="layout">
@@ -71,7 +71,7 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
           <button class="btn primary" id="playBtn">Play</button>
           <button class="btn" id="resetBtn">Reset</button>
         </div>
-        <div class="note"><strong>Downward is positive.</strong> Air resistance is neglected.</div>
+        <div class="note"><strong>Downward is positive.</strong> Air resistance neglected. Height scale on left helps analysis.</div>
       </div>
     </aside>
 
@@ -79,10 +79,10 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
       <div class="panel">
         <div class="canvasbox">
           <div class="canvas-top">
-            <strong>Free Fall View</strong>
+            <strong>Free Fall Analysis View</strong>
             <span id="timeLabel">t = 0.00 s</span>
           </div>
-          <canvas id="canvas" width="800" height="380"></canvas>
+          <canvas id="canvas" width="800" height="420"></canvas>
         </div>
       </div>
 
@@ -95,7 +95,7 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
             <div class="result"><span>Current Height</span><strong id="rY">—</strong></div>
             <div class="result"><span>Max Height*</span><strong id="rMax">—</strong></div>
           </div>
-          <p style="font-size:12px;color:var(--muted);margin:10px 0 0">* Shown only when object is thrown upward (u negative).</p>
+          <p style="font-size:12px;color:var(--muted);margin:10px 0 0">* Shown only when thrown upward (u negative).</p>
         </div>
       </div>
 
@@ -121,6 +121,7 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
   let playing = false;
   let t = 0;
   let lastTs = 0;
+  let trail = [];   // path history for analysis
 
   const hIn = $('h'), hNum = $('hNum');
   const uIn = $('u'), uNum = $('uNum');
@@ -154,9 +155,7 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
     };
   }
 
-  // Downward positive. Ground is y = 0.
   function flightTime(p) {
-    // h + u t + 0.5 g t² = 0
     const a = 0.5 * p.g;
     const b = p.u;
     const c = p.h;
@@ -178,6 +177,7 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
   function resetAnim() {
     playing = false;
     t = 0;
+    trail = [];
     $('playBtn').textContent = 'Play';
     $('timeLabel').textContent = 't = 0.00 s';
     update();
@@ -239,6 +239,12 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
       $('rMax').textContent = '—';
     }
 
+    // Store trail for analysis
+    if (playing || t > 0) {
+      trail.push({ t, y });
+      if (trail.length > 300) trail.shift();
+    }
+
     draw(p, y);
   }
 
@@ -246,73 +252,179 @@ canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const rect = canvas.getBoundingClientRect();
     const W = Math.max(1, rect.width);
-    const H = Math.max(1, rect.height || 380);
+    const H = Math.max(1, rect.height || 420);
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // Background
-    ctx.fillStyle = '#07101f';
+    // ===== SKY GRADIENT BACKGROUND =====
+    const sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, '#0b1a33');
+    sky.addColorStop(0.55, '#132a4f');
+    sky.addColorStop(0.75, '#1a2f4a');
+    sky.addColorStop(1, '#0f2740');
+    ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H);
 
-    // Ground
-    const groundY = H * 0.85;
-    ctx.fillStyle = '#1e293b';
+    // Soft clouds (very subtle)
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.beginPath(); ctx.ellipse(W*0.2, H*0.15, 60, 18, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(W*0.7, H*0.22, 80, 22, 0, 0, Math.PI*2); ctx.fill();
+
+    // ===== GROUND =====
+    const groundY = H * 0.88;
+    const groundGrad = ctx.createLinearGradient(0, groundY, 0, H);
+    groundGrad.addColorStop(0, '#1e3a2f');
+    groundGrad.addColorStop(1, '#0f241c');
+    ctx.fillStyle = groundGrad;
     ctx.fillRect(0, groundY, W, H - groundY);
-    ctx.strokeStyle = '#475569';
-    ctx.lineWidth = 2;
+
+    // Ground line
+    ctx.strokeStyle = '#3d6b54';
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(0, groundY);
     ctx.lineTo(W, groundY);
     ctx.stroke();
 
-    // Scale
-    const maxH = Math.max(p.h, 10);
+    // Grass dots
+    ctx.fillStyle = '#2d5a40';
+    for (let i = 0; i < 40; i++) {
+      const gx = (i * 37 + 10) % W;
+      ctx.fillRect(gx, groundY + 4, 3, 6);
+    }
+
+    // ===== HEIGHT SCALE (left side) =====
+    const maxH = Math.max(p.h * 1.15, 15);
     const usableH = groundY - 50;
+    const scaleX = 48;
+
+    ctx.strokeStyle = 'rgba(148,163,184,0.5)';
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'right';
+    ctx.lineWidth = 1;
+
+    // Major ticks every 10 m or appropriate step
+    const step = maxH > 80 ? 20 : maxH > 40 ? 10 : 5;
+    for (let h = 0; h <= maxH; h += step) {
+      const py = groundY - (h / maxH) * usableH;
+      ctx.beginPath();
+      ctx.moveTo(scaleX - 6, py);
+      ctx.lineTo(scaleX, py);
+      ctx.stroke();
+      ctx.fillText(h + ' m', scaleX - 10, py + 4);
+    }
+
+    // Vertical scale line
+    ctx.beginPath();
+    ctx.moveTo(scaleX, 45);
+    ctx.lineTo(scaleX, groundY);
+    ctx.stroke();
+
+    // ===== REFERENCE BUILDING (right side) for scale =====
+    const bldgH = Math.min(usableH * 0.7, (30 / maxH) * usableH);
+    const bldgX = W - 90;
+    const bldgW = 42;
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(bldgX, groundY - bldgH, bldgW, bldgH);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(bldgX, groundY - bldgH, bldgW, bldgH);
+    // windows
+    ctx.fillStyle = '#334155';
+    for (let row = 0; row < 5; row++) {
+      for (let col = 0; col < 2; col++) {
+        ctx.fillRect(bldgX + 8 + col * 16, groundY - bldgH + 12 + row * (bldgH/6), 10, 8);
+      }
+    }
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('~30m', bldgX + bldgW/2, groundY - bldgH - 6);
+
+    // ===== TRAJECTORY TRAIL =====
+    if (trail.length > 1) {
+      ctx.strokeStyle = 'rgba(99,230,255,0.35)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      trail.forEach((pt, i) => {
+        const py = groundY - (pt.y / maxH) * usableH;
+        const px = W / 2;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+    }
+
+    // ===== OBJECT =====
     const yPx = groundY - (y / maxH) * usableH;
 
-    // Object
-    ctx.fillStyle = '#63e6ff';
+    // Soft glow
     ctx.beginPath();
-    ctx.arc(W / 2, yPx, 12, 0, Math.PI * 2);
+    ctx.arc(W / 2, yPx, 18, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(99,230,255,0.15)';
     ctx.fill();
 
-    // Label
+    // Ball
+    const ballGrad = ctx.createRadialGradient(W/2 - 3, yPx - 3, 1, W/2, yPx, 12);
+    ballGrad.addColorStop(0, '#a5f3fc');
+    ballGrad.addColorStop(1, '#0891b2');
+    ctx.fillStyle = ballGrad;
+    ctx.beginPath();
+    ctx.arc(W / 2, yPx, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#e0f2fe';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Height label near ball
     ctx.fillStyle = '#e0f2fe';
     ctx.font = 'bold 13px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('y = ' + y.toFixed(1) + ' m', W / 2, yPx - 20);
+    ctx.textAlign = 'left';
+    ctx.fillText('y = ' + y.toFixed(1) + ' m', W / 2 + 20, yPx + 5);
 
-    // Velocity arrow
+    // ===== VELOCITY ARROW =====
     const v = vel(p, t);
-    if (Math.abs(v) > 0.4) {
-      const len = Math.min(50, Math.abs(v) * 2.2);
+    if (Math.abs(v) > 0.3) {
+      const len = Math.min(55, Math.abs(v) * 2.5);
       const dir = v > 0 ? 1 : -1;
+      const ax = W / 2 - 35;
       ctx.strokeStyle = '#ff8e9c';
       ctx.fillStyle = '#ff8e9c';
       ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.moveTo(W / 2 + 28, yPx);
-      ctx.lineTo(W / 2 + 28, yPx + dir * len);
+      ctx.moveTo(ax, yPx);
+      ctx.lineTo(ax, yPx + dir * len);
       ctx.stroke();
-      // arrow head
+      // head
       ctx.beginPath();
-      ctx.moveTo(W / 2 + 28, yPx + dir * len);
-      ctx.lineTo(W / 2 + 22, yPx + dir * len - dir * 9);
-      ctx.lineTo(W / 2 + 34, yPx + dir * len - dir * 9);
+      ctx.moveTo(ax, yPx + dir * len);
+      ctx.lineTo(ax - 6, yPx + dir * len - dir * 9);
+      ctx.lineTo(ax + 6, yPx + dir * len - dir * 9);
       ctx.closePath();
       ctx.fill();
+      ctx.font = '11px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('v', ax, yPx + dir * len + dir * 14);
     }
 
-    // Height scale on left
-    ctx.fillStyle = '#94a3b8';
+    // Launch height dashed line
+    const launchY = groundY - (p.h / maxH) * usableH;
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(167,139,250,0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(scaleX + 5, launchY);
+    ctx.lineTo(W - 20, launchY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#a78bfa';
     ctx.font = '11px system-ui';
-    ctx.textAlign = 'right';
-    ctx.fillText(maxH.toFixed(0) + ' m', 40, 55);
-    ctx.fillText('0 m', 40, groundY - 6);
+    ctx.textAlign = 'left';
+    ctx.fillText('Launch h = ' + p.h + ' m', scaleX + 10, launchY - 6);
   }
 
-  // Resize
   if (window.ResizeObserver) {
     new ResizeObserver(update).observe(canvas);
   } else {
