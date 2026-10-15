@@ -1,4 +1,5 @@
 /* Vinit Simulation Hub — Activity Catalog */
+/* cache-bust v8 - 8 live labs */
 const CATALOG = [
   // KINEMATICS (14)
   { id: "projectile", title: "Projectile Motion Lab", desc: "Trajectories, range, max height, flight time, target angles & minimum launch speed.", category: "kinematics", tags: "projectile trajectory launch angle gravity range", status: "live", url: "projects/projectile.html", icon: "🚀" },
