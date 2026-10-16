@@ -8,7 +8,7 @@ Mobile-friendly interactive physics simulation platform for JEE aspirants and sc
 
 ## Current Status
 
-### 8 Live Labs
+### 12 Live Labs
 **Kinematics**
 - Projectile Motion Lab (vectors, target mode, physics-core)
 - Minimum Speed to Hit Target
