@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b16">
+<title>de Broglie Wavelength Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:#273451;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#151a40 0,transparent 40%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+button,input{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16f2;border-bottom:1px solid var(--line)}.nav{min-height:60px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#17334b;color:var(--cyan)}.brand small{display:block;font-size:10px;color:var(--muted)}.nav a{color:var(--cyan);font-size:13px}
+.hero{padding:26px 0 16px}.eyebrow{display:inline-block;border:1px solid #63e6ff40;background:#63e6ff0d;color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}.hero h1{font-size:clamp(26px,5vw,42px);margin:10px 0 6px}.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--muted);margin:0;max-width:650px}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:16px;padding-bottom:28px}@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:13px 15px;border-bottom:1px solid var(--line);font-weight:700}.panel-body{padding:15px}
+.field{margin-bottom:13px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 75px;gap:8px}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number]{width:100%;padding:7px;border-radius:8px;border:1px solid #31415f;background:#080e1d;color:var(--text)}
+.btn{padding:10px;border-radius:10px;border:1px solid #34425e;background:#141e33;color:var(--text);font-weight:700;cursor:pointer;width:100%;margin-top:8px}.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}
+.note{margin-top:10px;padding:9px;border-radius:8px;background:#63e6ff0d;border:1px solid #63e6ff22;font-size:12px;color:var(--muted)}
+canvas{display:block;width:100%;height:360px;background:#0a1220;border-radius:12px}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:10px;padding:11px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:16px}
+.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>DE BROGLIE</small></span></a>
+    <a href="../index.html">← Back to Hub</a>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">MODERN PHYSICS · WAVE-PARTICLE DUALITY</div>
+    <h1>de Broglie <span class="grad">Wavelength</span></h1>
+    <p>Matter waves: λ = h/p. Change mass and velocity of a particle and watch its wavelength update in real time.</p>
+  </section>
+  <div class="layout">
+    <aside class="panel">
+      <div class="panel-head">Controls</div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Particle Mass <span class="hint" id="mVal">9.1×10⁻³¹ kg (e⁻)</span></label>
+          <select id="mass" style="width:100%;min-height:38px;padding:7px;background:#080e1d;color:var(--text);border:1px solid #31415f;border-radius:9px">
+            <option value="9.1e-31" selected>Electron (9.1×10⁻³¹ kg)</option>
+            <option value="1.67e-27">Proton (1.67×10⁻²⁷ kg)</option>
+            <option value="1e-26">Small molecule (~10⁻²⁶ kg)</option>
+            <option value="1e-6">Dust particle (10⁻⁶ kg)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Velocity (m/s) <span class="hint" id="vVal">1×10⁶</span></label>
+          <div class="inputrow">
+            <input type="range" id="vel" min="1" max="8" step="0.1" value="6">
+            <input type="number" id="velNum" min="1" max="8" step="0.1" value="6">
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">Slider = power of 10 (10^v)</div>
+        </div>
+        <button class="btn primary" id="resetBtn">Reset</button>
+        <div class="note"><strong>h = 6.626×10⁻³⁴ J·s</strong>. Macroscopic objects have tiny λ → wave nature not observed.</div>
+      </div>
+    </aside>
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-body">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <strong>Matter Wave Visualization</strong>
+            <span id="lambdaLabel" style="color:var(--muted);font-size:13px">λ = —</span>
+          </div>
+          <canvas id="canvas" width="700" height="360"></canvas>
+        </div>
+      </div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head">Results</div>
+        <div class="panel-body">
+          <div class="results">
+            <div class="result"><span>Momentum p</span><strong id="rP">—</strong></div>
+            <div class="result"><span>Wavelength λ</span><strong id="rL">—</strong></div>
+            <div class="result"><span>Comparable to</span><strong id="rC">—</strong></div>
+            <div class="result"><span>Wave nature</span><strong id="rW">—</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">Formula</div>
+        <div class="panel-body formulas">
+          <div><code>λ = h / p = h / (mv)</code></div>
+          <div>Electron at 10⁶ m/s → λ ~ 0.7 nm (atomic scale)</div>
+          <div>Cricket ball → λ ~ 10⁻³⁴ m (undetectable)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const h = 6.626e-34;
+
+  const mass = document.getElementById('mass');
+  const vel = document.getElementById('vel');
+  const velNum = document.getElementById('velNum');
+  const vVal = document.getElementById('vVal');
+  const mVal = document.getElementById('mVal');
+
+  function sync() {
+    vel.addEventListener('input', () => { velNum.value = vel.value; vVal.textContent = '1×10^' + vel.value; update(); });
+    velNum.addEventListener('input', () => {
+      let v = parseFloat(velNum.value);
+      if (isNaN(v)) return;
+      v = Math.max(1, Math.min(8, v));
+      vel.value = velNum.value = v;
+      vVal.textContent = '1×10^' + v;
+      update();
+    });
+    mass.addEventListener('change', () => {
+      mVal.textContent = mass.options[mass.selectedIndex].text;
+      update();
+    });
+  }
+  sync();
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    mass.value = '9.1e-31';
+    vel.value = velNum.value = 6;
+    vVal.textContent = '1×10⁶';
+    mVal.textContent = '9.1×10⁻³¹ kg (e⁻)';
+    update();
+  });
+
+  function calc() {
+    const m = parseFloat(mass.value);
+    const v = Math.pow(10, parseFloat(vel.value));
+    const p = m * v;
+    const lambda = h / p;
+    return { m, v, p, lambda };
+  }
+
+  function comparable(lambda) {
+    if (lambda > 1e-3) return 'Human scale';
+    if (lambda > 1e-6) return 'Cell / bacteria';
+    if (lambda > 1e-9) return 'Atom / molecule';
+    if (lambda > 1e-12) return 'Nucleus';
+    return 'Far below nucleus';
+  }
+
+  function update() {
+    const c = calc();
+    document.getElementById('rP').textContent = c.p.toExponential(2) + ' kg·m/s';
+    document.getElementById('rL').textContent = c.lambda.toExponential(2) + ' m';
+    document.getElementById('rC').textContent = comparable(c.lambda);
+    document.getElementById('rW').textContent = c.lambda > 1e-10 ? 'Observable' : 'Not observable';
+    document.getElementById('lambdaLabel').textContent = 'λ = ' + c.lambda.toExponential(2) + ' m';
+    draw(c);
+  }
+
+  function draw(c) {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(300, rect.width);
+    const H = Math.max(280, rect.height || 360);
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    ctx.fillStyle = '#0a1220';
+    ctx.fillRect(0, 0, W, H);
+
+    // Wave
+    const midY = H / 2;
+    // Scale wavelength visually (log-ish)
+    const visualLambda = Math.min(120, Math.max(15, 40 + Math.log10(c.lambda + 1e-40) * 8));
+    ctx.strokeStyle = '#63e6ff';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      const y = midY + Math.sin((x / visualLambda) * Math.PI * 2) * 50;
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Particle
+    ctx.beginPath();
+    ctx.arc(W * 0.3, midY, 8, 0, Math.PI * 2);
+    ctx.fillStyle = '#a78bfa';
+    ctx.fill();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('particle', W * 0.3, midY + 28);
+
+    // Wavelength bracket
+    ctx.strokeStyle = '#7cf0bd';
+    ctx.lineWidth = 1.5;
+    const bx = W * 0.55;
+    ctx.beginPath();
+    ctx.moveTo(bx, midY - 60);
+    ctx.lineTo(bx + visualLambda, midY - 60);
+    ctx.stroke();
+    ctx.fillStyle = '#7cf0bd';
+    ctx.font = '11px system-ui';
+    ctx.fillText('λ', bx + visualLambda / 2, midY - 68);
+  }
+
+  update();
+  window.addEventListener('resize', update);
+})();
+</script>
+</body>
+</html>
