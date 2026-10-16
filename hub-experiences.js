@@ -1,85 +1,300 @@
+(function () {
+  "use strict";
+  const deck = document.getElementById("experience-deck");
+  const stage = document.getElementById("experience-stage");
+  const picker = document.getElementById("theme-select");
+  if (!deck || !stage || !picker || typeof CATALOG === "undefined") return;
 
-(function(){
-"use strict";
-const deck=document.getElementById("experience-deck");
-const stage=document.getElementById("experience-stage");
-const picker=document.getElementById("theme-select");
-if(!deck||!stage||!picker||typeof CATALOG==="undefined")return;
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const all=CATALOG;
-const cats=[...new Set(all.map(x=>x.category))];
-const label=c=>c.replace(/[-_]/g," ").replace(/\b\w/g,m=>m.toUpperCase());
-let selected=cats[0]||"kinematics";
-let terminalHistory=["VINIT SIMULATION HUB // LOCAL CATALOG","Type help to list available commands.","Only catalog entries marked Live can be opened."];
-let terminalInput="";
-function items(cat){return all.filter(x=>!cat||x.category===cat)}
-function itemCards(list){return '<div class="exp-items">'+list.map(x=>'<article class="exp-item"><div class="exp-badge '+(x.status==="live"?"":"soon")+'">'+(x.status==="live"?"● LIVE":"○ COMING SOON")+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.desc)+'</p><div>'+(x.status==="live"&&x.url?'<a href="'+esc(x.url)+'">Open simulator ↗</a>':'<span class="exp-muted">Not released yet</span>')+'</div></article>').join("")+'</div>'}
-function catButtons(){return cats.map(c=>'<button type="button" class="exp-btn" data-category="'+esc(c)+'" aria-pressed="'+(c===selected)+'">'+esc(label(c))+'</button>').join("")}
-function header(title,desc,chip){return '<div class="exp-head"><div><div class="exp-kicker">MIDNIGHT QUANTUM · VINIT SIGNATURE</div><h2>'+title+'</h2><p>'+desc+'</p></div><span class="exp-chip">'+chip+'</span></div>'}
-function controlRoom(){
-let live=all.filter(x=>x.status==="live");
-return header("Space Data Center","Explore the real activity catalog from a modular science command deck.","CATALOG VERIFIED")+
-'<div class="exp-grid"><div class="exp-panel exp-stat"><strong>'+all.length+'</strong><span>Catalog entries</span></div><div class="exp-panel exp-stat"><strong>'+live.length+'</strong><span>Live simulators</span></div><div class="exp-panel exp-stat"><strong>'+cats.length+'</strong><span>Topic categories</span></div></div>'+
-'<div class="exp-panel" style="margin-top:12px"><b>Choose a science sector</b><div class="exp-actions">'+catButtons()+'</div><div class="exp-muted">Selected sector: '+esc(label(selected))+' · '+items(selected).length+' catalog entries</div>'+itemCards(items(selected))+'</div>'+
-'<p class="exp-muted">Earth and orbital telemetry are intentionally omitted until a real data source exists.</p>';
-}
-function holographic(){
-const n=cats.length, angles=cats.map((c,i)=>-90+i*360/n);
-let planets=cats.map((c,i)=>{let a=angles[i]*Math.PI/180;let x=50+42*Math.cos(a),y=50+42*Math.sin(a);return '<button type="button" class="exp-btn exp-planet" style="left:'+x+'%;top:'+y+'%" data-category="'+esc(c)+'" aria-pressed="'+(c===selected)+'">'+esc(label(c))+'</button>'}).join("");
-return header("Holographic Core","Select an orbiting topic to reveal its real catalog entries. Tap a planet to change sectors.","ORBIT NAVIGATION")+
-'<div class="exp-panel"><div class="exp-orbit"><div class="exp-ring"></div><div class="exp-ring r2"></div><div class="exp-core">VINIT<br>CORE</div>'+planets+'</div><div class="exp-muted">Focused sector: '+esc(label(selected))+'</div>'+itemCards(items(selected))+'</div>';
-}
-function constellation(){
-const n=cats.length, w=620,h=320,cx=w/2,cy=h/2,rx=235,ry=120;
-const pts=cats.map((c,i)=>({c,x:cx+rx*Math.cos(-Math.PI/2+i*2*Math.PI/n),y:cy+ry*Math.sin(-Math.PI/2+i*2*Math.PI/n)}));
-let edges=pts.map((p,i)=>{let q=pts[(i+1)%n];return '<line x1="'+p.x+'" y1="'+p.y+'" x2="'+q.x+'" y2="'+q.y+'" stroke="#397caa" stroke-opacity=".6" stroke-width="1.5"/>'}).join("");
-let nodes=pts.map(p=>'<g class="map-node" role="button" tabindex="0" data-category="'+esc(p.c)+'" aria-label="'+esc(label(p.c))+'"><circle cx="'+p.x+'" cy="'+p.y+'" r="'+(p.c===selected?11:7)+'" fill="'+(p.c===selected?"#7ceaff":"#6d80ff")+'" stroke="#b9f4ff" stroke-width="1.5"/><text x="'+p.x+'" y="'+(p.y+25)+'" text-anchor="middle">'+esc(label(p.c))+'</text></g>').join("");
-return header("Star Map Constellation","Choose a connected concept node. The highlighted sector updates the catalog below.","CONCEPT NETWORK")+
-'<div class="exp-panel"><svg class="exp-map" viewBox="0 0 '+w+' '+h+'" role="group" aria-label="Interactive category constellation">'+edges+nodes+'</svg><div class="exp-actions">'+catButtons()+'</div>'+itemCards(items(selected))+'</div>';
-}
-function terminal(){
-return header("Hacker Terminal","Run commands against the real local catalog. This is a catalog interface, not a shell.","LOCAL CATALOG CLI")+
-'<div class="exp-panel exp-terminal"><div class="exp-log" id="exp-log" aria-live="polite">'+terminalHistory.map(esc).join("\n")+'</div><form id="exp-terminal-form"><span aria-hidden="true" style="align-self:center;color:#83f5a0">$</span><input id="exp-command" autocomplete="off" aria-label="Catalog command" placeholder="help, ls, cd kinematics, search projectile, open projectile"><button class="exp-btn" type="submit">Run</button></form><div class="exp-muted" style="margin-top:9px">Allowed commands: help · ls · cd CATEGORY · search WORDS · open ID · clear</div><div id="exp-terminal-result"></div></div>';
-}
-function render(){
-let theme=picker.value;
-if(theme==="holographic")stage.innerHTML=holographic();
-else if(theme==="constellation")stage.innerHTML=constellation();
-else if(theme==="terminal")stage.innerHTML=terminal();
-else stage.innerHTML=controlRoom();
-}
-deck.addEventListener("click",e=>{
-const b=e.target.closest("[data-category]");
-if(!b)return;
-selected=b.dataset.category;
-render();
-});
-deck.addEventListener("keydown",e=>{
-const n=e.target.closest(".map-node");
-if(n&&(e.key==="Enter"||e.key===" ")){e.preventDefault();selected=n.dataset.category;render()}
-});
-deck.addEventListener("submit",e=>{
-if(e.target.id!=="exp-terminal-form")return;
-e.preventDefault();
-const input=deck.querySelector("#exp-command");
-const out=deck.querySelector("#exp-terminal-result");
-if(!input||!out)return;
-const raw=input.value.trim(),parts=raw.split(/\s+/),cmd=(parts.shift()||"").toLowerCase(),arg=parts.join(" ");
-let result="";
-if(cmd==="help")result="Commands: help | ls | cd CATEGORY | search WORDS | open ID | clear";
-else if(cmd==="ls")result=cats.map(c=>c+" ("+items(c).length+")").join("\n")+"\n\nLive IDs:\n"+all.filter(x=>x.status==="live").map(x=>x.id).join("\n");
-else if(cmd==="cd"){let c=cats.find(x=>x.toLowerCase()===arg.toLowerCase()||label(x).toLowerCase()===arg.toLowerCase());if(c){selected=c;result="Sector selected: "+label(c)+"\n"+items(c).map(x=>x.id+" — "+x.title+" ["+x.status+"]").join("\n")}else result="Unknown category. Run ls to see valid sectors."}
-else if(cmd==="search"){let found=all.filter(x=>(x.title+" "+x.desc+" "+x.tags+" "+x.id+" "+x.category).toLowerCase().includes(arg.toLowerCase()));result=found.length?found.map(x=>x.id+" — "+x.title+" ["+x.status+"]").join("\n"):"No matching catalog entries."}
-else if(cmd==="open"){let x=all.find(x=>x.id===arg);if(x&&x.status==="live"&&x.url){result="Opening "+x.title+"…";out.textContent=result;location.href=x.url;return}else if(x)result="Found: "+x.title+" — "+(x.status==="live"?"No URL is configured.":"Coming soon; not openable yet.");else result="Unknown ID. Run ls or search WORDS."}
-else if(cmd==="clear"){terminalHistory=[];terminalInput="";render();return}
-else result="Unknown command. Type help.";
-terminalHistory.push("$ "+raw,result);
-terminalHistory=terminalHistory.slice(-14);
-render();
-const log=deck.querySelector("#exp-log");if(log)log.scrollTop=log.scrollHeight;
-const resultBox=deck.querySelector("#exp-terminal-result");if(resultBox)resultBox.textContent=result;
-});
-picker.addEventListener("change",render);
-document.addEventListener("vsh-theme-change",render);
-render();
+  const esc = (s) =>
+    String(s ?? "").replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+    );
+
+  const all = CATALOG;
+  const live = all.filter((x) => x.status === "live");
+  const cats = [...new Set(all.map((x) => x.category))];
+  const label = (c) =>
+    c.replace(/[-_]/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
+
+  let selected = cats[0] || "kinematics";
+  let terminalHistory = [
+    "VINIT SIM HUB // SECURE SHELL",
+    "Type help | ls | open ID | clear",
+  ];
+
+  function liveList(cat) {
+    return live.filter((x) => !cat || x.category === cat);
+  }
+
+  /* ========== CONTROL ROOM — Space Data Center ========== */
+  function controlRoom() {
+    const byCat = cats.map((c) => ({
+      c,
+      n: all.filter((x) => x.category === c).length,
+      live: live.filter((x) => x.category === c).length,
+    }));
+    return `
+<div class="cr-wrap">
+  <div class="cr-top">
+    <div class="cr-title">
+      <span class="cr-icon">◈</span>
+      <div>
+        <h2>Space Data Center</h2>
+        <p>Mission control for every physics lab · live telemetry</p>
+      </div>
+    </div>
+    <div class="cr-status"><span class="cr-dot"></span> SYSTEMS ONLINE</div>
+  </div>
+  <div class="cr-stats">
+    <div class="cr-stat"><b>${all.length}</b><span>Catalog</span></div>
+    <div class="cr-stat"><b>${live.length}</b><span>Live Labs</span></div>
+    <div class="cr-stat"><b>${cats.length}</b><span>Sectors</span></div>
+    <div class="cr-stat warn"><b>${all.length - live.length}</b><span>Queued</span></div>
+  </div>
+  <div class="cr-body">
+    <div class="cr-side">
+      <div class="cr-panel">
+        <h3>Sectors</h3>
+        <div class="cr-cats">
+          ${cats
+            .map(
+              (c) =>
+                `<button type="button" class="cr-cat ${c === selected ? "on" : ""}" data-category="${esc(c)}">${esc(label(c))} <em>${liveList(c).length}</em></button>`
+            )
+            .join("")}
+        </div>
+      </div>
+    </div>
+    <div class="cr-main">
+      <div class="cr-panel">
+        <h3>${esc(label(selected))} · Live Modules</h3>
+        <div class="cr-grid">
+          ${liveList(selected)
+            .map(
+              (x) => `
+            <a class="cr-card" href="${esc(x.url)}">
+              <span class="cr-badge">LIVE</span>
+              <strong>${esc(x.title)}</strong>
+              <span>${esc(x.desc)}</span>
+            </a>`
+            )
+            .join("") || '<p class="cr-empty">No live labs in this sector yet.</p>'}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+  }
+
+  /* ========== CONSTELLATION — Star Map ========== */
+  function constellation() {
+    const nodes = cats.map((c, i) => {
+      const angle = (i / cats.length) * Math.PI * 2 - Math.PI / 2;
+      const r = 38;
+      return {
+        c,
+        x: 50 + r * Math.cos(angle),
+        y: 50 + r * Math.sin(angle),
+        live: liveList(c).length,
+      };
+    });
+    return `
+<div class="st-wrap">
+  <div class="st-head">
+    <h2>★ Star Map</h2>
+    <p>Constellation of knowledge · tap a node to explore that sector</p>
+  </div>
+  <div class="st-map">
+    <svg viewBox="0 0 100 100" class="st-svg">
+      ${nodes
+        .map(
+          (n) =>
+            `<line x1="50" y1="50" x2="${n.x}" y2="${n.y}" class="st-link"/>`
+        )
+        .join("")}
+      <circle cx="50" cy="50" r="4" class="st-core"/>
+      ${nodes
+        .map(
+          (n, i) =>
+            `<circle cx="${n.x}" cy="${n.y}" r="${n.c === selected ? 3.2 : 2.4}" class="st-node ${n.c === selected ? "on" : ""}" data-category="${esc(n.c)}"/>`
+        )
+        .join("")}
+    </svg>
+    <div class="st-labels">
+      ${nodes
+        .map(
+          (n) =>
+            `<button type="button" class="st-label ${n.c === selected ? "on" : ""}" data-category="${esc(n.c)}" style="left:${n.x}%;top:${n.y}%">${esc(label(n.c))}<small>${n.live} live</small></button>`
+        )
+        .join("")}
+    </div>
+  </div>
+  <div class="st-panel">
+    <h3>${esc(label(selected))}</h3>
+    <div class="st-items">
+      ${liveList(selected)
+        .map(
+          (x) =>
+            `<a href="${esc(x.url)}" class="st-item"><b>${esc(x.icon || "●")}</b> ${esc(x.title)}</a>`
+        )
+        .join("") || "<span>No live labs</span>"}
+    </div>
+  </div>
+</div>`;
+  }
+
+  /* ========== HOLOGRAPHIC — Neon floating panels ========== */
+  function holographic() {
+    return `
+<div class="hg-wrap">
+  <div class="hg-orb-zone">
+    <div class="hg-orb">
+      <div class="hg-ring"></div>
+      <div class="hg-ring r2"></div>
+      <div class="hg-core">∑</div>
+    </div>
+    <div class="hg-float f1">
+      <b>${live.length}</b><span>Live Sims</span>
+    </div>
+    <div class="hg-float f2">
+      <b>${cats.length}</b><span>Sectors</span>
+    </div>
+    <div class="hg-float f3">
+      <b>${all.length}</b><span>Catalog</span>
+    </div>
+  </div>
+  <div class="hg-panels">
+    ${cats
+      .map(
+        (c) => `
+      <div class="hg-panel ${c === selected ? "on" : ""}">
+        <button type="button" class="hg-tab" data-category="${esc(c)}">${esc(label(c))}</button>
+        <div class="hg-list">
+          ${liveList(c)
+            .slice(0, 4)
+            .map(
+              (x) =>
+                `<a href="${esc(x.url)}">${esc(x.title)}</a>`
+            )
+            .join("") || '<span class="hg-muted">Coming soon</span>'}
+        </div>
+      </div>`
+      )
+      .join("")}
+  </div>
+</div>`;
+  }
+
+  /* ========== TERMINAL — Hacker green ========== */
+  function terminal() {
+    const lines = terminalHistory
+      .map((l) => `<div class="tm-line">${esc(l)}</div>`)
+      .join("");
+    const liveIds = live.map((x) => x.id).join("  ");
+    return `
+<div class="tm-wrap">
+  <div class="tm-bar">
+    <span>root@vinit-sim:~#</span>
+    <span class="tm-online">● ONLINE</span>
+  </div>
+  <div class="tm-body">
+    <div class="tm-side">
+      <div class="tm-file on">./hub.sh</div>
+      <div class="tm-file">./catalog.js</div>
+      <div class="tm-file">./projects/</div>
+      ${cats.map((c) => `<button type="button" class="tm-file" data-category="${esc(c)}">./${esc(c)}/</button>`).join("")}
+    </div>
+    <div class="tm-main">
+      <div class="tm-cards">
+        <div class="tm-card"><span>LIVE</span><b>${live.length}</b></div>
+        <div class="tm-card"><span>TOTAL</span><b>${all.length}</b></div>
+        <div class="tm-card"><span>SECTOR</span><b>${esc(label(selected))}</b></div>
+      </div>
+      <div class="tm-log" id="exp-log">${lines}</div>
+      <div class="tm-labs">
+        <div class="tm-labs-title">// live modules — ${esc(label(selected))}</div>
+        ${liveList(selected)
+          .map(
+            (x) =>
+              `<a class="tm-lab" href="${esc(x.url)}"><span class="tm-id">${esc(x.id)}</span> ${esc(x.title)}</a>`
+          )
+          .join("") || '<div class="tm-line"># no live labs in sector</div>'}
+      </div>
+      <form id="exp-terminal-form" class="tm-form">
+        <span>$</span>
+        <input id="exp-command" autocomplete="off" placeholder="help | ls | open projectile | clear" />
+        <button type="submit">EXEC</button>
+      </form>
+      <div id="exp-terminal-result" class="tm-result"></div>
+    </div>
+  </div>
+</div>`;
+  }
+
+  function render() {
+    const theme = picker.value;
+    if (theme === "holographic") stage.innerHTML = holographic();
+    else if (theme === "constellation") stage.innerHTML = constellation();
+    else if (theme === "terminal") stage.innerHTML = terminal();
+    else stage.innerHTML = controlRoom();
+  }
+
+  deck.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-category]");
+    if (!b) return;
+    selected = b.dataset.category;
+    render();
+  });
+
+  deck.addEventListener("submit", (e) => {
+    if (e.target.id !== "exp-terminal-form") return;
+    e.preventDefault();
+    const input = deck.querySelector("#exp-command");
+    const out = deck.querySelector("#exp-terminal-result");
+    if (!input || !out) return;
+    const raw = input.value.trim();
+    const parts = raw.split(/\s+/);
+    const cmd = (parts.shift() || "").toLowerCase();
+    const arg = parts.join(" ");
+    let result = "";
+    if (cmd === "help")
+      result = "help | ls | cd CATEGORY | open ID | clear";
+    else if (cmd === "ls")
+      result =
+        cats.map((c) => c + " (" + liveList(c).length + " live)").join("\n") +
+        "\n\nIDs: " +
+        live.map((x) => x.id).join(", ");
+    else if (cmd === "cd") {
+      const c = cats.find(
+        (x) =>
+          x.toLowerCase() === arg.toLowerCase() ||
+          label(x).toLowerCase() === arg.toLowerCase()
+      );
+      if (c) {
+        selected = c;
+        result = "sector → " + label(c);
+        render();
+        return;
+      } else result = "unknown sector";
+    } else if (cmd === "open") {
+      const x = live.find((x) => x.id === arg);
+      if (x && x.url) {
+        location.href = x.url;
+        return;
+      }
+      result = "not found / not live";
+    } else if (cmd === "clear") {
+      terminalHistory = ["cleared."];
+      render();
+      return;
+    } else result = "unknown. type help";
+    terminalHistory.push("$ " + raw, result);
+    terminalHistory = terminalHistory.slice(-12);
+    input.value = "";
+    render();
+  });
+
+  picker.addEventListener("change", render);
+  document.addEventListener("vsh-theme-change", render);
+  render();
 })();
