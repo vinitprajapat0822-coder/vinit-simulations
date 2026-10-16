@@ -346,16 +346,26 @@
       function applyTheme(value, persist) {
         const theme = themes.includes(value) ? value : "control-room";
         document.body.dataset.theme = theme;
+        document.body.setAttribute("data-theme", theme);
+        // Remove old theme classes, add new
+        themes.forEach(t => document.body.classList.remove("theme-" + t));
+        document.body.classList.add("theme-" + theme);
         select.value = theme;
         if (persist) {
           try { localStorage.setItem(key, theme); } catch (_) {}
         }
+        // Notify experience deck
+        try { document.dispatchEvent(new CustomEvent("vsh-theme-change", { detail: { theme: theme } })); } catch (_) {}
       }
 
       let saved = "control-room";
       try { saved = localStorage.getItem(key) || saved; } catch (_) {}
       applyTheme(saved, false);
       select.addEventListener("change", function () {
+        applyTheme(select.value, true);
+      });
+      // Also apply on input for immediate feedback
+      select.addEventListener("input", function () {
         applyTheme(select.value, true);
       });
     })();
