@@ -80,5 +80,6 @@ const log=deck.querySelector("#exp-log");if(log)log.scrollTop=log.scrollHeight;
 const resultBox=deck.querySelector("#exp-terminal-result");if(resultBox)resultBox.textContent=result;
 });
 picker.addEventListener("change",render);
+document.addEventListener("vsh-theme-change",render);
 render();
 })();
