@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b16">
+<meta name="description" content="Interactive Photoelectric Effect Lab: explore threshold frequency, stopping potential, intensity and Einstein equation.">
+<title>Photoelectric Effect Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--orange:#fbbf24;--line:#273451;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#1a1540 0,transparent 40%),radial-gradient(ellipse at 90% 30%,#0f2744 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16f2;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:64px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:20px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.5px}.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:30px 0 20px}.eyebrow{display:inline-flex;border:1px solid #63e6ff40;background:#63e6ff0d;border-radius:99px;padding:5px 12px;color:var(--cyan);font-size:11px;font-weight:750;letter-spacing:1.2px}.hero h1{font-size:clamp(28px,5vw,46px);margin:12px 0 8px;letter-spacing:-1.2px}.grad{background:linear-gradient(100deg,var(--cyan),#c4b5fd 60%,var(--violet));color:transparent;background-clip:text}.hero p{color:var(--muted);max-width:720px;margin:0}
+.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:16px;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2ef5,#0d1324f8);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:14px 16px;border-bottom:1px solid var(--line)}.panel-head h2,.panel-head h3{margin:0;font-size:15px}.panel-body{padding:16px}
+.field{margin-bottom:14px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;color:#dce6fb}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 78px;gap:8px}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number],select{width:100%;min-height:38px;padding:7px 8px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px}
+.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px;cursor:pointer;font-weight:750;font-size:13px;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.actions{display:flex;gap:8px;margin-top:12px}.actions .btn{flex:1}
+.note{padding:10px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff22;color:var(--muted);font-size:12px;margin-top:12px}.note strong{color:var(--cyan)}
+canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e1c;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:12px;padding:12px}.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}.result strong{font-size:16px}
+.status{margin-top:12px;padding:11px 13px;border-radius:10px;font-size:13px;font-weight:700}.status.on{background:#0d2e28;border:1px solid #1f6b55;color:#7cf0bd}.status.off{background:#3a2218;border:1px solid #8a4f2a;color:#ffc89c}
+.formulas{font-size:13px;color:var(--muted);line-height:1.75}.formulas code{color:var(--cyan);font-size:12px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>PHOTOELECTRIC EFFECT</small></span></a>
+    <a href="../index.html">← Back to Hub</a>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">MODERN PHYSICS · QUANTUM</div>
+    <h1>Photoelectric <span class="grad">Effect Lab</span></h1>
+    <p>Explore Einstein’s photoelectric equation. Change frequency, intensity and metal work function. Watch electrons eject only above threshold.</p>
+  </section>
+  <div class="layout">
+    <aside class="panel">
+      <div class="panel-head"><h2>Controls</h2></div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Light Frequency (×10¹⁴ Hz) <span class="hint" id="fVal">8.0</span></label>
+          <div class="inputrow">
+            <input type="range" id="freq" min="1" max="20" step="0.1" value="8">
+            <input type="number" id="freqNum" min="1" max="20" step="0.1" value="8">
+          </div>
+        </div>
+        <div class="field">
+          <label>Intensity <span class="hint" id="iVal">50%</span></label>
+          <div class="inputrow">
+            <input type="range" id="intensity" min="10" max="100" step="5" value="50">
+            <input type="number" id="intensityNum" min="10" max="100" step="5" value="50">
+          </div>
+        </div>
+        <div class="field">
+          <label>Metal Work Function (eV)</label>
+          <select id="metal">
+            <option value="2.28">Sodium (2.28 eV)</option>
+            <option value="2.90">Calcium (2.90 eV)</option>
+            <option value="4.26" selected>Zinc (4.26 eV)</option>
+            <option value="4.70">Copper (4.70 eV)</option>
+            <option value="5.17">Silver (5.17 eV)</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="resetBtn">Reset</button>
+        </div>
+        <div class="note"><strong>h = 4.14×10⁻¹⁵ eV·s</strong>. Electrons emit only when hf &gt; φ.</div>
+      </div>
+    </aside>
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <div style="padding:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <strong>Photoelectric Setup</strong>
+            <span id="statusText" style="font-size:13px;color:var(--muted)">No emission</span>
+          </div>
+          <canvas id="canvas" width="800" height="380"></canvas>
+        </div>
+      </div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head"><h3>Results</h3></div>
+        <div class="panel-body">
+          <div class="results">
+            <div class="result"><span>Photon Energy (hf)</span><strong id="rHf">—</strong></div>
+            <div class="result"><span>Threshold Freq (f₀)</span><strong id="rF0">—</strong></div>
+            <div class="result"><span>Max KE</span><strong id="rKE">—</strong></div>
+            <div class="result"><span>Stopping Potential</span><strong id="rVs">—</strong></div>
+          </div>
+          <div id="statusBox" class="status off">Below threshold — no photoelectrons</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Einstein’s Equation</h3></div>
+        <div class="panel-body formulas">
+          <div><code>hf = φ + K<sub>max</sub></code></div>
+          <div><code>K<sub>max</sub> = hf − φ</code></div>
+          <div><code>eV<sub>s</sub> = K<sub>max</sub></code> → Stopping potential</div>
+          <div><code>f₀ = φ / h</code> → Threshold frequency</div>
+          <div>Intensity affects <strong>number</strong> of electrons, not their KE.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
+
+  const h = 4.14e-15; // eV·s
+  let electrons = [];
+  let lastSpawn = 0;
+
+  const freq = $('freq'), freqNum = $('freqNum');
+  const intensity = $('intensity'), intensityNum = $('intensityNum');
+  const metal = $('metal');
+
+  function sync(range, num, label, fmt) {
+    range.addEventListener('input', () => {
+      num.value = range.value;
+      label.textContent = fmt(range.value);
+      update();
+    });
+    num.addEventListener('input', () => {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.max(+range.min, Math.min(+range.max, v));
+      range.value = num.value = v;
+      label.textContent = fmt(v);
+      update();
+    });
+  }
+  sync(freq, freqNum, $('fVal'), v => Number(v).toFixed(1));
+  sync(intensity, intensityNum, $('iVal'), v => v + '%');
+  metal.addEventListener('change', update);
+
+  $('resetBtn').addEventListener('click', () => {
+    freq.value = freqNum.value = 8;
+    intensity.value = intensityNum.value = 50;
+    metal.value = '4.26';
+    $('fVal').textContent = '8.0';
+    $('iVal').textContent = '50%';
+    electrons = [];
+    update();
+  });
+
+  function calc() {
+    const f = parseFloat(freq.value) * 1e14; // Hz
+    const φ = parseFloat(metal.value); // eV
+    const hf = h * f; // eV
+    const f0 = φ / h; // Hz
+    const emits = hf > φ;
+    const Kmax = emits ? hf - φ : 0;
+    const Vs = Kmax; // volts (since e=1 in eV)
+    return { f, φ, hf, f0, emits, Kmax, Vs, intensity: parseFloat(intensity.value) };
+  }
+
+  function updateResults(c) {
+    $('rHf').textContent = c.hf.toFixed(2) + ' eV';
+    $('rF0').textContent = (c.f0 / 1e14).toFixed(2) + '×10¹⁴ Hz';
+    $('rKE').textContent = c.emits ? c.Kmax.toFixed(2) + ' eV' : '0 eV';
+    $('rVs').textContent = c.emits ? c.Vs.toFixed(2) + ' V' : '—';
+
+    const box = $('statusBox');
+    const st = $('statusText');
+    if (c.emits) {
+      box.className = 'status on';
+      box.textContent = 'Above threshold — photoelectrons emitted';
+      st.textContent = 'Emission ON';
+      st.style.color = '#7cf0bd';
+    } else {
+      box.className = 'status off';
+      box.textContent = 'Below threshold — no photoelectrons';
+      st.textContent = 'No emission';
+      st.style.color = '#ffc89c';
+    }
+  }
+
+  function spawnElectrons(c, now) {
+    if (!c.emits) return;
+    const rate = c.intensity / 8; // electrons per frame roughly
+    if (now - lastSpawn < 40) return;
+    lastSpawn = now;
+    const n = Math.max(1, Math.round(rate / 10));
+    for (let i = 0; i < n; i++) {
+      electrons.push({
+        x: 280 + Math.random() * 30,
+        y: 160 + Math.random() * 80,
+        vx: 1.5 + Math.random() * 2 + c.Kmax * 0.4,
+        vy: (Math.random() - 0.5) * 1.5,
+        life: 80 + Math.random() * 40
+      });
+    }
+  }
+
+  function draw(c) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(1, rect.width);
+    const H = Math.max(1, rect.height || 380);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    ctx.fillStyle = '#070f1c';
+    ctx.fillRect(0, 0, W, H);
+
+    // Light source (left)
+    const lampX = 70, lampY = H / 2;
+    // Beam color based on frequency (approx visible mapping)
+    const fNorm = (parseFloat(freq.value) - 1) / 19;
+    const r = Math.floor(100 + fNorm * 155);
+    const g = Math.floor(80 + (1 - fNorm) * 100);
+    const b = Math.floor(255 - fNorm * 100);
+    const beamColor = `rgba(${r},${g},${b},`;
+
+    // Beam
+    const grad = ctx.createLinearGradient(lampX + 30, 0, 280, 0);
+    grad.addColorStop(0, beamColor + (0.15 + c.intensity/200) + ')');
+    grad.addColorStop(1, beamColor + '0.02)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(lampX + 25, lampY - 25);
+    ctx.lineTo(280, lampY - 50 - c.intensity/5);
+    ctx.lineTo(280, lampY + 50 + c.intensity/5);
+    ctx.lineTo(lampX + 25, lampY + 25);
+    ctx.closePath();
+    ctx.fill();
+
+    // Lamp
+    ctx.fillStyle = beamColor + '0.9)';
+    ctx.beginPath();
+    ctx.arc(lampX, lampY, 18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('LIGHT', lampX, lampY + 36);
+
+    // Metal plate
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(270, H/2 - 70, 22, 140);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(275, H/2 - 60, 12, 120);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('METAL', 281, H/2 + 90);
+
+    // Collector plate (right)
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(W - 90, H/2 - 70, 18, 140);
+    ctx.fillStyle = '#475569';
+    ctx.font = '11px system-ui';
+    ctx.fillText('COLLECTOR', W - 81, H/2 + 90);
+
+    // Electrons
+    electrons.forEach(e => {
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#7cf0bd';
+      ctx.fill();
+    });
+
+    // Labels
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('f = ' + parseFloat(freq.value).toFixed(1) + '×10¹⁴ Hz', 20, 24);
+    ctx.fillText('φ = ' + c.φ.toFixed(2) + ' eV', 20, 42);
+  }
+
+  function tick(now) {
+    const c = calc();
+    updateResults(c);
+    spawnElectrons(c, now);
+
+    // Move electrons
+    electrons.forEach(e => {
+      e.x += e.vx;
+      e.y += e.vy;
+      e.life--;
+    });
+    electrons = electrons.filter(e => e.life > 0 && e.x < canvas.width);
+
+    draw(c);
+    requestAnimationFrame(tick);
+  }
+
+  function update() {
+    // results update happens in tick
+  }
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(() => {}).observe(canvas);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
