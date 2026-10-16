@@ -1,0 +1,41 @@
+
+#experience-deck{margin-top:28px;margin-bottom:48px}
+#experience-deck .exp-shell{position:relative;overflow:hidden;border:1px solid #34465f;border-radius:24px;padding:clamp(16px,3vw,30px);background:radial-gradient(ellipse at 50% 0%,#142e50 0%,#0a1223 55%,#070b15 100%);box-shadow:0 18px 65px #0005;color:#edf6ff}
+#experience-deck .exp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+#experience-deck .exp-kicker{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#74e5ff}
+#experience-deck .exp-head h2{margin:8px 0;font-size:clamp(1.35rem,4vw,2rem)}
+#experience-deck .exp-head p{color:#aebdd2;max-width:620px;margin:0 0 18px}
+#experience-deck .exp-chip{border:1px solid #3b6685;border-radius:99px;padding:7px 11px;color:#8beaff;font-size:.78rem}
+#experience-deck .exp-panel{border:1px solid #263d5a;border-radius:17px;background:#0c1729cc;padding:16px;min-width:0}
+#experience-deck .exp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#experience-deck .exp-stat strong{display:block;font-size:1.7rem;color:#8ceaff}
+#experience-deck .exp-stat span,#experience-deck .exp-muted{font-size:.85rem;color:#aabbd0}
+#experience-deck .exp-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+#experience-deck button,#experience-deck input{font:inherit}
+#experience-deck .exp-btn{cursor:pointer;color:#dffaff;background:#10243b;border:1px solid #365b79;border-radius:11px;padding:9px 12px}
+#experience-deck .exp-btn:hover,#experience-deck .exp-btn[aria-pressed=true]{background:#123e57;border-color:#59dcff;box-shadow:0 0 18px #20cfff22}
+#experience-deck .exp-btn:focus-visible,#experience-deck input:focus-visible{outline:2px solid #70e8ff;outline-offset:3px}
+#experience-deck .exp-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+#experience-deck .exp-item{padding:13px;border:1px solid #273d59;border-radius:13px;background:#0b1526}
+#experience-deck .exp-item h3{font-size:1rem;margin:0 0 7px}
+#experience-deck .exp-item p{font-size:.86rem;color:#aebdd2;margin:0 0 10px}
+#experience-deck .exp-item a{color:#7ce5ff}
+#experience-deck .exp-badge{font-size:.7rem;color:#8fe6b2}
+#experience-deck .exp-badge.soon{color:#ffd28b}
+#experience-deck .exp-orbit{position:relative;min-height:310px;display:grid;place-items:center;overflow:hidden}
+#experience-deck .exp-core{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;text-align:center;font-weight:700;color:white;background:radial-gradient(circle at 35% 30%,#b8fbff,#477bff 32%,#512c9d 67%,#10132c);box-shadow:0 0 28px #38d9ff88,0 0 75px #8c47ff55;z-index:2}
+#experience-deck .exp-ring{position:absolute;border:1px solid #50dfff55;border-radius:50%;width:210px;height:210px;pointer-events:none}
+#experience-deck .exp-ring.r2{width:290px;height:290px;border-color:#a67bff55}
+#experience-deck .exp-planet{position:absolute;z-index:3;max-width:125px;font-size:.78rem;transform:translate(-50%,-50%);white-space:normal}
+#experience-deck .exp-map{width:100%;height:auto;min-height:230px;display:block;touch-action:pan-y}
+#experience-deck .exp-map text{font:12px system-ui;fill:#dff8ff;pointer-events:none}
+#experience-deck .exp-map .map-node{cursor:pointer}
+#experience-deck .exp-map .map-node:focus{outline:none}
+#experience-deck .exp-map .map-node:focus circle,#experience-deck .exp-map .map-node:hover circle{stroke:#fff;stroke-width:3}
+#experience-deck .exp-terminal{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+#experience-deck .exp-terminal .exp-log{min-height:130px;max-height:250px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;color:#9df5b0;font-size:.84rem;line-height:1.65}
+#experience-deck .exp-terminal form{display:flex;gap:8px;margin-top:12px}
+#experience-deck .exp-terminal input{min-width:0;flex:1;color:#d8ffe1;background:#050d0b;border:1px solid #2e6a4a;border-radius:9px;padding:11px}
+#experience-deck .exp-empty{color:#aebdd2;padding:12px}
+@media(max-width:620px){#experience-deck .exp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#experience-deck .exp-items{grid-template-columns:1fr}#experience-deck .exp-orbit{min-height:285px}#experience-deck .exp-ring{width:180px;height:180px}#experience-deck .exp-ring.r2{width:255px;height:255px}#experience-deck .exp-planet{max-width:100px;font-size:.7rem;padding:7px}}
+@media(prefers-reduced-motion:reduce){#experience-deck *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}

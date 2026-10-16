@@ -186,6 +186,8 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="hub-home-themes.css">
+  <link rel="stylesheet" href="hub-experiences.css">
 </head>
 <body>
   <header class="nav-wrap">
@@ -194,9 +196,24 @@
         <span class="brand-icon" aria-hidden="true">∑</span>
         <span>VINIT SIMULATION HUB<small>SCIENCE · VISUALIZED</small></span>
       </a>
-      <div class="nav-links">
-        <a href="#simulations">Explore</a>
-        <a href="#about" class="optional">About</a>
+      <button class="nav-toggle" type="button" aria-expanded="false"
+        aria-controls="primary-navigation" aria-label="Open navigation menu">
+        <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+      </button>
+      <div class="nav-tools" id="primary-navigation">
+        <div class="nav-links">
+          <a href="#simulations">Explore</a>
+          <a href="#about">About</a>
+        </div>
+        <div class="theme-picker">
+          <label for="theme-select">Interface theme</label>
+          <select id="theme-select" aria-label="Choose interface theme">
+            <option value="control-room">Control Room Bento</option>
+            <option value="constellation">Constellation Web</option>
+            <option value="holographic">Holographic Core</option>
+            <option value="terminal">Hacker Terminal</option>
+          </select>
+        </div>
       </div>
     </nav>
   </header>
@@ -210,6 +227,12 @@
         <div class="stat"><strong id="stat-total">139</strong><span>Planned activities</span></div>
         <div class="stat"><strong id="stat-live">8</strong><span>Live now</span></div>
         <div class="stat"><strong>JEE</strong><span>Focused depth</span></div>
+      </div>
+    </section>
+
+    <section class="section container" id="experience-deck" aria-label="Interactive interface experience">
+      <div class="exp-shell">
+        <div id="experience-stage"></div>
       </div>
     </section>
 
@@ -311,5 +334,73 @@
       render();
     })();
   </script>
+
+  <script>
+    (function () {
+      "use strict";
+      const key = "vsh-interface-theme-v1";
+      const themes = ["control-room", "constellation", "holographic", "terminal"];
+      const select = document.getElementById("theme-select");
+      if (!select) return;
+
+      function applyTheme(value, persist) {
+        const theme = themes.includes(value) ? value : "control-room";
+        document.body.dataset.theme = theme;
+        select.value = theme;
+        if (persist) {
+          try { localStorage.setItem(key, theme); } catch (_) {}
+        }
+      }
+
+      let saved = "control-room";
+      try { saved = localStorage.getItem(key) || saved; } catch (_) {}
+      applyTheme(saved, false);
+      select.addEventListener("change", function () {
+        applyTheme(select.value, true);
+      });
+    })();
+  </script>
+  <script src="hub-experiences.js"></script>
+  <script id="vsh-mobile-menu-v2">
+    (function () {
+      "use strict";
+      const toggle = document.querySelector(".nav-toggle");
+      const menu = document.getElementById("primary-navigation");
+      if (!toggle || !menu) return;
+
+      function setOpen(open) {
+        menu.classList.toggle("is-open", open);
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute(
+          "aria-label",
+          open ? "Close navigation menu" : "Open navigation menu"
+        );
+        const icon = toggle.querySelector(".nav-toggle-icon");
+        if (icon) icon.textContent = open ? "×" : "☰";
+      }
+
+      toggle.addEventListener("click", function () {
+        setOpen(toggle.getAttribute("aria-expanded") !== "true");
+      });
+      menu.querySelectorAll('a[href^="#"]').forEach(function (link) {
+        link.addEventListener("click", function () { setOpen(false); });
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          setOpen(false);
+          toggle.focus();
+        }
+      });
+      document.addEventListener("click", function (event) {
+        if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+          setOpen(false);
+        }
+      });
+      window.addEventListener("resize", function () {
+        if (window.innerWidth > 760) setOpen(false);
+      });
+    })();
+  </script>
+
 </body>
 </html>
