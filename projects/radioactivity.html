@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b16">
+<title>Radioactivity & Half-life Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#1a1030 0,transparent 40%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+button,input{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16f2;border-bottom:1px solid var(--line)}.nav{min-height:60px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#17334b;color:var(--cyan)}.brand small{display:block;font-size:10px;color:var(--muted)}.nav a{color:var(--cyan);font-size:13px}
+.hero{padding:26px 0 16px}.eyebrow{display:inline-block;border:1px solid #63e6ff40;background:#63e6ff0d;color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}.hero h1{font-size:clamp(26px,5vw,42px);margin:10px 0 6px}.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--muted);margin:0;max-width:650px}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:16px;padding-bottom:28px}@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:13px 15px;border-bottom:1px solid var(--line);font-weight:700}.panel-body{padding:15px}
+.field{margin-bottom:13px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 75px;gap:8px}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number]{width:100%;padding:7px;border-radius:8px;border:1px solid #31415f;background:#080e1d;color:var(--text)}
+.btn{padding:10px;border-radius:10px;border:1px solid #34425e;background:#141e33;color:var(--text);font-weight:700;cursor:pointer}.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}.actions{display:flex;gap:8px;margin-top:10px}.actions .btn{flex:1}
+.note{margin-top:10px;padding:9px;border-radius:8px;background:#63e6ff0d;border:1px solid #63e6ff22;font-size:12px;color:var(--muted)}
+canvas{display:block;width:100%;height:360px;background:#0a1220;border-radius:12px}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:10px;padding:11px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:16px}
+.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>RADIOACTIVITY</small></span></a>
+    <a href="../index.html">← Back to Hub</a>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">MODERN PHYSICS · NUCLEAR</div>
+    <h1>Radioactivity & <span class="grad">Half-life</span></h1>
+    <p>Watch radioactive decay in real time. Change half-life and initial nuclei. See exponential decay and activity.</p>
+  </section>
+  <div class="layout">
+    <aside class="panel">
+      <div class="panel-head">Controls</div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Half-life (s) <span class="hint" id="tHalfVal">8 s</span></label>
+          <div class="inputrow">
+            <input type="range" id="tHalf" min="2" max="30" step="1" value="8">
+            <input type="number" id="tHalfNum" min="2" max="30" value="8">
+          </div>
+        </div>
+        <div class="field">
+          <label>Initial Nuclei (N₀) <span class="hint" id="n0Val">200</span></label>
+          <div class="inputrow">
+            <input type="range" id="n0" min="50" max="400" step="10" value="200">
+            <input type="number" id="n0Num" min="50" max="400" step="10" value="200">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="playBtn">Play</button>
+          <button class="btn" id="resetBtn">Reset</button>
+        </div>
+        <div class="note"><strong>N = N₀ e<sup>−λt</sup></strong> where λ = ln2 / T½</div>
+      </div>
+    </aside>
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-body">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <strong>Decay Simulation</strong>
+            <span id="timeLabel" style="color:var(--muted);font-size:13px">t = 0.0 s</span>
+          </div>
+          <canvas id="canvas" width="700" height="360"></canvas>
+        </div>
+      </div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head">Results</div>
+        <div class="panel-body">
+          <div class="results">
+            <div class="result"><span>Remaining N</span><strong id="rN">—</strong></div>
+            <div class="result"><span>Decayed</span><strong id="rD">—</strong></div>
+            <div class="result"><span>Activity A</span><strong id="rA">—</strong></div>
+            <div class="result"><span>λ (decay const)</span><strong id="rL">—</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">Formulas</div>
+        <div class="panel-body formulas">
+          <div><code>N = N₀ e<sup>−λt</sup></code></div>
+          <div><code>λ = ln(2) / T½</code></div>
+          <div><code>A = λN</code> (activity)</div>
+          <div>After 1 half-life → 50% left; after 2 → 25%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let playing = false, t = 0, lastTs = 0;
+  let nuclei = [];
+
+  const tHalf = document.getElementById('tHalf');
+  const tHalfNum = document.getElementById('tHalfNum');
+  const n0 = document.getElementById('n0');
+  const n0Num = document.getElementById('n0Num');
+  const playBtn = document.getElementById('playBtn');
+  const timeLabel = document.getElementById('timeLabel');
+
+  function sync(range, num, label, unit) {
+    range.addEventListener('input', () => { num.value = range.value; label.textContent = range.value + unit; reset(); });
+    num.addEventListener('input', () => {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.max(+range.min, Math.min(+range.max, v));
+      range.value = num.value = v;
+      label.textContent = v + unit;
+      reset();
+    });
+  }
+  sync(tHalf, tHalfNum, document.getElementById('tHalfVal'), ' s');
+  sync(n0, n0Num, document.getElementById('n0Val'), '');
+
+  function initNuclei() {
+    const N = parseInt(n0.value);
+    nuclei = [];
+    for (let i = 0; i < N; i++) {
+      nuclei.push({
+        x: 40 + Math.random() * 620,
+        y: 40 + Math.random() * 280,
+        alive: true,
+        decayTime: -Math.log(Math.random()) * (parseFloat(tHalf.value) / Math.LN2)
+      });
+    }
+  }
+
+  function reset() {
+    playing = false;
+    t = 0;
+    playBtn.textContent = 'Play';
+    timeLabel.textContent = 't = 0.0 s';
+    initNuclei();
+    update();
+  }
+
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    playBtn.textContent = playing ? 'Pause' : 'Play';
+    if (playing) { lastTs = 0; requestAnimationFrame(loop); }
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    tHalf.value = tHalfNum.value = 8;
+    n0.value = n0Num.value = 200;
+    document.getElementById('tHalfVal').textContent = '8 s';
+    document.getElementById('n0Val').textContent = '200';
+    reset();
+  });
+
+  function loop(ts) {
+    if (!playing) return;
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min((ts - lastTs) / 1000, 0.05);
+    lastTs = ts;
+    t += dt;
+    timeLabel.textContent = 't = ' + t.toFixed(1) + ' s';
+
+    nuclei.forEach(n => {
+      if (n.alive && t >= n.decayTime) n.alive = false;
+    });
+    update();
+    if (playing) requestAnimationFrame(loop);
+  }
+
+  function update() {
+    const T = parseFloat(tHalf.value);
+    const lambda = Math.LN2 / T;
+    const alive = nuclei.filter(n => n.alive).length;
+    const N0 = nuclei.length;
+    const A = lambda * alive;
+
+    document.getElementById('rN').textContent = alive;
+    document.getElementById('rD').textContent = N0 - alive;
+    document.getElementById('rA').textContent = A.toFixed(1) + ' /s';
+    document.getElementById('rL').textContent = lambda.toFixed(3) + ' /s';
+    draw(alive, N0);
+  }
+
+  function draw(alive, N0) {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(300, rect.width);
+    const H = Math.max(280, rect.height || 360);
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    ctx.fillStyle = '#0a1220';
+    ctx.fillRect(0, 0, W, H);
+
+    // Nuclei dots
+    nuclei.forEach(n => {
+      const sx = (n.x / 700) * W;
+      const sy = (n.y / 360) * H;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = n.alive ? '#63e6ff' : '#334155';
+      ctx.fill();
+    });
+
+    // Decay curve overlay (bottom right)
+    const graphW = 160, graphH = 80;
+    const gx = W - graphW - 16, gy = H - graphH - 16;
+    ctx.fillStyle = '#0c1426cc';
+    ctx.fillRect(gx - 8, gy - 8, graphW + 16, graphH + 16);
+    ctx.strokeStyle = '#7cf0bd';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const T = parseFloat(tHalf.value);
+    for (let i = 0; i <= 50; i++) {
+      const tt = (i / 50) * T * 4;
+      const nn = Math.exp(-Math.LN2 * tt / T);
+      const px = gx + (i / 50) * graphW;
+      const py = gy + graphH - nn * graphH;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // Current t marker
+    const frac = Math.min(t / (T * 4), 1);
+    const cx = gx + frac * graphW;
+    const cy = gy + graphH - Math.exp(-Math.LN2 * t / T) * graphH;
+    ctx.fillStyle = '#ff8e9c';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  initNuclei();
+  update();
+  window.addEventListener('resize', update);
+})();
+</script>
+</body>
+</html>
