@@ -1,0 +1,403 @@
+/* Midnight Quantum — Vinit Signature UI
+   Four distinct preserved themes + Liquid Glass + ambient effects.
+   Homepage stylesheet only. No simulation physics changes. */
+
+body[data-theme] {
+  --mq-bg: #050817;
+  --mq-panel: rgba(16, 25, 48, .70);
+  --mq-border: rgba(135, 203, 255, .25);
+  --mq-text: #edf6ff;
+  --mq-muted: #9db2d0;
+  --mq-a: #5de7ff;
+  --mq-b: #9a7cff;
+  --mq-glow: rgba(47, 173, 255, .15);
+  color: var(--mq-text);
+  background:
+    radial-gradient(ellipse at 12% 0%, var(--mq-glow), transparent 42%),
+    radial-gradient(ellipse at 88% 18%, rgba(145, 77, 255, .10), transparent 38%),
+    var(--mq-bg);
+  background-attachment: fixed;
+}
+
+body[data-theme]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .24;
+  background-image:
+    radial-gradient(1px 1px at 12% 24%, white 50%, transparent 100%),
+    radial-gradient(1px 1px at 76% 17%, var(--mq-a) 50%, transparent 100%),
+    radial-gradient(1px 1px at 54% 72%, white 50%, transparent 100%),
+    radial-gradient(1px 1px at 89% 83%, var(--mq-b) 50%, transparent 100%);
+  background-size: 270px 230px, 330px 290px, 390px 310px, 300px 260px;
+}
+
+body[data-theme] > * {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-theme] .hero,
+body[data-theme] .stat,
+body[data-theme] .card,
+body[data-theme] .panel,
+body[data-theme] #filters,
+body[data-theme] #empty,
+body[data-theme] .nav-wrap {
+  color: var(--mq-text);
+  background-color: var(--mq-panel);
+  border: 1px solid var(--mq-border);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09),
+              0 12px 36px rgba(0,0,0,.16);
+}
+
+body[data-theme] .hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  padding: clamp(22px, 4vw, 48px);
+}
+
+body[data-theme] .hero::after {
+  content: "";
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  right: -90px;
+  top: -110px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--mq-glow), transparent 70%);
+}
+
+body[data-theme] .card {
+  border-radius: 20px;
+  transition: transform .22s ease, border-color .22s ease,
+              box-shadow .22s ease;
+}
+
+body[data-theme] .card:hover {
+  transform: translateY(-4px);
+  border-color: var(--mq-a);
+  box-shadow: 0 0 24px var(--mq-glow),
+              inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+body[data-theme] a {
+  color: var(--mq-a);
+}
+
+body[data-theme] h1,
+body[data-theme] h2,
+body[data-theme] h3 {
+  color: var(--mq-text);
+  letter-spacing: -.025em;
+}
+
+body[data-theme] p,
+body[data-theme] .card-meta {
+  color: var(--mq-muted);
+}
+
+body[data-theme] button,
+body[data-theme] input,
+body[data-theme] select {
+  border-color: var(--mq-border);
+  border-radius: 12px;
+}
+
+body[data-theme] :focus-visible {
+  outline: 2px solid var(--mq-a);
+  outline-offset: 3px;
+}
+
+/* 1. SPACE DATA CENTER — modular command deck */
+body[data-theme="control-room"] {
+  --mq-bg: #050b1b;
+  --mq-panel: rgba(12, 26, 49, .78);
+  --mq-a: #55eaff;
+  --mq-b: #8d7bff;
+  --mq-glow: rgba(38, 202, 255, .18);
+}
+
+body[data-theme="control-room"] .hero {
+  border-radius: 12px 28px 12px 28px;
+  border-top: 2px solid var(--mq-a);
+}
+
+body[data-theme="control-room"] .stat {
+  border-radius: 14px;
+}
+
+body[data-theme="control-room"] .grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+}
+
+body[data-theme="control-room"] .grid > .card {
+  grid-column: span 4;
+  border-radius: 14px 22px 14px 22px;
+}
+
+body[data-theme="control-room"] .grid > .card:nth-child(5n + 1) {
+  grid-column: span 6;
+}
+
+body[data-theme="control-room"] .grid > .card:nth-child(5n + 2) {
+  grid-column: span 6;
+}
+
+/* 2. STAR MAP — spatial constellation network */
+body[data-theme="constellation"] {
+  --mq-bg: #050611;
+  --mq-panel: rgba(13, 17, 37, .72);
+  --mq-a: #6cecff;
+  --mq-b: #f2cc7c;
+  --mq-glow: rgba(94, 114, 255, .17);
+}
+
+body[data-theme="constellation"] .hero {
+  border-radius: 50px 18px 50px 18px;
+  text-align: center;
+}
+
+body[data-theme="constellation"] .grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+body[data-theme="constellation"] .grid > .card {
+  position: relative;
+  overflow: visible;
+  border-radius: 50% 50% 24px 24px / 22% 22% 24px 24px;
+  text-align: center;
+}
+
+body[data-theme="constellation"] .grid > .card::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mq-a);
+  box-shadow: 0 0 15px var(--mq-a);
+}
+
+body[data-theme="constellation"] .grid > .card:nth-child(3n + 2) {
+  transform: translateY(18px);
+}
+
+body[data-theme="constellation"] .grid > .card:hover {
+  transform: translateY(-3px);
+  border-color: var(--mq-b);
+}
+
+/* 3. HOLOGRAPHIC CORE — layered holographic workspace */
+body[data-theme="holographic"] {
+  --mq-bg: #09051a;
+  --mq-panel: rgba(28, 15, 48, .60);
+  --mq-a: #65f0ff;
+  --mq-b: #e18bff;
+  --mq-glow: rgba(190, 74, 255, .20);
+}
+
+body[data-theme="holographic"] .hero {
+  border-radius: 32px;
+  border-color: rgba(216, 157, 255, .42);
+  box-shadow: 0 0 42px rgba(149, 75, 255, .12),
+              inset 0 0 32px rgba(97, 225, 255, .05);
+}
+
+body[data-theme="holographic"] .hero::before {
+  content: "";
+  display: block;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%,
+    #fff 0%, #9df7ff 9%, #7d65ff 34%,
+    #d45bff 53%, rgba(91, 38, 190, .08) 72%);
+  box-shadow: 0 0 28px rgba(91, 220, 255, .38),
+              0 0 65px rgba(190, 74, 255, .23);
+  animation: mq-core-pulse 5s ease-in-out infinite;
+}
+
+body[data-theme="holographic"] .grid > .card {
+  border-radius: 24px;
+  background-image: linear-gradient(135deg,
+    rgba(255,255,255,.07), transparent 48%,
+    rgba(175,91,255,.07));
+}
+
+body[data-theme="holographic"] .grid > .card:nth-child(3n + 2) {
+  transform: translateY(12px);
+}
+
+/* 4. HACKER TERMINAL — operational command interface */
+body[data-theme="terminal"] {
+  --mq-bg: #030906;
+  --mq-panel: rgba(4, 20, 13, .88);
+  --mq-border: rgba(91, 255, 155, .25);
+  --mq-text: #d7ffe5;
+  --mq-muted: #83b99a;
+  --mq-a: #65ff9a;
+  --mq-b: #ff647d;
+  --mq-glow: rgba(45, 255, 124, .10);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+body[data-theme="terminal"] .hero {
+  border-radius: 8px;
+  border-left: 3px solid var(--mq-a);
+}
+
+body[data-theme="terminal"] .hero h1::before {
+  content: "> ";
+  color: var(--mq-a);
+}
+
+body[data-theme="terminal"] .grid {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+body[data-theme="terminal"] .grid > .card {
+  width: auto;
+  border-radius: 7px;
+  padding: 16px 20px;
+  background-image: linear-gradient(90deg,
+    rgba(50,255,130,.055), transparent 75%);
+}
+
+body[data-theme="terminal"] .grid > .card:hover {
+  transform: translateX(3px);
+  box-shadow: inset 3px 0 var(--mq-a);
+}
+
+body[data-theme="terminal"] .badge {
+  border-radius: 4px;
+}
+
+/* Ambient signature animation */
+@keyframes mq-core-pulse {
+  0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+  50% { transform: scale(1.045); filter: hue-rotate(12deg); }
+}
+
+/* Tablet and mobile: avoid narrow cards and horizontal overflow */
+@media (max-width: 760px) {
+  body[data-theme="control-room"] .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-theme="control-room"] .grid > .card,
+  body[data-theme="control-room"] .grid > .card:nth-child(5n + 1),
+  body[data-theme="control-room"] .grid > .card:nth-child(5n + 2) {
+    grid-column: span 1;
+  }
+
+  body[data-theme="constellation"] .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  body[data-theme="constellation"] .grid > .card:nth-child(3n + 2),
+  body[data-theme="holographic"] .grid > .card:nth-child(3n + 2) {
+    transform: none;
+  }
+}
+
+@media (max-width: 460px) {
+  body[data-theme="control-room"] .grid,
+  body[data-theme="constellation"] .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-theme] .hero {
+    padding: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme] *,
+  body[data-theme] *::before,
+  body[data-theme] *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+
+/* Theme picker and responsive navigation */
+.nav-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+}
+.theme-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.theme-picker label {
+  color: #a9bfd8;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.theme-picker select {
+  max-width: 210px;
+  border: 1px solid #3b5575;
+  border-radius: 10px;
+  padding: 9px 30px 9px 10px;
+  background: #101c30;
+  color: #edf6ff;
+}
+.nav-toggle {
+  display: none;
+  border: 1px solid #3b5575;
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: #101c30;
+  color: #edf6ff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+@media (max-width: 760px) {
+  .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
+  .nav-tools {
+    display: none;
+    flex: 0 0 100%;
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+    padding: 12px 0 8px;
+  }
+  .nav-tools.is-open { display: flex; }
+  .nav-tools .nav-links {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .theme-picker {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .theme-picker select { width: 100%; max-width: none; }
+}
