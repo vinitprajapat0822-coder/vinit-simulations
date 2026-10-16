@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b16">
+<title>Bohr Atomic Model Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--orange:#fbbf24;--line:#273451;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% 0%,#1a1040 0,transparent 40%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+button,input,select{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:#080b16f2;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:64px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:20px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.5px}.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:28px 0 18px}.eyebrow{display:inline-flex;border:1px solid #63e6ff40;background:#63e6ff0d;border-radius:99px;padding:5px 12px;color:var(--cyan);font-size:11px;font-weight:750}.hero h1{font-size:clamp(26px,5vw,44px);margin:12px 0 8px}.grad{background:linear-gradient(100deg,var(--cyan),#c4b5fd 60%,var(--violet));color:transparent;background-clip:text}.hero p{color:var(--muted);max-width:700px;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,330px) 1fr;gap:16px;padding-bottom:28px}.panel{background:linear-gradient(145deg,#111a2ef5,#0d1324f8);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:14px 16px;border-bottom:1px solid var(--line)}.panel-head h2,.panel-head h3{margin:0;font-size:15px}.panel-body{padding:15px}
+.field{margin-bottom:13px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 70px;gap:8px}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number],select{width:100%;min-height:36px;padding:6px 8px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:9px}
+.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px;cursor:pointer;font-weight:750;font-size:13px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.actions{display:flex;gap:8px;margin-top:10px}.actions .btn{flex:1}
+.note{padding:9px;border-radius:9px;background:#63e6ff0a;border:1px solid #63e6ff22;color:var(--muted);font-size:12px;margin-top:10px}
+canvas{display:block;width:100%;height:400px;border-radius:12px;background:#080e1c;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:11px;padding:11px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:15px}
+.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>BOHR MODEL</small></span></a>
+    <a href="../index.html">← Back to Hub</a>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">MODERN PHYSICS · ATOMIC STRUCTURE</div>
+    <h1>Bohr <span class="grad">Atomic Model</span></h1>
+    <p>Hydrogen energy levels, electron transitions, and spectral lines. Change n_initial and n_final to see absorption/emission.</p>
+  </section>
+  <div class="layout">
+    <aside class="panel">
+      <div class="panel-head"><h2>Controls</h2></div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Initial Level (nᵢ) <span class="hint" id="niVal">3</span></label>
+          <div class="inputrow">
+            <input type="range" id="ni" min="1" max="6" step="1" value="3">
+            <input type="number" id="niNum" min="1" max="6" value="3">
+          </div>
+        </div>
+        <div class="field">
+          <label>Final Level (nƒ) <span class="hint" id="nfVal">2</span></label>
+          <div class="inputrow">
+            <input type="range" id="nf" min="1" max="6" step="1" value="2">
+            <input type="number" id="nfNum" min="1" max="6" value="2">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="jumpBtn">Show Transition</button>
+          <button class="btn" id="resetBtn">Reset</button>
+        </div>
+        <div class="note"><strong>Eₙ = −13.6 / n² eV</strong>. Photon emitted when electron jumps to lower level.</div>
+      </div>
+    </aside>
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <div style="padding:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <strong>Energy Levels + Orbit</strong>
+            <span id="transLabel" style="font-size:13px;color:var(--muted)">n=3 → n=2</span>
+          </div>
+          <canvas id="canvas" width="800" height="400"></canvas>
+        </div>
+      </div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head"><h3>Results</h3></div>
+        <div class="panel-body">
+          <div class="results">
+            <div class="result"><span>Eᵢ (eV)</span><strong id="rEi">—</strong></div>
+            <div class="result"><span>Eƒ (eV)</span><strong id="rEf">—</strong></div>
+            <div class="result"><span>ΔE (eV)</span><strong id="rDE">—</strong></div>
+            <div class="result"><span>Wavelength</span><strong id="rL">—</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Key Formulas</h3></div>
+        <div class="panel-body formulas">
+          <div><code>Eₙ = −13.6 / n² eV</code></div>
+          <div><code>ΔE = 13.6 (1/nƒ² − 1/nᵢ²)</code></div>
+          <div><code>λ = hc / ΔE</code> (hc ≈ 1240 eV·nm)</div>
+          <div>Lyman (→ n=1), Balmer (→ n=2), Paschen (→ n=3)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
+
+  let electronAngle = 0;
+  let animId = null;
+
+  const ni = $('ni'), niNum = $('niNum');
+  const nf = $('nf'), nfNum = $('nfNum');
+
+  function sync(range, num, label) {
+    range.addEventListener('input', () => {
+      num.value = range.value;
+      label.textContent = range.value;
+      update();
+    });
+    num.addEventListener('input', () => {
+      let v = parseInt(num.value);
+      if (isNaN(v)) return;
+      v = Math.max(+range.min, Math.min(+range.max, v));
+      range.value = num.value = v;
+      label.textContent = v;
+      update();
+    });
+  }
+  sync(ni, niNum, $('niVal'));
+  sync(nf, nfNum, $('nfVal'));
+
+  $('resetBtn').addEventListener('click', () => {
+    ni.value = niNum.value = 3;
+    nf.value = nfNum.value = 2;
+    $('niVal').textContent = '3';
+    $('nfVal').textContent = '2';
+    update();
+  });
+
+  $('jumpBtn').addEventListener('click', () => {
+    update();
+  });
+
+  function energy(n) { return -13.6 / (n * n); }
+
+  function calc() {
+    const n1 = parseInt(ni.value);
+    const n2 = parseInt(nf.value);
+    const Ei = energy(n1);
+    const Ef = energy(n2);
+    const dE = Math.abs(Ei - Ef);
+    const lambda = dE > 0 ? 1240 / dE : 0; // nm
+    const emission = n1 > n2;
+    return { n1, n2, Ei, Ef, dE, lambda, emission };
+  }
+
+  function updateResults(c) {
+    $('rEi').textContent = c.Ei.toFixed(2) + ' eV';
+    $('rEf').textContent = c.Ef.toFixed(2) + ' eV';
+    $('rDE').textContent = c.dE.toFixed(2) + ' eV';
+    $('rL').textContent = c.lambda > 0 ? c.lambda.toFixed(1) + ' nm' : '—';
+    $('transLabel').textContent = 'n=' + c.n1 + ' → n=' + c.n2 + (c.emission ? ' (emission)' : ' (absorption)');
+  }
+
+  function wavelengthColor(nm) {
+    if (nm < 400) return '#a78bfa';
+    if (nm < 450) return '#6366f1';
+    if (nm < 500) return '#22d3ee';
+    if (nm < 570) return '#4ade80';
+    if (nm < 590) return '#facc15';
+    if (nm < 620) return '#fb923c';
+    if (nm < 750) return '#f87171';
+    return '#94a3b8';
+  }
+
+  function draw(c) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(1, rect.width);
+    const H = Math.max(1, rect.height || 400);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    ctx.fillStyle = '#070f1c';
+    ctx.fillRect(0, 0, W, H);
+
+    const cx = W * 0.38;
+    const cy = H / 2;
+
+    // Nucleus
+    ctx.beginPath();
+    ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fill();
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 9px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('H', cx, cy + 3);
+
+    // Orbits n=1 to 6
+    const maxR = Math.min(W * 0.32, H * 0.42);
+    for (let n = 1; n <= 6; n++) {
+      const r = (n / 6) * maxR;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = n === c.n1 || n === c.n2 ? '#63e6ff66' : '#1e293b';
+      ctx.lineWidth = n === c.n1 || n === c.n2 ? 2 : 1;
+      ctx.stroke();
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText('n=' + n, cx + r + 6, cy - 4);
+    }
+
+    // Electron on initial orbit
+    const rE = (c.n1 / 6) * maxR;
+    const ex = cx + rE * Math.cos(electronAngle);
+    const ey = cy + rE * Math.sin(electronAngle);
+    ctx.beginPath();
+    ctx.arc(ex, ey, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#63e6ff';
+    ctx.fill();
+
+    // Transition arrow
+    if (c.n1 !== c.n2) {
+      const r1 = (c.n1 / 6) * maxR;
+      const r2 = (c.n2 / 6) * maxR;
+      const col = wavelengthColor(c.lambda);
+      ctx.strokeStyle = col;
+      ctx.fillStyle = col;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(cx + r1, cy);
+      ctx.lineTo(cx + r2, cy);
+      ctx.stroke();
+      // arrow head
+      const dir = c.n1 > c.n2 ? -1 : 1;
+      const tip = cx + r2;
+      ctx.beginPath();
+      ctx.moveTo(tip, cy);
+      ctx.lineTo(tip - dir * 8, cy - 5);
+      ctx.lineTo(tip - dir * 8, cy + 5);
+      ctx.fill();
+
+      // Photon wavy
+      if (c.emission) {
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < 40; i++) {
+          const px = cx + r2 + 20 + i * 3;
+          const py = cy - 20 + Math.sin(i * 0.5) * 6;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.font = '11px system-ui';
+        ctx.fillText('γ  ' + c.lambda.toFixed(0) + ' nm', cx + r2 + 30, cy - 32);
+      }
+    }
+
+    // Energy level diagram on right
+    const lx = W * 0.72;
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 12px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('Energy Levels', lx, 28);
+
+    for (let n = 1; n <= 6; n++) {
+      const E = energy(n);
+      const y = 50 + (1 - (E / -13.6)) * (H - 90);
+      ctx.strokeStyle = n === c.n1 || n === c.n2 ? '#63e6ff' : '#334155';
+      ctx.lineWidth = n === c.n1 || n === c.n2 ? 2.5 : 1;
+      ctx.beginPath();
+      ctx.moveTo(lx - 50, y);
+      ctx.lineTo(lx + 50, y);
+      ctx.stroke();
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText('n=' + n + '  ' + E.toFixed(1) + ' eV', lx + 56, y + 4);
+    }
+  }
+
+  function loop() {
+    electronAngle += 0.025;
+    const c = calc();
+    updateResults(c);
+    draw(c);
+    animId = requestAnimationFrame(loop);
+  }
+
+  function update() {
+    // redraw happens in loop
+  }
+
+  loop();
+})();
+</script>
+</body>
+</html>
