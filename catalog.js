@@ -117,8 +117,10 @@ const CATALOG = [
   { id: "viscosity", title: "Viscosity & Stokes' Law", desc: "Terminal velocity and viscous force.", category: "fluids", tags: "viscosity stokes terminal velocity", status: "coming-soon", icon: "🍯" },
 
   // MODERN (2)
-  { id: "photoelectric", title: "Photoelectric Effect", desc: "Einstein's equation, work function and stopping potential.", category: "modern", tags: "photoelectric einstein work function", status: "coming-soon", icon: "☀️" },
-  { id: "atomic-models", title: "Atomic Models", desc: "Bohr model energy levels and spectral lines (basic).", category: "modern", tags: "bohr model energy levels", status: "coming-soon", icon: "⚛️" },
+  { id: "photoelectric", title: "Photoelectric Effect", desc: "Einstein equation, threshold frequency, stopping potential and intensity effects.", category: "modern", tags: "photoelectric einstein quantum", status: "live", url: "projects/photoelectric.html", icon: "💡" },
+  { id: "atomic-models", title: "Bohr Atomic Model", desc: "Hydrogen energy levels, electron transitions and spectral lines.", category: "modern", tags: "bohr atom spectrum energy levels", status: "live", url: "projects/bohr-model.html", icon: "⚛️" },
+{ id: "debroglie", title: "de Broglie Wavelength", desc: "Matter waves: λ = h/p. Explore wave nature of particles.", category: "modern", tags: "de broglie wavelength dual nature", status: "live", url: "projects/debroglie.html", icon: "🌊" },
+  { id: "radioactivity", title: "Radioactivity & Half-life", desc: "Exponential decay, half-life, activity and decay constant.", category: "modern", tags: "radioactivity half-life nuclear decay", status: "live", url: "projects/radioactivity.html", icon: "☢️" },,
 
   // TOOLS (4)
   { id: "graphing-tool", title: "Graphing Calculator", desc: "Plot functions and experimental data points.", category: "tools", tags: "graph plot function data", status: "coming-soon", icon: "📊" },
