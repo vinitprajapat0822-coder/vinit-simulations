@@ -1,264 +1,314 @@
-/* Vinit Simulation Hub — Distinct UI Themes
-   Matching: Control Room (space data), Constellation (star map),
-   Holographic (neon orb panels), Terminal (green hacker) */
+/* ============================================================
+   Vinit Simulation Hub — Liquid Glass Design System
+   4 Visual Themes × 3 Appearance Modes × Ambient Light
+   ============================================================ */
 
-/* ========== BASE ========== */
+/* ---------- Base tokens (overridden by mode + theme) ---------- */
 body[data-theme] {
-  color: var(--mq-text);
-  background: var(--mq-bg);
+  --lg-blur: 24px;
+  --lg-blur-sm: 14px;
+  --lg-radius: 22px;
+  --lg-radius-sm: 14px;
+  --lg-border: rgba(255, 255, 255, 0.14);
+  --lg-border-soft: rgba(255, 255, 255, 0.08);
+  --lg-highlight: rgba(255, 255, 255, 0.18);
+  --lg-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+  --lg-inset: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --lg-text: #f2f6ff;
+  --lg-muted: #a8b6d0;
+  --lg-accent: #7dd3fc;
+  --lg-accent-2: #c4b5fd;
+  --lg-bg: #070b16;
+  --lg-panel: rgba(16, 24, 48, 0.48);
+  --lg-panel-solid: rgba(12, 18, 36, 0.72);
+  --lg-glow: rgba(125, 211, 252, 0.18);
+  color: var(--lg-text);
+  background: var(--lg-bg);
   background-attachment: fixed;
-  transition: background .35s ease, color .25s ease;
+  transition: background 0.4s ease, color 0.3s ease;
 }
+
+/* Ambient mesh layer */
+body[data-theme]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 10%, var(--lg-glow), transparent 55%),
+    radial-gradient(ellipse 50% 45% at 85% 20%, color-mix(in srgb, var(--lg-accent-2) 35%, transparent), transparent 50%),
+    radial-gradient(ellipse 45% 40% at 50% 90%, color-mix(in srgb, var(--lg-accent) 20%, transparent), transparent 55%);
+}
+body[data-theme][data-ambient="on"]::before {
+  opacity: 1;
+  animation: ambientDrift 18s ease-in-out infinite alternate;
+}
+@keyframes ambientDrift {
+  0% { filter: hue-rotate(0deg) brightness(1); transform: scale(1); }
+  100% { filter: hue-rotate(18deg) brightness(1.08); transform: scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme][data-ambient="on"]::before { animation: none; }
+}
+
+body[data-theme] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Appearance modes ---------- */
+body[data-appearance="daylight"] {
+  --lg-bg: linear-gradient(165deg, #eef3fb 0%, #e4ebf7 40%, #dce6f4 100%);
+  --lg-panel: rgba(255, 255, 255, 0.55);
+  --lg-panel-solid: rgba(255, 255, 255, 0.72);
+  --lg-border: rgba(255, 255, 255, 0.65);
+  --lg-border-soft: rgba(0, 0, 0, 0.06);
+  --lg-highlight: rgba(255, 255, 255, 0.8);
+  --lg-text: #0f172a;
+  --lg-muted: #475569;
+  --lg-shadow: 0 10px 36px rgba(15, 23, 42, 0.08);
+  --lg-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --lg-glow: rgba(56, 189, 248, 0.2);
+  color-scheme: light;
+}
+body[data-appearance="evening"] {
+  --lg-bg: linear-gradient(165deg, #1a2238 0%, #141c30 50%, #10182a 100%);
+  --lg-panel: rgba(30, 41, 66, 0.52);
+  --lg-panel-solid: rgba(22, 32, 54, 0.75);
+  --lg-border: rgba(255, 255, 255, 0.12);
+  --lg-text: #e8eefc;
+  --lg-muted: #9aabc8;
+  --lg-glow: rgba(129, 140, 248, 0.2);
+  color-scheme: dark;
+}
+body[data-appearance="night"] {
+  --lg-bg: #05070f;
+  --lg-panel: rgba(12, 16, 32, 0.55);
+  --lg-panel-solid: rgba(8, 12, 24, 0.78);
+  --lg-border: rgba(255, 255, 255, 0.08);
+  --lg-text: #e6edf8;
+  --lg-muted: #8b9bb5;
+  --lg-glow: rgba(56, 189, 248, 0.12);
+  color-scheme: dark;
+}
+
+/* ---------- Theme accent overrides ---------- */
+body[data-theme="control-room"] {
+  --lg-accent: #38bdf8;
+  --lg-accent-2: #818cf8;
+  --lg-glow: rgba(56, 189, 248, 0.22);
+}
+body[data-theme="constellation"] {
+  --lg-accent: #7dd3fc;
+  --lg-accent-2: #f0c674;
+  --lg-glow: rgba(125, 211, 252, 0.2);
+}
+body[data-theme="holographic"] {
+  --lg-accent: #c084fc;
+  --lg-accent-2: #67e8f9;
+  --lg-glow: rgba(192, 132, 252, 0.28);
+}
+body[data-theme="terminal"] {
+  --lg-accent: #4ade80;
+  --lg-accent-2: #f87171;
+  --lg-glow: rgba(74, 222, 128, 0.16);
+  font-family: ui-monospace, SF Mono, Menlo, Consolas, monospace;
+}
+
+/* ---------- Liquid glass surfaces ---------- */
 body[data-theme] .nav-wrap {
-  background: var(--mq-nav) !important;
-  border-bottom: 1px solid var(--mq-border) !important;
-  backdrop-filter: blur(16px);
+  background: var(--lg-panel) !important;
+  border-bottom: 1px solid var(--lg-border) !important;
+  backdrop-filter: blur(var(--lg-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(160%);
+  box-shadow: var(--lg-inset);
 }
 body[data-theme] .hero,
 body[data-theme] .stat,
 body[data-theme] .card,
 body[data-theme] .panel,
 body[data-theme] #filters,
-body[data-theme] #empty {
-  background: var(--mq-panel) !important;
-  border: 1px solid var(--mq-border) !important;
-  color: var(--mq-text) !important;
-  box-shadow: var(--mq-shadow);
+body[data-theme] #empty,
+body[data-theme] .theme-picker,
+body[data-theme] .appearance-bar {
+  background: var(--lg-panel) !important;
+  border: 1px solid var(--lg-border) !important;
+  color: var(--lg-text) !important;
+  border-radius: var(--lg-radius);
+  backdrop-filter: blur(var(--lg-blur)) saturate(155%);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(155%);
+  box-shadow: var(--lg-shadow), var(--lg-inset);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.22s ease;
+}
+body[data-theme] .card {
+  border-radius: var(--lg-radius-sm);
 }
 body[data-theme] .card:hover {
-  border-color: var(--mq-a) !important;
-  box-shadow: 0 0 28px var(--mq-glow);
+  border-color: color-mix(in srgb, var(--lg-accent) 55%, var(--lg-border)) !important;
+  box-shadow: 0 0 28px var(--lg-glow), var(--lg-inset);
   transform: translateY(-3px);
+}
+body[data-theme] .hero {
+  border-radius: 26px;
+  overflow: hidden;
 }
 body[data-theme] a,
 body[data-theme] .brand,
-body[data-theme] .gradient-text,
 body[data-theme] .eyebrow {
-  color: var(--mq-a) !important;
+  color: var(--lg-accent) !important;
 }
-body[data-theme] h1, body[data-theme] h2, body[data-theme] h3 {
-  color: var(--mq-text) !important;
+body[data-theme] h1,
+body[data-theme] h2,
+body[data-theme] h3 {
+  color: var(--lg-text) !important;
 }
-body[data-theme] p, body[data-theme] .muted, body[data-theme] .card-meta {
-  color: var(--mq-muted) !important;
+body[data-theme] p,
+body[data-theme] .muted,
+body[data-theme] .card-meta {
+  color: var(--lg-muted) !important;
 }
 body[data-theme] button.filter,
 body[data-theme] select,
 body[data-theme] input {
-  background: var(--mq-input) !important;
-  border: 1px solid var(--mq-border) !important;
-  color: var(--mq-text) !important;
+  background: var(--lg-panel-solid) !important;
+  border: 1px solid var(--lg-border) !important;
+  color: var(--lg-text) !important;
+  border-radius: 12px;
+  backdrop-filter: blur(var(--lg-blur-sm));
 }
 body[data-theme] button.filter[aria-pressed="true"] {
-  background: var(--mq-a) !important;
+  background: var(--lg-accent) !important;
   color: #061018 !important;
-  border-color: var(--mq-a) !important;
+  border-color: var(--lg-accent) !important;
 }
 body[data-theme] .badge.live {
-  background: color-mix(in srgb, var(--mq-a) 25%, transparent);
-  color: var(--mq-a);
-  border-color: var(--mq-a);
+  background: color-mix(in srgb, var(--lg-accent) 22%, transparent);
+  color: var(--lg-accent);
+  border: 1px solid color-mix(in srgb, var(--lg-accent) 40%, transparent);
 }
 
-/* ========== 1. CONTROL ROOM — Space Data Center ========== */
-body[data-theme="control-room"] {
-  --mq-bg: radial-gradient(ellipse at 20% 0%, #0a1a3a 0%, #050d1c 50%, #030810 100%);
-  --mq-nav: rgba(6, 14, 30, 0.92);
-  --mq-panel: rgba(10, 22, 48, 0.82);
-  --mq-border: rgba(80, 160, 255, 0.28);
-  --mq-text: #e8f1ff;
-  --mq-muted: #8eabcc;
-  --mq-a: #4db8ff;
-  --mq-b: #7b8cff;
-  --mq-glow: rgba(50, 140, 255, 0.22);
-  --mq-input: rgba(8, 18, 40, 0.9);
-  --mq-shadow: 0 8px 32px rgba(0, 20, 60, 0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+/* Daylight contrast fixes */
+body[data-appearance="daylight"] .badge.live {
+  background: color-mix(in srgb, var(--lg-accent) 18%, #fff);
+  color: #0369a1;
 }
-body[data-theme="control-room"] .hero {
-  border-radius: 16px;
-  border-top: 3px solid #4db8ff;
-  background:
-    linear-gradient(135deg, rgba(20,50,100,0.4), rgba(8,18,40,0.9)),
-    var(--mq-panel) !important;
-}
-body[data-theme="control-room"] .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px;
-}
-body[data-theme="control-room"] .card {
-  border-radius: 14px;
-  border-left: 3px solid #4db8ff;
-}
-body[data-theme="control-room"] .stat {
-  border-radius: 12px;
-  border-bottom: 2px solid #4db8ff44;
+body[data-appearance="daylight"] button.filter[aria-pressed="true"] {
+  color: #fff !important;
 }
 
-/* ========== 2. CONSTELLATION — Star Map ========== */
-body[data-theme="constellation"] {
-  --mq-bg: #03050f;
-  --mq-nav: rgba(5, 8, 20, 0.94);
-  --mq-panel: rgba(12, 16, 36, 0.75);
-  --mq-border: rgba(120, 160, 255, 0.2);
-  --mq-text: #eef2ff;
-  --mq-muted: #9aa8c8;
-  --mq-a: #7dd3fc;
-  --mq-b: #f0c674;
-  --mq-glow: rgba(100, 140, 255, 0.2);
-  --mq-input: rgba(10, 14, 30, 0.95);
-  --mq-shadow: 0 0 40px rgba(60, 80, 160, 0.15);
-}
-body[data-theme="constellation"] {
-  background:
-    radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 100%),
-    radial-gradient(1px 1px at 30% 60%, #7dd3fc 50%, transparent 100%),
-    radial-gradient(1px 1px at 70% 30%, #fff 50%, transparent 100%),
-    radial-gradient(1px 1px at 85% 75%, #f0c674 50%, transparent 100%),
-    radial-gradient(1px 1px at 50% 50%, #a5b4fc 50%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 15% 80%, #fff 50%, transparent 100%),
-    radial-gradient(1px 1px at 90% 15%, #7dd3fc 50%, transparent 100%),
-    #03050f !important;
-  background-size: 200px 180px, 280px 220px, 320px 260px, 240px 200px, 300px 240px, 180px 160px, 260px 210px, auto !important;
-}
-body[data-theme="constellation"] .hero {
-  border-radius: 40px 16px 40px 16px;
-  text-align: center;
-  background: rgba(12, 16, 40, 0.7) !important;
-  border: 1px solid rgba(125, 211, 252, 0.25) !important;
-}
+/* Theme-specific shapes */
 body[data-theme="constellation"] .card {
   border-radius: 50%;
   aspect-ratio: 1;
+  max-width: 170px;
+  margin: 0 auto;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  max-width: 180px;
-  margin: 0 auto;
-  background: radial-gradient(circle at 40% 35%, rgba(125,211,252,0.15), rgba(12,16,36,0.9)) !important;
-  border: 1px solid rgba(125, 211, 252, 0.35) !important;
 }
 body[data-theme="constellation"] .grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 28px;
+  gap: 22px;
   justify-content: center;
-  padding: 20px 0;
 }
-body[data-theme="constellation"] .card h3 {
-  font-size: 13px !important;
-}
-body[data-theme="constellation"] .card p {
-  display: none;
-}
-body[data-theme="constellation"] .stat {
-  border-radius: 999px;
-  text-align: center;
-}
+body[data-theme="constellation"] .card p { display: none; }
+body[data-theme="constellation"] .card h3 { font-size: 13px !important; }
 
-/* ========== 3. HOLOGRAPHIC — Neon Orb / Glass Panels ========== */
-body[data-theme="holographic"] {
-  --mq-bg: radial-gradient(ellipse at 50% 30%, #1a0a3a 0%, #0c0520 45%, #060312 100%);
-  --mq-nav: rgba(15, 8, 35, 0.9);
-  --mq-panel: rgba(30, 15, 55, 0.55);
-  --mq-border: rgba(200, 120, 255, 0.35);
-  --mq-text: #f3e8ff;
-  --mq-muted: #b8a0d4;
-  --mq-a: #c084fc;
-  --mq-b: #67e8f9;
-  --mq-glow: rgba(180, 80, 255, 0.3);
-  --mq-input: rgba(20, 10, 40, 0.85);
-  --mq-shadow: 0 0 40px rgba(160, 60, 255, 0.2), inset 0 0 20px rgba(180, 100, 255, 0.08);
+body[data-theme="control-room"] .card {
+  border-left: 3px solid var(--lg-accent);
+  border-radius: 14px;
 }
-body[data-theme="holographic"] .hero {
-  border-radius: 28px;
-  background:
-    linear-gradient(135deg, rgba(120,40,200,0.25), rgba(40,20,80,0.6)),
-    var(--mq-panel) !important;
-  border: 1px solid rgba(200, 140, 255, 0.4) !important;
-  box-shadow: 0 0 50px rgba(160, 60, 255, 0.2), inset 0 0 30px rgba(180, 100, 255, 0.1) !important;
-}
-body[data-theme="holographic"] .card {
-  border-radius: 20px;
-  background: rgba(30, 15, 55, 0.5) !important;
-  border: 1px solid rgba(180, 120, 255, 0.3) !important;
-  backdrop-filter: blur(20px) saturate(160%);
-  box-shadow: 0 8px 32px rgba(100, 40, 180, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
-}
-body[data-theme="holographic"] .card:hover {
-  border-color: #e879f9 !important;
-  box-shadow: 0 0 36px rgba(200, 80, 255, 0.35);
-}
-body[data-theme="holographic"] .stat {
-  border-radius: 16px;
-  border: 1px solid rgba(168, 85, 247, 0.3);
-}
-
-/* ========== 4. TERMINAL — Green Hacker ========== */
-body[data-theme="terminal"] {
-  --mq-bg: #020805;
-  --mq-nav: rgba(2, 12, 8, 0.95);
-  --mq-panel: rgba(4, 18, 12, 0.9);
-  --mq-border: rgba(60, 255, 130, 0.28);
-  --mq-text: #c8ffd8;
-  --mq-muted: #6a9e7c;
-  --mq-a: #3dff8a;
-  --mq-b: #ff5c7a;
-  --mq-glow: rgba(40, 255, 120, 0.15);
-  --mq-input: rgba(2, 14, 8, 0.95);
-  --mq-shadow: 0 0 20px rgba(0, 40, 20, 0.4);
-  font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace !important;
-}
-body[data-theme="terminal"] {
-  background:
-    linear-gradient(rgba(0, 255, 80, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 80, 0.03) 1px, transparent 1px),
-    #020805 !important;
-  background-size: 24px 24px, 24px 24px, auto !important;
-}
-body[data-theme="terminal"] .hero {
+body[data-theme="terminal"] .card,
+body[data-theme="terminal"] .hero,
+body[data-theme="terminal"] .stat {
   border-radius: 4px;
-  border: 1px solid #3dff8a55 !important;
-  background: rgba(4, 20, 12, 0.95) !important;
-  box-shadow: 0 0 0 1px #0a2a18, inset 0 0 30px rgba(0, 255, 100, 0.04) !important;
 }
 body[data-theme="terminal"] .hero h1::before {
   content: "> ";
-  color: #3dff8a;
+  color: var(--lg-accent);
 }
-body[data-theme="terminal"] .card {
-  border-radius: 2px;
-  border: 1px solid #2a5a3a !important;
-  background: rgba(4, 16, 10, 0.92) !important;
-  font-family: inherit;
-}
-body[data-theme="terminal"] .card:hover {
-  border-color: #3dff8a !important;
-  box-shadow: 0 0 16px rgba(61, 255, 138, 0.2);
-}
-body[data-theme="terminal"] .stat {
-  border-radius: 2px;
-  border: 1px solid #2a5a3a;
-}
-body[data-theme="terminal"] .badge.live {
-  background: rgba(61, 255, 138, 0.15);
-  color: #3dff8a;
-  border-color: #3dff8a;
-}
-body[data-theme="terminal"] button.filter[aria-pressed="true"] {
-  background: #3dff8a !important;
-  color: #020805 !important;
+body[data-theme="holographic"] .hero {
+  box-shadow: 0 0 48px var(--lg-glow), var(--lg-inset) !important;
 }
 
-/* Mobile */
-@media (max-width: 700px) {
-  body[data-theme="constellation"] .card {
-    max-width: 140px;
-    border-radius: 40%;
+/* ---------- Appearance control bar ---------- */
+.appearance-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 12px !important;
+  margin: 10px auto 0;
+  width: min(1140px, calc(100% - 28px));
+  border-radius: 999px !important;
+}
+.appearance-bar .seg {
+  display: inline-flex;
+  background: var(--lg-panel-solid);
+  border: 1px solid var(--lg-border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.appearance-bar .seg button {
+  border: none;
+  background: transparent;
+  color: var(--lg-muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.appearance-bar .seg button[aria-pressed="true"] {
+  background: var(--lg-accent);
+  color: #061018;
+}
+.appearance-bar .amb-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--lg-muted);
+  cursor: pointer;
+  user-select: none;
+}
+.appearance-bar .amb-toggle input {
+  accent-color: var(--lg-accent);
+  width: 16px;
+  height: 16px;
+}
+.appearance-bar label.lbl {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--lg-muted);
+  text-transform: uppercase;
+}
+
+/* Logo micro-interaction */
+.brand-icon {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.brand-icon.spin {
+  transform: rotate(360deg) scale(1.08);
+}
+
+@media (max-width: 640px) {
+  .appearance-bar {
+    justify-content: center;
+    border-radius: 18px !important;
   }
-  body[data-theme="constellation"] .grid {
-    gap: 16px;
+  body[data-theme="constellation"] .card {
+    max-width: 130px;
   }
 }
