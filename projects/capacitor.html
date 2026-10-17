@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<title>RC Charging Curve | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:rgba(255,255,255,.12);--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,rgba(99,102,241,.18),transparent 42%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.75);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{min-height:58px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center;font-weight:850}
+.logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 22px rgba(99,102,241,.35)}
+.brand small{display:block;font-size:10px;color:var(--muted)}.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:24px 0 14px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);background:rgba(99,230,255,.08);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:750}
+.hero h1{font-size:clamp(24px,4.5vw,38px);margin:10px 0 6px}.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin:0;max-width:680px}
+.layout{display:grid;grid-template-columns:minmax(260px,320px) 1fr;gap:14px;padding-bottom:28px}@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(18px);overflow:hidden}
+.panel-head{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:750}.panel-body{padding:14px}
+.field{margin-bottom:12px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.hint{color:var(--muted);font-size:11px}
+input[type=range]{width:100%;accent-color:var(--cyan)}.inputrow{display:grid;grid-template-columns:1fr 70px;gap:8px}
+input[type=number],select{width:100%;padding:7px;border-radius:10px;border:1px solid #31415f;background:#0a1220;color:var(--text)}
+.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:750;cursor:pointer}.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:8px}.actions .btn{flex:1}
+canvas{display:block;width:100%;height:360px;border-radius:14px;background:linear-gradient(180deg,#0c1426,#070f1c);border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:12px;padding:10px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:15px}
+.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>E & M · CAPACITORS</small></span></a>
+  <a href="../index.html">← Back to Hub</a>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">E & M · CAPACITORS</div>
+    <h1>RC Charging Curve</h1>
+    <p id="lab-lead"></p>
+  </section>
+  <div class="layout">
+    <aside class="panel"><div class="panel-head">Controls</div><div class="panel-body">
+      <div class="field"><label>V₀ (V) <span class="hint" id="VV">10</span></label><input type="range" id="V0" min="1" max="20" value="10"></div>
+<div class="field"><label>R (Ω) <span class="hint" id="RV">1000</span></label><input type="range" id="R" min="100" max="5000" step="100" value="1000"></div>
+<div class="field"><label>C (μF) <span class="hint" id="CV">500</span></label><input type="range" id="C" min="50" max="2000" step="50" value="500"></div>
+      <div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div>
+    </div></aside>
+    <div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-body"><canvas id="canvas" width="800" height="360"></canvas></div></div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-head">Results</div><div class="panel-body"><div class="results" id="results"></div></div></div>
+      <div class="panel"><div class="panel-head">Formulas</div><div class="panel-body formulas"><div><code>τ = R C</code></div><div><code>Q(t) = Q₀(1 − e<sup>−t/τ</sup>)</code></div><div><code>I(t) = I₀ e<sup>−t/τ</sup></code></div></div></div>
+    </div>
+  </div>
+</main>
+<script>
+
+(function(){
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+let t=0,playing=false,last=0;
+document.getElementById('lab-lead').textContent='Watch charge approach Q₀ with time constant τ = RC.';
+function tau(){return parseFloat(R.value)*(parseFloat(C.value)*1e-6)}
+function sync(){VV.textContent=V0.value;RV.textContent=R.value;CV.textContent=C.value;results()}
+['V0','R','C'].forEach(id=>document.getElementById(id).oninput=sync);
+function results(){const T=tau(),Q0=parseFloat(V0.value)*parseFloat(C.value)*1e-6;const Q=Q0*(1-Math.exp(-t/T));
+ document.getElementById('results').innerHTML='<div class="result"><span>τ</span><strong>'+T.toFixed(3)+' s</strong></div><div class="result"><span>Q(t)</span><strong>'+(Q*1e6).toFixed(2)+' μC</strong></div><div class="result"><span>t</span><strong>'+t.toFixed(2)+' s</strong></div>'}
+function draw(){
+ const dpr=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||700,H=360;
+ canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+ ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+ const T=tau();ctx.strokeStyle='#63e6ff';ctx.beginPath();
+ for(let i=0;i<=100;i++){const tt=i/100*T*5;const q=1-Math.exp(-tt/T);const x=40+i/100*(W-80),y=H-40-q*(H-80);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)} ctx.stroke();
+ const qn=1-Math.exp(-t/T);const cx=40+(Math.min(t,T*5)/(T*5))*(W-80),cy=H-40-qn*(H-80);
+ ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(cx,cy,5,0,Math.PI*2);ctx.fill();results();
+}
+function loop(ts){if(!playing){draw();return}if(!last)last=ts;const dt=Math.min(.032,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop)}
+document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop)};
+document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;V0.value=10;R.value=1000;C.value=500;sync();draw();playBtn.textContent='Play'};
+sync();draw();
+})();
+
+</script>
+</body>
+</html>
