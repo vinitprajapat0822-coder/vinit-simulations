@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<title>Magnetic Force (F = qvB) | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:rgba(255,255,255,.12);--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,rgba(99,102,241,.18),transparent 42%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.75);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{min-height:58px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center;font-weight:850}
+.logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 22px rgba(99,102,241,.35)}
+.brand small{display:block;font-size:10px;color:var(--muted)}.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:24px 0 14px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);background:rgba(99,230,255,.08);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:750}
+.hero h1{font-size:clamp(24px,4.5vw,38px);margin:10px 0 6px}.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin:0;max-width:680px}
+.layout{display:grid;grid-template-columns:minmax(260px,320px) 1fr;gap:14px;padding-bottom:28px}@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(18px);overflow:hidden}
+.panel-head{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:750}.panel-body{padding:14px}
+.field{margin-bottom:12px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.hint{color:var(--muted);font-size:11px}
+input[type=range]{width:100%;accent-color:var(--cyan)}.inputrow{display:grid;grid-template-columns:1fr 70px;gap:8px}
+input[type=number],select{width:100%;padding:7px;border-radius:10px;border:1px solid #31415f;background:#0a1220;color:var(--text)}
+.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:750;cursor:pointer}.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:8px}.actions .btn{flex:1}
+canvas{display:block;width:100%;height:360px;border-radius:14px;background:linear-gradient(180deg,#0c1426,#070f1c);border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:12px;padding:10px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:15px}
+.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>E & M · MAGNETISM</small></span></a>
+  <a href="../index.html">← Back to Hub</a>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">E & M · MAGNETISM</div>
+    <h1>Magnetic Force (F = qvB)</h1>
+    <p id="lab-lead"></p>
+  </section>
+  <div class="layout">
+    <aside class="panel"><div class="panel-head">Controls</div><div class="panel-body">
+      <div class="field"><label>Charge q (μC) <span class="hint" id="qV">5</span></label><input type="range" id="q" min="1" max="20" value="5"></div>
+<div class="field"><label>Speed v (m/s) <span class="hint" id="vV">10</span></label><input type="range" id="v" min="1" max="30" value="10"></div>
+<div class="field"><label>B field (T) <span class="hint" id="BV">0.5</span></label><input type="range" id="B" min="0.1" max="2" step="0.1" value="0.5"></div>
+      <div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div>
+    </div></aside>
+    <div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-body"><canvas id="canvas" width="800" height="360"></canvas></div></div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-head">Results</div><div class="panel-body"><div class="results" id="results"></div></div></div>
+      <div class="panel"><div class="panel-head">Formulas</div><div class="panel-body formulas"><div><code>F = q v B</code> (v ⟂ B)</div><div><code>r = m v / (q B)</code> circular path</div></div></div>
+    </div>
+  </div>
+</main>
+<script>
+
+(function(){
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+let ang=0,playing=true,last=0;
+document.getElementById('lab-lead').textContent='Positive charge in uniform B (into page) moves in a circle.';
+function sync(){qV.textContent=q.value;vV.textContent=v.value;BV.textContent=B.value;results()}
+['q','v','B'].forEach(id=>document.getElementById(id).oninput=sync);
+function results(){const F=(parseFloat(q.value)*1e-6)*parseFloat(v.value)*parseFloat(B.value);
+ document.getElementById('results').innerHTML='<div class="result"><span>F</span><strong>'+F.toExponential(2)+' N</strong></div><div class="result"><span>Direction</span><strong>⊥ to v and B</strong></div>'}
+function draw(){
+ const dpr=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||700,H=360;
+ canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+ ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+ const cx=W/2,cy=H/2,R=50+parseFloat(v.value)*2;
+ ctx.strokeStyle='#334155';ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+ // B into page marks
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2;ctx.fillStyle='#475569';ctx.beginPath();ctx.arc(cx+Math.cos(a)*R*0.6,cy+Math.sin(a)*R*0.6,2,0,Math.PI*2);ctx.fill()}
+ const px=cx+R*Math.cos(ang),py=cy+R*Math.sin(ang);
+ ctx.fillStyle='#63e6ff';ctx.beginPath();ctx.arc(px,py,8,0,Math.PI*2);ctx.fill();results();
+}
+function loop(ts){if(!playing){draw();return}if(!last)last=ts;const dt=Math.min(.032,(ts-last)/1000);last=ts;
+ ang+=parseFloat(v.value)*0.02*dt*60;draw();requestAnimationFrame(loop)}
+document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop)};
+document.getElementById('resetBtn').onclick=()=>{q.value=5;v.value=10;B.value=0.5;ang=0;sync();draw()};
+sync();requestAnimationFrame(loop);
+})();
+
+</script>
+</body>
+</html>
