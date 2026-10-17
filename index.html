@@ -186,7 +186,7 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="hub-home-themes.css?v=32">
+  <link rel="stylesheet" href="hub-home-themes.css?v=33">
   <link rel="stylesheet" href="hub-features.css?v=1">
   <link rel="stylesheet" href="hub-experiences.css?v=30">
 </head>
@@ -463,7 +463,7 @@
     })();
     </script>
   <script src="hub-experiences.js?v=30"></script>
-  <script src="hub-features.js?v=1" defer></script>
+  <script src="hub-features.js?v=2" defer></script>
   <script id="vsh-mobile-menu-v2">
     (function () {
       "use strict";
@@ -530,48 +530,59 @@
       })();
 </script>
 
+
+
+
 <script>
 (function(){
   var KEY="vsh-mini-auth-v1";
-  var unlocked=false;
-  try{ unlocked = localStorage.getItem(KEY)==="1"; }catch(e){}
-  var auth=document.getElementById("mini-auth");
-  var bento=document.getElementById("bento-live");
   function unlock(){
-    unlocked=true;
     try{ localStorage.setItem(KEY,"1"); }catch(e){}
     document.body.classList.remove("catalog-locked");
-    if(auth) auth.hidden=true;
+    var auth=document.getElementById("mini-auth");
+    if(auth){ auth.hidden=true; auth.style.display="none"; }
     renderBento();
     try{
       var s=document.getElementById("search");
       if(s) s.dispatchEvent(new Event("input"));
+      var btn=document.querySelector('.filter[aria-pressed="true"]');
+      if(btn) btn.click();
     }catch(e){}
   }
   function renderBento(){
+    var bento=document.getElementById("bento-live");
     if(!bento || typeof CATALOG==="undefined") return;
     var live=CATALOG.filter(function(x){return x.status==="live" && x.url;});
     bento.hidden=false;
+    bento.style.display="";
     bento.innerHTML=live.map(function(x,i){
-      var wide = i%5===0 ? " wide" : "";
-      var tall = i%4===1 ? " tall" : "";
-      return '<a class="bento-card'+wide+tall+'" href="'+x.url+'">'
-        +'<div class="b-kicker">LIVE · '+(x.category||"")+'</div>'
-        +'<h3>'+(x.icon?x.icon+" ":"")+(x.title||"")+'</h3>'
-        +'<p>'+(x.desc||"")+'</p></a>';
+      var wide=i%5===0?" wide":"";
+      var tall=i%4===1?" tall":"";
+      return '<a class="bento-card'+wide+tall+'" href="'+x.url+'"><div class="b-kicker">LIVE · '+(x.category||"")+'</div><h3>'+(x.icon?x.icon+" ":"")+(x.title||"")+'</h3><p>'+(x.desc||"")+'</p></a>';
     }).join("");
   }
-  if(unlocked){
-    document.body.classList.remove("catalog-locked");
-    if(auth) auth.hidden=true;
-    // wait catalog
-    setTimeout(renderBento, 50);
-  } else if(auth){
+  function wire(){
+    var unlocked=false;
+    try{ unlocked=localStorage.getItem(KEY)==="1"; }catch(e){}
+    if(unlocked){ unlock(); return; }
     var u=document.getElementById("auth-unlock");
     var s=document.getElementById("auth-skip");
-    if(u) u.addEventListener("click", unlock);
-    if(s) s.addEventListener("click", unlock);
+    if(u) u.onclick=function(e){ e.preventDefault(); unlock(); };
+    if(s) s.onclick=function(e){ e.preventDefault(); unlock(); };
+    // event delegation fallback
+    document.addEventListener("click", function(e){
+      var t=e.target;
+      if(!t) return;
+      if(t.id==="auth-unlock"||t.id==="auth-skip"||(t.closest&&(t.closest("#auth-unlock")||t.closest("#auth-skip")))){
+        e.preventDefault();
+        unlock();
+      }
+    });
   }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", wire);
+  else wire();
+  setTimeout(wire, 100);
+  setTimeout(function(){ if(typeof CATALOG!=="undefined"){ try{ if(localStorage.getItem(KEY)==="1") unlock(); }catch(e){} } }, 400);
 })();
 </script>
 
