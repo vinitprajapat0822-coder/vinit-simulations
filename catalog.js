@@ -29,7 +29,7 @@ const CATALOG = [
   { id: "force-equilibrium", title: "Force Equilibrium", desc: "Coplanar forces in equilibrium — Lami's theorem visual.", category: "forces", tags: "equilibrium concurrent forces", status: "coming-soon", icon: "⚖️" },
 
   // CONSERVATION (8)
-  { id: "work-energy", title: "Work-Energy Theorem", desc: "Work done by forces equals change in kinetic energy.", category: "conservation", tags: "work energy theorem kinetic", status: "coming-soon", icon: "⚡" },
+  { id: "work-energy", title: "Work–Energy Theorem", desc: "W_net = ΔKE", category: "conservation", tags: "work–energy theorem", status: "live", url: "projects/work-energy.html", icon: "🔧" },
   { id: "potential-energy", title: "Gravitational PE & Springs", desc: "Potential energy curves and conservation checks.", category: "conservation", tags: "potential energy gravity spring", status: "coming-soon", icon: "🏔️" },
   { id: "momentum-1d", title: "1D Collisions", desc: "Elastic and inelastic collisions with momentum conservation.", category: "conservation", tags: "collision momentum elastic inelastic", status: "coming-soon", icon: "💥" },
   { id: "momentum-2d", title: "2D Collisions", desc: "Two-dimensional collision analysis with vectors.", category: "conservation", tags: "2d collision momentum vectors", status: "coming-soon", icon: "🎯" },
@@ -45,7 +45,7 @@ const CATALOG = [
   { id: "superposition", title: "Wave Superposition", desc: "Constructive and destructive interference of waves.", category: "waves", tags: "superposition interference phase", status: "coming-soon", icon: "🌊" },
   { id: "standing-waves", title: "Standing Waves", desc: "Nodes, antinodes and harmonics on string & pipe.", category: "waves", tags: "standing wave nodes harmonics", status: "coming-soon", icon: "🎻" },
   { id: "beats", title: "Beats Phenomenon", desc: "Two close frequencies producing audible beats.", category: "waves", tags: "beats frequency difference", status: "coming-soon", icon: "🎵" },
-  { id: "doppler", title: "Doppler Effect", desc: "Frequency shift for moving source and observer.", category: "waves", tags: "doppler effect frequency shift", status: "coming-soon", icon: "🚨" },
+  { id: "doppler", title: "Doppler Effect", desc: "Frequency shift for moving source/observer", category: "waves", tags: "doppler effect", status: "live", url: "projects/doppler.html", icon: "📡" },
   { id: "sound-waves", title: "Sound Wave Properties", desc: "Speed of sound, intensity and loudness basics.", category: "waves", tags: "sound speed intensity", status: "coming-soon", icon: "🔊" },
   { id: "resonance", title: "Resonance & Forced Oscillations", desc: "Resonance curve and damping effects.", category: "waves", tags: "resonance forced oscillation damping", status: "coming-soon", icon: "📡" },
   { id: "organ-pipe", title: "Organ Pipes & Air Columns", desc: "Open and closed pipes — harmonics and end correction.", category: "waves", tags: "organ pipe harmonics closed open", status: "coming-soon", icon: "🎹" },
@@ -85,7 +85,7 @@ const CATALOG = [
   { id: "current-electricity", title: "Ohm's Law & Resistance", desc: "V-I characteristics and resistivity.", category: "em", tags: "ohm law resistance resistivity", status: "coming-soon", icon: "🔌" },
   { id: "kirchhoff", title: "Kirchhoff's Laws", desc: "Loop and junction rules for complex circuits.", category: "em", tags: "kirchhoff loop junction", status: "coming-soon", icon: "🔄" },
   { id: "magnetic-field", title: "Magnetic Field due to Current", desc: "Straight wire, loop and solenoid field patterns.", category: "em", tags: "magnetic field biot savart", status: "coming-soon", icon: "🧲" },
-  { id: "lorentz", title: "Lorentz Force", desc: "Force on moving charge in magnetic field.", category: "em", tags: "lorentz force magnetic", status: "coming-soon", icon: "➡️" },
+  { id: "lorentz", title: "Magnetic Force on Charge", desc: "F = q v B perpendicular case", category: "em", tags: "magnetic force on charge", status: "live", url: "projects/lorentz.html", icon: "🧲" },
   { id: "emi", title: "Electromagnetic Induction", desc: "Faraday's law, Lenz's law and induced emf.", category: "em", tags: "faraday lenz induction emf", status: "coming-soon", icon: "🌀" },
   { id: "em-quiz", title: "E&M Concept Quiz", desc: "Practice questions on electrostatics and magnetism.", category: "em", tags: "quiz electricity magnetism", status: "coming-soon", icon: "❓" },
 
