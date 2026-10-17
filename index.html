@@ -186,10 +186,10 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="hub-home-themes.css?v=20">
-  <link rel="stylesheet" href="hub-experiences.css?v=20">
+  <link rel="stylesheet" href="hub-home-themes.css?v=21">
+  <link rel="stylesheet" href="hub-experiences.css?v=21">
 </head>
-<body data-theme="control-room" data-appearance="evening" data-ambient="on">
+<body data-theme="holographic" data-appearance="evening" data-ambient="on">
   <header class="nav-wrap">
     <nav class="container nav" aria-label="Main">
       <a class="brand" href="#home">
@@ -204,13 +204,14 @@
         <div class="nav-links">
           <a href="#simulations">Explore</a>
           <a href="#about">About</a>
+          <a href="#contact">Contact</a>
         </div>
         <div class="theme-picker">
           <label for="theme-select">Interface theme</label>
           <select id="theme-select" aria-label="Choose interface theme">
             <option value="control-room">Control Room Bento</option>
             <option value="constellation">Constellation Web</option>
-            <option value="holographic">Holographic Core</option>
+            <option value="holographic" selected>Holographic Core</option>
             <option value="terminal">Hacker Terminal</option>
           </select>
         </div>
@@ -253,7 +254,7 @@
     <section class="section container" id="simulations">
       <div class="section-head">
         <div>
-          <h2>Activity Catalog</h2>
+          <h2>Activity Catalog <span style="font-weight:500;font-size:12px;opacity:.7">(live only)</span></h2>
           <p>Search or filter. Only live activities open a working simulator.</p>
         </div>
         <input class="search" id="search" type="search" placeholder="Search activities…" aria-label="Search">
@@ -280,6 +281,20 @@
       <span>© 2026 Vinit Simulation Hub</span>
       <span>Built for learning · GitHub Pages</span>
     </div>
+  
+  <section class="section container" id="contact" style="padding-bottom:48px">
+    <div class="hero" style="margin:0">
+      <div class="eyebrow">CONTACT</div>
+      <h2 style="margin:10px 0 8px;font-size:clamp(22px,4vw,32px)">Get in touch</h2>
+      <p style="max-width:560px">Questions, lab ideas, or collaboration for Vinit Simulation Hub.</p>
+      <div style="display:grid;gap:12px;margin-top:18px;max-width:420px">
+        <a href="mailto:vinitprajapat0822@gmail.com" class="card-link" style="display:inline-flex;padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.12);text-decoration:none">Email · vinitprajapat0822@gmail.com</a>
+        <a href="https://github.com/vinitprajapat0822-coder/vinit-simulations" class="card-link" style="display:inline-flex;padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.12);text-decoration:none">GitHub · vinit-simulations</a>
+        <a href="https://vinit-simulation.is-a.dev/" class="card-link" style="display:inline-flex;padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.12);text-decoration:none">Live site · vinit-simulation.is-a.dev</a>
+      </div>
+    </div>
+  </section>
+
   </footer>
 
   <script src="catalog.js?v=8"></script>
@@ -307,9 +322,12 @@
 
       function render() {
         const q = search.value.trim().toLowerCase();
+        const showSoon = !!(window.__vshShowSoon);
         grid.innerHTML = "";
         let shown = 0;
         CATALOG.forEach(item => {
+          const isLive = item.status === "live";
+          if (!isLive && !showSoon && activeFilter !== "coming-soon") return;
           const matchFilter =
             activeFilter === "all" ||
             (activeFilter === "coming-soon" && item.status === "coming-soon") ||
@@ -319,7 +337,6 @@
               .toLowerCase().includes(q);
           if (!matchFilter || !matchSearch) return;
           shown++;
-          const isLive = item.status === "live";
           const card = document.createElement("article");
           card.className = "card";
           card.innerHTML = `
@@ -362,7 +379,7 @@
       var logo = document.querySelector(".brand-icon");
 
       function applyTheme(value, persist) {
-        var theme = themes.indexOf(value) >= 0 ? value : "control-room";
+        var theme = themes.indexOf(value) >= 0 ? value : "holographic";
         document.body.setAttribute("data-theme", theme);
         themes.forEach(function (t) {
           document.body.classList.remove("theme-" + t);
@@ -399,7 +416,7 @@
       }
 
       // restore
-      var savedTheme = "control-room";
+      var savedTheme = "holographic";
       var savedAppear = "evening";
       var savedAmbient = "on";
       try { savedTheme = localStorage.getItem(themeKey) || savedTheme; } catch (e) {}
@@ -444,7 +461,7 @@
       }
     })();
     </script>
-  <script src="hub-experiences.js?v=20"></script>
+  <script src="hub-experiences.js?v=21"></script>
   <script id="vsh-mobile-menu-v2">
     (function () {
       "use strict";
@@ -486,5 +503,29 @@
     })();
   </script>
 
+<script>
+      (function(){
+        var t = document.getElementById("show-soon-toggle");
+        if (!t) {
+          var filters = document.getElementById("filters");
+          if (filters && filters.parentNode) {
+            var lab = document.createElement("label");
+            lab.className = "show-soon-toggle";
+            lab.style.cssText = "display:inline-flex;align-items:center;gap:8px;font-size:12px;margin:8px 0;cursor:pointer;color:inherit";
+            lab.innerHTML = '<input type="checkbox" id="show-soon-toggle"> Show coming soon';
+            filters.parentNode.insertBefore(lab, filters.nextSibling);
+            t = lab.querySelector("input");
+          }
+        }
+        if (t) {
+          t.addEventListener("change", function(){
+            window.__vshShowSoon = t.checked;
+            try { document.querySelector("#search").dispatchEvent(new Event("input")); } catch(e) {}
+            var btn = document.querySelector(".filter[aria-pressed=\"true\"]");
+            if (btn) btn.click();
+          });
+        }
+      })();
+</script>
 </body>
 </html>
