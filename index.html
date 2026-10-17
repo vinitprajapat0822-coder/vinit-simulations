@@ -189,6 +189,22 @@
   <link rel="stylesheet" href="hub-home-themes.css?v=33">
   <link rel="stylesheet" href="hub-features.css?v=1">
   <link rel="stylesheet" href="hub-experiences.css?v=30">
+
+<style id="cat-section-styles">
+.cat-section{margin-bottom:22px;width:100%;grid-column:1/-1}
+.cat-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:4px 0 12px}
+.cat-title{margin:0;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:capitalize}
+.cat-count{font-size:12px;opacity:.65}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.view-more-btn{
+  margin-top:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);
+  color:inherit;border-radius:999px;padding:10px 16px;font-weight:750;font-size:13px;cursor:pointer;
+}
+.view-more-btn:hover{border-color:rgba(125,211,252,.45)}
+#project-grid{display:block}
+body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
+</style>
+
 </head>
 <body class="catalog-locked catalog-locked" data-theme="holographic" data-appearance="evening" data-ambient="on">
   <header class="nav-wrap">
@@ -298,7 +314,7 @@
 
   </footer>
 
-  <script src="catalog.js?v=20"></script>
+  <script src="catalog.js?v=21"></script>
   <script>
     (function () {
       const grid = document.getElementById("project-grid");
@@ -321,28 +337,16 @@
         filtersEl.appendChild(btn);
       });
 
-      function render() {
-        const q = search.value.trim().toLowerCase();
-        const showSoon = !!(window.__vshShowSoon);
-        grid.innerHTML = "";
-        let shown = 0;
-        CATALOG.forEach(item => {
-          const isLive = item.status === "live";
-          if (!isLive && !showSoon && activeFilter !== "coming-soon") return;
-          const matchFilter =
-            activeFilter === "all" ||
-            (activeFilter === "coming-soon" && item.status === "coming-soon") ||
-            item.category === activeFilter;
-          const matchSearch = !q ||
-            (item.title + " " + item.desc + " " + item.tags + " " + item.category)
-              .toLowerCase().includes(q);
-          if (!matchFilter || !matchSearch) return;
-          shown++;
-          const card = document.createElement("article");
-          card.className = "card";
-          card.innerHTML = `
+
+      const expandedCats = new Set();
+
+      function cardEl(item) {
+        const isLive = item.status === "live";
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `
             <div class="card-top">
-              <div class="card-icon" aria-hidden="true">${item.icon}</div>
+              <div class="card-icon" aria-hidden="true">${item.icon || "●"}</div>
               <span class="badge ${isLive ? "live" : "soon"}">${isLive ? "Live" : "Coming soon"}</span>
             </div>
             <h3>${item.title}</h3>
@@ -352,10 +356,87 @@
               ${isLive
                 ? `<a class="card-link" href="${item.url}">Open ↗</a>`
                 : `<span class="card-link disabled">Soon</span>`}
-            </div>
-          `;
-          grid.appendChild(card);
+            </div>`;
+        return card;
+      }
+
+      function render() {
+        const q = search.value.trim().toLowerCase();
+        const showSoon = !!(window.__vshShowSoon);
+        grid.innerHTML = "";
+        let shown = 0;
+
+        const matched = CATALOG.filter(item => {
+          const isLive = item.status === "live";
+          if (!isLive && !showSoon && activeFilter !== "coming-soon") return false;
+          const matchFilter =
+            activeFilter === "all" ||
+            (activeFilter === "coming-soon" && item.status === "coming-soon") ||
+            item.category === activeFilter;
+          const matchSearch = !q ||
+            (item.title + " " + item.desc + " " + item.tags + " " + item.category)
+              .toLowerCase().includes(q);
+          return matchFilter && matchSearch;
         });
+
+        // Group by category when viewing "all"
+        if (activeFilter === "all" && !q) {
+          const byCat = {};
+          matched.forEach(item => {
+            const c = item.category || "other";
+            if (!byCat[c]) byCat[c] = [];
+            byCat[c].push(item);
+          });
+          const order = (typeof CATEGORIES !== "undefined" ? CATEGORIES.map(c => c.id) : Object.keys(byCat))
+            .filter(id => id !== "all" && id !== "coming-soon" && byCat[id] && byCat[id].length);
+
+          // also any extra categories
+          Object.keys(byCat).forEach(c => {
+            if (order.indexOf(c) < 0) order.push(c);
+          });
+
+          order.forEach(catId => {
+            const list = byCat[catId] || [];
+            if (!list.length) return;
+            const section = document.createElement("div");
+            section.className = "cat-section";
+            section.dataset.cat = catId;
+            const label = (typeof CATEGORIES !== "undefined" && CATEGORIES.find(c => c.id === catId))
+              ? CATEGORIES.find(c => c.id === catId).label
+              : catId.replace(/[-_]/g, " ");
+            const expanded = expandedCats.has(catId);
+            const limit = 4;
+            const visible = expanded ? list : list.slice(0, limit);
+            const more = list.length - limit;
+
+            section.innerHTML = `<div class="cat-head"><h3 class="cat-title">${label}</h3>
+              <span class="cat-count">${list.length} topics</span></div>
+              <div class="cat-grid"></div>`;
+            const g = section.querySelector(".cat-grid");
+            visible.forEach(item => {
+              g.appendChild(cardEl(item));
+              shown++;
+            });
+            if (more > 0) {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "view-more-btn";
+              btn.textContent = expanded ? "Show less" : ("View more · " + more + " more");
+              btn.addEventListener("click", () => {
+                if (expandedCats.has(catId)) expandedCats.delete(catId);
+                else expandedCats.add(catId);
+                render();
+              });
+              section.appendChild(btn);
+            }
+            grid.appendChild(section);
+          });
+        } else {
+          matched.forEach(item => {
+            grid.appendChild(cardEl(item));
+            shown++;
+          });
+        }
         empty.hidden = shown > 0;
       }
 
@@ -583,6 +664,30 @@
   else wire();
   setTimeout(wire, 100);
   setTimeout(function(){ if(typeof CATALOG!=="undefined"){ try{ if(localStorage.getItem(KEY)==="1") unlock(); }catch(e){} } }, 400);
+})();
+</script>
+
+
+<script>
+(function(){
+  var brand = document.querySelector(".brand");
+  var icon = document.querySelector(".brand-icon");
+  if (!brand || !icon) return;
+  brand.addEventListener("click", function(e){
+    e.preventDefault();
+    icon.classList.remove("spin");
+    void icon.offsetWidth;
+    icon.classList.add("spin");
+    // mini reload: soft refresh of catalog + scroll top
+    try {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      var s = document.getElementById("search");
+      if (s) { s.value = ""; s.dispatchEvent(new Event("input")); }
+      var allBtn = document.querySelector('.filter[data-filter="all"]');
+      if (allBtn) allBtn.click();
+    } catch (err) {}
+    setTimeout(function(){ icon.classList.remove("spin"); }, 700);
+  });
 })();
 </script>
 
