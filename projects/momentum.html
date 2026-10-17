@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<title>Conservation of Momentum | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:rgba(255,255,255,.12);--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,rgba(99,102,241,.18),transparent 42%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.75);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{min-height:58px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center;font-weight:850}
+.logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 22px rgba(99,102,241,.35)}
+.brand small{display:block;font-size:10px;color:var(--muted)}.nav a:last-child{color:var(--cyan);font-size:13px}
+.hero{padding:24px 0 14px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);background:rgba(99,230,255,.08);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:750}
+.hero h1{font-size:clamp(24px,4.5vw,38px);margin:10px 0 6px}.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin:0;max-width:680px}
+.layout{display:grid;grid-template-columns:minmax(260px,320px) 1fr;gap:14px;padding-bottom:28px}@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(18px);overflow:hidden}
+.panel-head{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:750}.panel-body{padding:14px}
+.field{margin-bottom:12px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.hint{color:var(--muted);font-size:11px}
+input[type=range]{width:100%;accent-color:var(--cyan)}.inputrow{display:grid;grid-template-columns:1fr 70px;gap:8px}
+input[type=number],select{width:100%;padding:7px;border-radius:10px;border:1px solid #31415f;background:#0a1220;color:var(--text)}
+.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:750;cursor:pointer}.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:8px}.actions .btn{flex:1}
+canvas{display:block;width:100%;height:360px;border-radius:14px;background:linear-gradient(180deg,#0c1426,#070f1c);border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:12px;padding:10px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:15px}
+.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>CONSERVATION · COLLISIONS</small></span></a>
+  <a href="../index.html">← Back to Hub</a>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">CONSERVATION · COLLISIONS</div>
+    <h1>Conservation of Momentum</h1>
+    <p id="lab-lead"></p>
+  </section>
+  <div class="layout">
+    <aside class="panel"><div class="panel-head">Controls</div><div class="panel-body">
+      <div class="field"><label>m₁ (kg) <span class="hint" id="m1V">2</span></label><input type="range" id="m1" min="0.5" max="10" step="0.5" value="2"></div>
+<div class="field"><label>u₁ (m/s) <span class="hint" id="u1V">4</span></label><input type="range" id="u1" min="-10" max="10" step="0.5" value="4"></div>
+<div class="field"><label>m₂ (kg) <span class="hint" id="m2V">2</span></label><input type="range" id="m2" min="0.5" max="10" step="0.5" value="2"></div>
+<div class="field"><label>u₂ (m/s) <span class="hint" id="u2V">0</span></label><input type="range" id="u2" min="-10" max="10" step="0.5" value="0"></div>
+<div class="field"><label>Collision type</label><select id="type"><option value="elastic">Elastic</option><option value="inelastic">Perfectly inelastic</option></select></div>
+      <div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div>
+    </div></aside>
+    <div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-body"><canvas id="canvas" width="800" height="360"></canvas></div></div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-head">Results</div><div class="panel-body"><div class="results" id="results"></div></div></div>
+      <div class="panel"><div class="panel-head">Formulas</div><div class="panel-body formulas"><div><code>m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂</code></div><div>Elastic also conserves KE</div></div></div>
+    </div>
+  </div>
+</main>
+<script>
+
+(function(){
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+let x1=120,x2=320,v1=0,v2=0,playing=false,last=0,collided=false;
+document.getElementById('lab-lead').textContent='Two blocks collide in one dimension. Compare elastic vs perfectly inelastic.';
+function sync(){m1V.textContent=m1.value;u1V.textContent=u1.value;m2V.textContent=m2.value;u2V.textContent=u2.value;results()}
+['m1','u1','m2','u2','type'].forEach(id=>document.getElementById(id).oninput=sync);
+function results(){
+ const m1v=+m1.value,m2v=+m2.value,u1v=+u1.value,u2v=+u2.value;
+ document.getElementById('results').innerHTML='<div class="result"><span>p before</span><strong>'+(m1v*u1v+m2v*u2v).toFixed(2)+'</strong></div><div class="result"><span>v₁</span><strong>'+v1.toFixed(2)+'</strong></div><div class="result"><span>v₂</span><strong>'+v2.toFixed(2)+'</strong></div><div class="result"><span>p after</span><strong>'+(m1v*v1+m2v*v2).toFixed(2)+'</strong></div>';
+}
+function resolve(){
+ const m1v=+m1.value,m2v=+m2.value,u1v=v1,u2v=v2;
+ if(type.value==='inelastic'){const v=(m1v*u1v+m2v*u2v)/(m1v+m2v);v1=v2=v}
+ else{v1=((m1v-m2v)/(m1v+m2v))*u1v+(2*m2v/(m1v+m2v))*u2v;v2=(2*m1v/(m1v+m2v))*u1v+((m2v-m1v)/(m1v+m2v))*u2v}
+}
+function draw(){
+ const dpr=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||700,H=360;
+ canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+ ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);ctx.fillStyle='#1e293b';ctx.fillRect(0,H-70,W,70);
+ const s1=24+ +m1.value*2,s2=24+ +m2.value*2;
+ ctx.fillStyle='#63e6ff';ctx.fillRect(x1,H-70-s1,s1,s1);
+ ctx.fillStyle='#a78bfa';ctx.fillRect(x2,H-70-s2,s2,s2);
+ results();
+}
+function loop(ts){if(!playing){draw();return}if(!last)last=ts;const dt=Math.min(.032,(ts-last)/1000);last=ts;
+ x1+=v1*dt*30;x2+=v2*dt*30;
+ const s1=24+ +m1.value*2;
+ if(!collided&&x1+s1>=x2){resolve();collided=true}
+ draw();requestAnimationFrame(loop)}
+document.getElementById('playBtn').onclick=()=>{playing=!playing;if(playing){v1=+u1.value;v2=+u2.value;collided=false;last=0;requestAnimationFrame(loop)}playBtn.textContent=playing?'Pause':'Play'};
+document.getElementById('resetBtn').onclick=()=>{playing=false;x1=120;x2=320;v1=v2=0;collided=false;m1.value=2;u1.value=4;m2.value=2;u2.value=0;sync();draw();playBtn.textContent='Play'};
+sync();draw();
+})();
+
+</script>
+</body>
+</html>
