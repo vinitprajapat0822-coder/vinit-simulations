@@ -1,3 +1,4 @@
+/* Liquid glass compatible experience surfaces */
 /* Experience deck — per-theme layouts */
 
 #experience-deck {
@@ -12,6 +13,8 @@
 
 /* ===== CONTROL ROOM ===== */
 .cr-wrap {
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   background: linear-gradient(160deg, #0a1830 0%, #061020 100%);
   border: 1px solid rgba(80, 160, 255, 0.3);
   border-radius: 16px;
@@ -122,6 +125,8 @@
 
 /* ===== CONSTELLATION ===== */
 .st-wrap {
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   background: #03050f;
   border: 1px solid rgba(125, 211, 252, 0.2);
   border-radius: 20px;
@@ -198,6 +203,8 @@
 
 /* ===== HOLOGRAPHIC ===== */
 .hg-wrap {
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
   background: radial-gradient(ellipse at 50% 20%, #2a1050 0%, #100828 50%, #08041a 100%);
   border: 1px solid rgba(200, 120, 255, 0.35);
   border-radius: 24px;
