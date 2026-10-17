@@ -186,10 +186,10 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="hub-home-themes.css?v=12">
-  <link rel="stylesheet" href="hub-experiences.css?v=12">
+  <link rel="stylesheet" href="hub-home-themes.css?v=20">
+  <link rel="stylesheet" href="hub-experiences.css?v=20">
 </head>
-<body>
+<body data-theme="control-room" data-appearance="evening" data-ambient="on">
   <header class="nav-wrap">
     <nav class="container nav" aria-label="Main">
       <a class="brand" href="#home">
@@ -217,6 +217,20 @@
       </div>
     </nav>
   </header>
+
+  <div class="appearance-bar" role="toolbar" aria-label="Appearance controls">
+    <span class="lbl">Look</span>
+    <div class="seg" id="appearance-seg">
+      <button type="button" data-appearance="daylight" aria-pressed="false">Daylight</button>
+      <button type="button" data-appearance="evening" aria-pressed="true">Evening</button>
+      <button type="button" data-appearance="night" aria-pressed="false">Night</button>
+    </div>
+    <label class="amb-toggle">
+      <input type="checkbox" id="ambient-toggle" checked>
+      Ambient light
+    </label>
+  </div>
+
 
   <main>
     <section class="hero container" id="home">
@@ -338,39 +352,99 @@
   <script>
     (function () {
       "use strict";
-      const key = "vsh-interface-theme-v1";
-      const themes = ["control-room", "constellation", "holographic", "terminal"];
-      const select = document.getElementById("theme-select");
-      if (!select) return;
+      var themeKey = "vsh-interface-theme-v2";
+      var appearKey = "vsh-appearance-v1";
+      var ambientKey = "vsh-ambient-v1";
+      var themes = ["control-room", "constellation", "holographic", "terminal"];
+      var select = document.getElementById("theme-select");
+      var appearSeg = document.getElementById("appearance-seg");
+      var ambientToggle = document.getElementById("ambient-toggle");
+      var logo = document.querySelector(".brand-icon");
 
       function applyTheme(value, persist) {
-        const theme = themes.includes(value) ? value : "control-room";
-        document.body.dataset.theme = theme;
+        var theme = themes.indexOf(value) >= 0 ? value : "control-room";
         document.body.setAttribute("data-theme", theme);
-        // Remove old theme classes, add new
-        themes.forEach(t => document.body.classList.remove("theme-" + t));
+        themes.forEach(function (t) {
+          document.body.classList.remove("theme-" + t);
+        });
         document.body.classList.add("theme-" + theme);
-        select.value = theme;
+        if (select) select.value = theme;
         if (persist) {
-          try { localStorage.setItem(key, theme); } catch (_) {}
+          try { localStorage.setItem(themeKey, theme); } catch (e) {}
         }
-        // Notify experience deck
-        try { document.dispatchEvent(new CustomEvent("vsh-theme-change", { detail: { theme: theme } })); } catch (_) {}
+        try {
+          document.dispatchEvent(new CustomEvent("vsh-theme-change", { detail: { theme: theme } }));
+        } catch (e) {}
       }
 
-      let saved = "control-room";
-      try { saved = localStorage.getItem(key) || saved; } catch (_) {}
-      applyTheme(saved, false);
-      select.addEventListener("change", function () {
-        applyTheme(select.value, true);
-      });
-      // Also apply on input for immediate feedback
-      select.addEventListener("input", function () {
-        applyTheme(select.value, true);
-      });
+      function applyAppearance(mode, persist) {
+        var m = mode === "daylight" || mode === "night" ? mode : "evening";
+        document.body.setAttribute("data-appearance", m);
+        if (appearSeg) {
+          appearSeg.querySelectorAll("button").forEach(function (btn) {
+            btn.setAttribute("aria-pressed", btn.getAttribute("data-appearance") === m ? "true" : "false");
+          });
+        }
+        if (persist) {
+          try { localStorage.setItem(appearKey, m); } catch (e) {}
+        }
+      }
+
+      function applyAmbient(on, persist) {
+        document.body.setAttribute("data-ambient", on ? "on" : "off");
+        if (ambientToggle) ambientToggle.checked = !!on;
+        if (persist) {
+          try { localStorage.setItem(ambientKey, on ? "on" : "off"); } catch (e) {}
+        }
+      }
+
+      // restore
+      var savedTheme = "control-room";
+      var savedAppear = "evening";
+      var savedAmbient = "on";
+      try { savedTheme = localStorage.getItem(themeKey) || savedTheme; } catch (e) {}
+      try { savedAppear = localStorage.getItem(appearKey) || savedAppear; } catch (e) {}
+      try { savedAmbient = localStorage.getItem(ambientKey) || savedAmbient; } catch (e) {}
+
+      applyTheme(savedTheme, false);
+      applyAppearance(savedAppear, false);
+      applyAmbient(savedAmbient !== "off", false);
+
+      if (select) {
+        select.addEventListener("change", function () { applyTheme(select.value, true); });
+        select.addEventListener("input", function () { applyTheme(select.value, true); });
+      }
+      if (appearSeg) {
+        appearSeg.addEventListener("click", function (e) {
+          var btn = e.target.closest("button[data-appearance]");
+          if (!btn) return;
+          applyAppearance(btn.getAttribute("data-appearance"), true);
+        });
+      }
+      if (ambientToggle) {
+        ambientToggle.addEventListener("change", function () {
+          applyAmbient(ambientToggle.checked, true);
+        });
+      }
+
+      // Logo spin on click
+      if (logo) {
+        var brand = document.querySelector(".brand");
+        if (brand) {
+          brand.addEventListener("click", function (e) {
+            if (brand.getAttribute("href") === "#home" || brand.getAttribute("href") === "#") {
+              e.preventDefault();
+            }
+            logo.classList.remove("spin");
+            void logo.offsetWidth;
+            logo.classList.add("spin");
+            setTimeout(function () { logo.classList.remove("spin"); }, 700);
+          });
+        }
+      }
     })();
-  </script>
-  <script src="hub-experiences.js?v=12"></script>
+    </script>
+  <script src="hub-experiences.js?v=20"></script>
   <script id="vsh-mobile-menu-v2">
     (function () {
       "use strict";
