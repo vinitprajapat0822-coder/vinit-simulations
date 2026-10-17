@@ -416,3 +416,123 @@
   border-radius: 2px;
 }
 .tm-result { font-size: 12px; color: #6a9e7c; margin-top: 8px; min-height: 16px; }
+/* ===== Holographic card stack ===== */
+.hg-head { text-align: center; margin-bottom: 12px; }
+.hg-head h2 { margin: 0; font-size: 22px; color: #e9d5ff; }
+.hg-head p { margin: 4px 0 0; color: #b8a0d4; font-size: 13px; }
+.hg-sectors {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin-bottom: 16px;
+}
+.hg-chip {
+  border: 1px solid rgba(200,140,255,0.35);
+  background: rgba(40,20,70,0.55);
+  color: #e9d5ff;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+}
+.hg-chip.on {
+  background: rgba(168,85,247,0.35);
+  border-color: #c084fc;
+  box-shadow: 0 0 18px rgba(168,85,247,0.35);
+}
+.hg-stack-zone {
+  position: relative;
+  width: min(340px, 92%);
+  height: 280px;
+  margin: 10px auto 16px;
+}
+.hg-card {
+  position: absolute;
+  left: 0; right: 0;
+  top: 0;
+  height: 240px;
+  border-radius: 22px;
+  padding: 20px;
+  background: rgba(36, 18, 64, 0.62);
+  border: 1px solid rgba(220, 170, 255, 0.4);
+  backdrop-filter: blur(22px) saturate(165%);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  box-shadow: 0 16px 40px rgba(60, 20, 120, 0.35), inset 0 1px 0 rgba(255,255,255,0.16);
+  color: #f3e8ff;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+.hg-card[data-stack="0"] { cursor: grab; }
+.hg-card-glow {
+  position: absolute; inset: auto -20% -30% -20%;
+  height: 60%;
+  background: radial-gradient(ellipse at center, rgba(192,132,252,0.35), transparent 70%);
+  pointer-events: none;
+}
+.hg-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #c084fc;
+  background: rgba(192,132,252,0.15);
+  border: 1px solid rgba(192,132,252,0.35);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.hg-card h3 {
+  margin: 14px 0 8px;
+  font-size: 20px;
+  color: #fff;
+}
+.hg-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #c4b5fd;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hg-card-actions {
+  position: absolute;
+  left: 20px; right: 20px; bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #a78bfa;
+}
+.hg-open {
+  color: #061018;
+  background: linear-gradient(135deg, #e9d5ff, #c084fc);
+  text-decoration: none;
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.hg-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.hg-nav {
+  border: 1px solid rgba(200,140,255,0.4);
+  background: rgba(40,20,70,0.6);
+  color: #f3e8ff;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hg-hint, .hg-empty {
+  text-align: center;
+  color: #b8a0d4;
+  font-size: 12px;
+  margin: 0;
+}
+.hg-empty { padding: 24px; }
