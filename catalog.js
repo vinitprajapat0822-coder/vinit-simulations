@@ -153,4 +153,14 @@ const CATEGORIES = [
   { id: "tools", label: "Tools" },
   { id: "fun", label: "Fun" },
   { id: "coming-soon", label: "Coming Soon" }
+,
+  { id: "newtons-law-live", title: "Newton's Second Law", desc: "F = ma interactive", category: "forces", tags: "newtons-law", status: "live", url: "projects/newtons-law.html", icon: "⚖️" },
+  { id: "friction-live", title: "Friction Lab", desc: "Static vs kinetic friction", category: "forces", tags: "friction", status: "live", url: "projects/friction.html", icon: "🧱" },
+  { id: "momentum-live", title: "Conservation of Momentum", desc: "1D collisions", category: "conservation", tags: "momentum", status: "live", url: "projects/momentum.html", icon: "💥" },
+  { id: "shm-live", title: "Simple Harmonic Motion", desc: "Spring-mass SHM", category: "waves", tags: "shm", status: "live", url: "projects/shm.html", icon: "🌊" },
+  { id: "snell-live", title: "Snell's Law", desc: "Refraction and TIR", category: "optics", tags: "snell", status: "live", url: "projects/snell.html", icon: "🔎" },
+  { id: "ohm-live", title: "Ohm's Law Lab", desc: "V = IR explorer", category: "em", tags: "ohm", status: "live", url: "projects/ohm.html", icon: "⚡" },
+  { id: "circular-motion-live", title: "Uniform Circular Motion", desc: "Centripetal acceleration", category: "kinematics", tags: "circular-motion", status: "live", url: "projects/circular-motion.html", icon: "🔄" },
+  { id: "capacitor-live", title: "RC Charging Curve", desc: "Capacitor charge vs time", category: "em", tags: "capacitor", status: "live", url: "projects/capacitor.html", icon: "🔋" },
+  { id: "lens-live", title: "Thin Lens Equation", desc: "Lens formula", category: "optics", tags: "lens", status: "live", url: "projects/lens.html", icon: "🔦" }
 ];
