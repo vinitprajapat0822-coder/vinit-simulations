@@ -1,53 +1,69 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rotation Quiz | Vinit Simulation Hub</title>
+<title>Rotation Quick Quiz | Vinit Simulation Hub</title>
+<link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:#63e6ff;text-decoration:none}.wrap{width:min(1000px,calc(100% - 24px));margin:auto}
-header{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.1);position:sticky;top:0;background:rgba(8,11,22,.85);backdrop-filter:blur(12px)}
-.nav{display:flex;justify-content:space-between;align-items:center}.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-h1{font-size:1.5rem;margin:16px 0 6px}.lead{color:#9cabc8}
-.panel{background:rgba(16,24,48,.55);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px;margin:12px 0;backdrop-filter:blur(16px)}
-label{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:#63e6ff}
-canvas{width:100%;height:300px;border-radius:12px;background:#0a1220;border:1px solid #24314b;display:block}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:10px}
-.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:#9cabc8}
-.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:#63e6ff;color:#07111b;margin-right:8px}
-</style><link rel="stylesheet" href="../lab-polish.css?v=2">
-</head><body>
-<header><div class="wrap nav"><a href="../index.html" style="display:flex;gap:8px;align-items:center;color:inherit;font-weight:800"><span class="logo">V</span>ROTATION</a><a href="../index.html">← Hub</a></div></header>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(800px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);margin:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;backdrop-filter:blur(16px)}
+.q{font-weight:700;margin-bottom:12px}
+.opt{display:block;width:100%;text-align:left;border:1px solid #34425e;background:#141e33;color:var(--text);border-radius:12px;padding:12px;margin:8px 0;cursor:pointer;font-weight:600}
+.opt:hover{border-color:var(--cyan)}
+.opt.correct{border-color:var(--green);background:rgba(124,240,189,.12)}
+.opt.wrong{border-color:var(--red);background:rgba(255,142,156,.12)}
+.why{color:var(--muted);font-size:13px;margin-top:10px;display:none}
+.score{font-size:18px;font-weight:800;color:var(--cyan)}
+.btn{border:0;border-radius:12px;background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;padding:12px 18px;font-weight:800;cursor:pointer;margin-top:10px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>ROTATION</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<h1>Rotation Quiz</h1><p class="lead">Interactive physics lab</p>
-<div class="panel">
-<label>Parameter A <span id="aV">5</span></label><input type="range" id="a" min="1" max="20" step="0.5" value="5">
-<label>Parameter B <span id="bV">3</span></label><input type="range" id="b" min="1" max="20" step="0.5" value="3">
-<button class="btn" id="play">Play</button>
-</div>
-<div class="panel"><canvas id="c" width="800" height="300"></canvas>
-<div class="results" id="res"></div>
-</div>
+<section class="hero"><div class="eyebrow">QUIZ</div><h1>Rotation Quick Quiz</h1><p class="lead">Torque, angular momentum, rolling — conceptual checks.</p>
+<p class="score" id="score">Score: 0 / 0</p></section>
+<div id="quiz"></div>
+<button class="btn" id="reset">Restart quiz</button>
 </main>
 <script src="../lab-theme.js?v=3"></script>
 <script>
-(function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const a=document.getElementById('a'),b=document.getElementById('b');
-let t=0,playing=true,last=0;
-function sync(){aV.textContent=a.value;bV.textContent=b.value;}
-a.oninput=b.oninput=function(){sync();draw();};
-function draw(){
- const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||700,H=300;
- canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);
- ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- ctx.strokeStyle='#63e6ff';ctx.beginPath();
- for(let i=0;i<W;i++){const y=H/2+(10+(+a.value))*Math.sin(i/(20+(+b.value)/5)-t*2);ctx.lineTo(i,y);}
- ctx.stroke();
- ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc((t*40*(+a.value/5))%(W-20),H/2,8,0,6.28);ctx.fill();
- document.getElementById('res').innerHTML='<div class="result"><span>A</span><strong>'+a.value+'</strong></div><div class="result"><span>B</span><strong>'+b.value+'</strong></div><div class="result"><span>A×B</span><strong>'+(+a.value*(+b.value)).toFixed(1)+'</strong></div>';
+const questions = [{'q': 'Torque τ equals', 'options': ['rF cosθ', 'rF sinθ', 'r + F', 'F/r'], 'answer': 1, 'why': 'τ = rF sinθ.'}, {'q': 'For pure rolling', 'options': ['v = ω/r', 'v = ωr', 'v = 0', 'ω = 0'], 'answer': 1, 'why': 'v = ωr means contact point instantaneously at rest.'}, {'q': 'Angular momentum of rigid body about axis', 'options': ['I/ω', 'Iω', '½Iω', 'Iω²'], 'answer': 1, 'why': 'L = Iω.'}, {'q': 'Rotational KE is', 'options': ['Iω', '½Iω', '½Iω²', 'Iω²'], 'answer': 2, 'why': 'KE_rot = ½Iω².'}, {'q': 'If external torque is zero', 'options': ['Energy always constant', 'L is conserved', 'ω is always constant', 'I must be zero'], 'answer': 1, 'why': 'τ_ext = dL/dt = 0 ⇒ L conserved.'}];
+let answered=0, correct=0;
+const box=document.getElementById('quiz');
+const scoreEl=document.getElementById('score');
+function render(){
+  box.innerHTML='';
+  questions.forEach((item,qi)=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML='<div class="q">'+(qi+1)+'. '+item.q+'</div>';
+    const why=document.createElement('div'); why.className='why'; why.textContent=item.why;
+    item.options.forEach((op,oi)=>{
+      const b=document.createElement('button'); b.className='opt'; b.textContent=op;
+      b.onclick=()=>{
+        if(b.disabled) return;
+        [...card.querySelectorAll('.opt')].forEach(x=>x.disabled=true);
+        answered++;
+        if(oi===item.answer){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong'); card.querySelectorAll('.opt')[item.answer].classList.add('correct');}
+        why.style.display='block';
+        scoreEl.textContent='Score: '+correct+' / '+answered;
+      };
+      card.appendChild(b);
+    });
+    card.appendChild(why);
+    box.appendChild(card);
+  });
 }
-function loop(ts){if(!playing)return;if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('play').onclick=function(){playing=!playing;this.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-sync();requestAnimationFrame(loop);
-})();
-</script></body></html>
+document.getElementById('reset').onclick=()=>{answered=0;correct=0;scoreEl.textContent='Score: 0 / 0';render();};
+render();
+</script>
+</body>
+</html>
