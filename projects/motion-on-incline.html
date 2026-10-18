@@ -1,276 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080b16">
-<meta name="description" content="Interactive Motion on Incline Lab: acceleration, friction, time and forces on an inclined plane.">
-<title>Motion on Incline Lab | Vinit Simulation Hub</title>
-<style>
-:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:#080b16ef;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
-.hero{padding:32px 0 20px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750}.hero h1{font-size:clamp(28px,5vw,46px);margin:12px 0 8px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{color:var(--muted);max-width:720px;margin:0}
-.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:16px;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2ef2,#0d1324f7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:15px 17px;border-bottom:1px solid var(--line)}.panel-head h2,.panel-head h3{margin:0;font-size:16px}.panel-body{padding:16px}
-.field{margin-bottom:13px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;color:#dce6fb}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 80px;gap:8px}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number]{width:100%;min-height:38px;padding:6px 8px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px}
-.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px;cursor:pointer;font-weight:750;font-size:13px;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.actions{display:flex;gap:8px;margin-top:12px}.actions .btn{flex:1}
-.note{padding:10px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:12px}
-canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e1c;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:12px;padding:12px}.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}.result strong{font-size:16px}
-.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inclined Plane with Friction | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>INCLINE MOTION</small></span></a>
-    <a href="../index.html">← Back to Hub</a>
-  </div>
-</header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FORCES</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">KINEMATICS · INCLINED PLANE</div>
-    <h1>Motion on <span class="grad">Incline</span></h1>
-    <p>Acceleration down the plane, effect of friction, time to reach bottom and force components.</p>
-  </section>
-  <div class="layout">
-    <aside class="panel">
-      <div class="panel-head"><h2>Controls</h2></div>
-      <div class="panel-body">
-        <div class="field"><label>Incline Angle (θ) <span class="hint" id="thetaVal">30°</span></label>
-          <div class="inputrow"><input type="range" id="theta" min="5" max="60" step="1" value="30"><input type="number" id="thetaNum" min="5" max="60" value="30"></div></div>
-        <div class="field"><label>Length of Incline <span class="hint" id="LVal">10 m</span></label>
-          <div class="inputrow"><input type="range" id="L" min="3" max="25" step="0.5" value="10"><input type="number" id="LNum" min="3" max="25" step="0.5" value="10"></div></div>
-        <div class="field"><label>Friction Coefficient μ <span class="hint" id="muVal">0.20</span></label>
-          <div class="inputrow"><input type="range" id="mu" min="0" max="0.8" step="0.05" value="0.2"><input type="number" id="muNum" min="0" max="0.8" step="0.05" value="0.2"></div></div>
-        <div class="field"><label>Gravity (g) <span class="hint" id="gVal">9.8 m/s²</span></label>
-          <div class="inputrow"><input type="range" id="g" min="5" max="15" step="0.1" value="9.8"><input type="number" id="gNum" min="5" max="15" step="0.1" value="9.8"></div></div>
-        <div class="actions">
-          <button class="btn primary" id="playBtn">Play</button>
-          <button class="btn" id="resetBtn">Reset</button>
-        </div>
-        <div class="note"><strong>Starts from rest.</strong> Kinetic friction assumed once motion begins.</div>
-      </div>
-    </aside>
-    <div>
-      <div class="panel" style="margin-bottom:16px">
-        <div style="padding:12px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-            <strong>Incline View</strong>
-            <span id="timeLabel" style="color:var(--muted);font-size:13px">t = 0.00 s</span>
-          </div>
-          <canvas id="canvas" width="800" height="380"></canvas>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h3>Results</h3></div>
-        <div class="panel-body">
-          <div class="results">
-            <div class="result"><span>Acceleration</span><strong id="rA">—</strong></div>
-            <div class="result"><span>Time to Bottom</span><strong id="rT">—</strong></div>
-            <div class="result"><span>Final Speed</span><strong id="rV">—</strong></div>
-            <div class="result"><span>Net a (g units)</span><strong id="rF">—</strong></div>
-          </div>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:16px">
-        <div class="panel-head"><h3>Formulas</h3></div>
-        <div class="panel-body formulas">
-          <div>a = g (sinθ − μ cosθ)</div>
-          <div>t = √(2L / a) &nbsp; (from rest)</div>
-          <div>v = √(2 a L)</div>
-          <div>Parallel component: mg sinθ</div>
-          <div>Friction force: μ N = μ mg cosθ</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<section class="hero"><div class="eyebrow">INCLINE + FRICTION</div><h1>Inclined Plane with Friction</h1><p class="lead">A block on a rough incline. See when friction holds the block and when it slides — and the acceleration down the plane.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Mass m <b id="mV">3 kg</b></label><input type="range" id="m" min="0.5" max="10" step="0.5" value="3">
+<label class="row">Angle θ <b id="thV">30°</b></label><input type="range" id="th" min="5" max="55" step="1" value="30">
+<label class="row">μ (kinetic ≈ static) <b id="muV">0.30</b></label><input type="range" id="mu" min="0" max="0.9" step="0.02" value="0.3"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Component of weight down the plane is <b style="color:#fff">mg sinθ</b>. Friction up the plane is at most <b style="color:#fff">μN = μ mg cosθ</b>.</div>
+<ul><li>Slides if tanθ > μ (for the simple μ_s = μ model).</li>
+<li>Acceleration when sliding: g(sinθ − μ cosθ).</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Forces on the incline</h3>
+<code>N = mg cosθ</code><br>
+<code>f_max = μ N</code><br>
+<code>a = g(sinθ − μ cosθ)</code> (down the plane, if sliding)
+<h3>Problem tip</h3>
+Always resolve mg into parallel and perpendicular to the surface before writing Newton’s laws.</div></div>
+</div></div>
 </main>
-<script>
-(function(){
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  const $ = id => document.getElementById(id);
-
-  let playing = false;
-  let t = 0;
-  let lastTs = 0;
-
-  const theta = $('theta'), thetaNum = $('thetaNum');
-  const L = $('L'), LNum = $('LNum');
-  const mu = $('mu'), muNum = $('muNum');
-  const g = $('g'), gNum = $('gNum');
-
-  function sync(range, num, label, suffix, decimals) {
-    range.addEventListener('input', () => {
-      num.value = range.value;
-      label.textContent = Number(range.value).toFixed(decimals) + suffix;
-      resetAnim();
-    });
-    num.addEventListener('input', () => {
-      let v = parseFloat(num.value);
-      if (isNaN(v)) return;
-      v = Math.max(+range.min, Math.min(+range.max, v));
-      range.value = num.value = v;
-      label.textContent = v.toFixed(decimals) + suffix;
-      resetAnim();
-    });
-  }
-
-  sync(theta, thetaNum, $('thetaVal'), '°', 0);
-  sync(L, LNum, $('LVal'), ' m', 1);
-  sync(mu, muNum, $('muVal'), '', 2);
-  sync(g, gNum, $('gVal'), ' m/s²', 1);
-
-  function getP() {
-    return {
-      θ: +theta.value * Math.PI / 180,
-      L: +L.value,
-      μ: +mu.value,
-      g: +g.value
-    };
-  }
-
-  function accel(p) {
-    return p.g * (Math.sin(p.θ) - p.μ * Math.cos(p.θ));
-  }
-
-  function timeToBottom(p) {
-    const a = accel(p);
-    return a > 0.01 ? Math.sqrt(2 * p.L / a) : Infinity;
-  }
-
-  function resetAnim() {
-    playing = false;
-    t = 0;
-    $('playBtn').textContent = 'Play';
-    $('timeLabel').textContent = 't = 0.00 s';
-    update();
-  }
-
-  $('playBtn').addEventListener('click', () => {
-    playing = !playing;
-    $('playBtn').textContent = playing ? 'Pause' : 'Play';
-    if (playing) {
-      lastTs = 0;
-      requestAnimationFrame(loop);
-    }
-  });
-
-  $('resetBtn').addEventListener('click', () => {
-    theta.value = thetaNum.value = 30;
-    L.value = LNum.value = 10;
-    mu.value = muNum.value = 0.2;
-    g.value = gNum.value = 9.8;
-    $('thetaVal').textContent = '30°';
-    $('LVal').textContent = '10.0 m';
-    $('muVal').textContent = '0.20';
-    $('gVal').textContent = '9.8 m/s²';
-    resetAnim();
-  });
-
-  function loop(ts) {
-    if (!playing) return;
-    if (!lastTs) lastTs = ts;
-    const dt = Math.min((ts - lastTs) / 1000, 0.05);
-    lastTs = ts;
-    const p = getP();
-    const T = timeToBottom(p);
-    t += dt;
-    if (t >= T) {
-      t = T;
-      playing = false;
-      $('playBtn').textContent = 'Play';
-    }
-    $('timeLabel').textContent = 't = ' + t.toFixed(2) + ' s';
-    update();
-    if (playing) requestAnimationFrame(loop);
-  }
-
-  function update() {
-    const p = getP();
-    const a = accel(p);
-    const T = timeToBottom(p);
-    const v = a > 0 ? Math.sqrt(2 * a * p.L) : 0;
-
-    $('rA').textContent = (a > 0 ? a.toFixed(2) : '0.00') + ' m/s²';
-    $('rT').textContent = isFinite(T) ? T.toFixed(2) + ' s' : '∞';
-    $('rV').textContent = v.toFixed(2) + ' m/s';
-    $('rF').textContent = (a / p.g).toFixed(3) + ' g';
-
-    draw(p, a);
-  }
-
-  function draw(p, a) {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(1, rect.width);
-    const H = Math.max(1, rect.height || 380);
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    ctx.fillStyle = '#07101f';
-    ctx.fillRect(0, 0, W, H);
-
-    // Geometry
-    const margin = 50;
-    const scale = Math.min((W - 2 * margin) / p.L, (H - 80) / (p.L * Math.sin(p.θ) + 30));
-    const x1 = margin;
-    const y1 = H - 45;
-    const x2 = x1 + p.L * Math.cos(p.θ) * scale;
-    const y2 = y1 - p.L * Math.sin(p.θ) * scale;
-
-    // Plane surface
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-
-    // Fill under plane
-    ctx.fillStyle = '#1e293b';
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.lineTo(x2, y1);
-    ctx.closePath();
-    ctx.fill();
-
-    // Object position
-    const s = Math.min(0.5 * Math.max(a, 0) * t * t, p.L);
-    const frac = p.L > 0 ? s / p.L : 0;
-    const ox = x1 + frac * (x2 - x1);
-    const oy = y1 + frac * (y2 - y1);
-
-    ctx.fillStyle = '#63e6ff';
-    ctx.beginPath();
-    ctx.arc(ox, oy, 11, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Angle label
-    ctx.strokeStyle = '#63e6ff';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(x1, y1, 38, -p.θ, 0);
-    ctx.stroke();
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '13px system-ui';
-    ctx.fillText('θ = ' + theta.value + '°', x1 + 45, y1 - 12);
-  }
-
-  if (window.ResizeObserver) {
-    new ResizeObserver(update).observe(canvas);
-  } else {
-    window.addEventListener('resize', update);
-  }
-  update();
-})();
-</script>
 <script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const mEl=document.getElementById('m'),thEl=document.getElementById('th'),muEl=document.getElementById('mu');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=false,s=0,v=0,last=0;
+function sync(){mV.textContent=mEl.value+' kg';thV.textContent=thEl.value+'°';muV.textContent=(+muEl.value).toFixed(2);}
+function phys(){
+  const m=+mEl.value,th=+thEl.value*Math.PI/180,mu=+muEl.value,g=9.8;
+  const N=m*g*Math.cos(th);
+  const fmax=mu*N;
+  const down=m*g*Math.sin(th);
+  let a=0, state='rest';
+  if(down>fmax+1e-9){a=(down-fmax)/m; state='sliding down';}
+  else if(down<1e-9){state='level';
+  else {a=0; state='held by friction';}
+  return {m,th,mu,g,N,fmax,down,a,state};
+}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const p=phys();
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const baseY=H-50, left=60, right=W-40;
+  const run=right-left, rise=Math.tan(p.th)*run*0.55;
+  const x1=left,y1=baseY,x2=right,y2=baseY-rise;
+  ctx.fillStyle='#1e293b';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x2,baseY);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#64748b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  // block position along incline
+  const len=Math.hypot(x2-x1,y2-y1);
+  const frac=Math.min(0.85,0.15+s/200);
+  const bx=x1+(x2-x1)*frac, by=y1+(y2-y1)*frac;
+  // block oriented
+  ctx.save();ctx.translate(bx,by);ctx.rotate(-p.th);
+  ctx.fillStyle='#63e6ff';ctx.fillRect(-18,-14,36,20);
+  ctx.restore();
+  res.innerHTML='<div class="result"><span>a</span><strong>'+p.a.toFixed(2)+' m/s²</strong></div>'+
+    '<div class="result"><span>N</span><strong>'+p.N.toFixed(1)+' N</strong></div>'+
+    '<div class="result"><span>f_max</span><strong>'+p.fmax.toFixed(1)+' N</strong></div>'+
+    '<div class="result"><span>mg sinθ</span><strong>'+p.down.toFixed(1)+' N</strong></div>'+
+    '<div class="result"><span>state</span><strong>'+p.state+'</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;
+  const p=phys();v+=p.a*dt;s+=v*dt*30;if(s<0){s=0;v=0;}if(s>160){s=160;v=0;}
+  draw();requestAnimationFrame(loop);}
+function reset(){playing=false;s=0;v=0;last=0;playBtn.textContent='Play';sync();draw();}
+mEl.oninput=thEl.oninput=muEl.oninput=function(){sync();s=0;v=0;draw();};
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;reset();
+})();
+
+</script>
 </body>
 </html>
