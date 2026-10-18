@@ -1,221 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080b16">
-<meta name="description" content="Interactive 2D Vector Lab: add two vectors, resolve components, and visualize resultant magnitude and direction.">
-<title>2D Vector Lab | Vinit Simulation Hub</title>
-<style>
-:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:#080b16ef;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
-.hero{padding:32px 0 20px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750}.hero h1{font-size:clamp(28px,5vw,46px);margin:12px 0 8px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{color:var(--muted);max-width:700px;margin:0}
-.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:16px;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2ef2,#0d1324f7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:15px 17px;border-bottom:1px solid var(--line)}.panel-head h2,.panel-head h3{margin:0;font-size:16px}.panel-body{padding:16px}
-.field{margin-bottom:13px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;color:#dce6fb}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 80px;gap:8px}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number]{width:100%;min-height:38px;padding:6px 8px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px}
-.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px;cursor:pointer;font-weight:750;font-size:13px;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.actions{display:flex;gap:8px;margin-top:12px}.actions .btn{flex:1}
-.note{padding:10px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:12px}
-canvas{display:block;width:100%;height:400px;border-radius:13px;background:#080e1c;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:12px;padding:12px}.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}.result strong{font-size:16px}
-.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2D Vector Addition Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>2D VECTORS</small></span></a>
-    <a href="../index.html">← Back to Hub</a>
-  </div>
-</header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>KINEMATICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">KINEMATICS · VECTORS</div>
-    <h1>2D Vector <span class="grad">Lab</span></h1>
-    <p>Add two vectors, resolve into components, and visualize the resultant magnitude and direction in real time.</p>
-  </section>
-  <div class="layout">
-    <aside class="panel">
-      <div class="panel-head"><h2>Controls</h2></div>
-      <div class="panel-body">
-        <div class="field"><label>Vector A Magnitude <span class="hint" id="aMagVal">8.0</span></label>
-          <div class="inputrow"><input type="range" id="aMag" min="1" max="15" step="0.5" value="8"><input type="number" id="aMagNum" min="1" max="15" step="0.5" value="8"></div></div>
-        <div class="field"><label>Vector A Angle <span class="hint" id="aAngVal">30°</span></label>
-          <div class="inputrow"><input type="range" id="aAng" min="0" max="360" step="1" value="30"><input type="number" id="aAngNum" min="0" max="360" value="30"></div></div>
-        <div class="field"><label>Vector B Magnitude <span class="hint" id="bMagVal">6.0</span></label>
-          <div class="inputrow"><input type="range" id="bMag" min="1" max="15" step="0.5" value="6"><input type="number" id="bMagNum" min="1" max="15" step="0.5" value="6"></div></div>
-        <div class="field"><label>Vector B Angle <span class="hint" id="bAngVal">120°</span></label>
-          <div class="inputrow"><input type="range" id="bAng" min="0" max="360" step="1" value="120"><input type="number" id="bAngNum" min="0" max="360" value="120"></div></div>
-        <div class="actions"><button class="btn primary" id="resetBtn">Reset</button></div>
-        <div class="note"><strong>Angles</strong> measured from +x axis, counter-clockwise.</div>
-      </div>
-    </aside>
-    <div>
-      <div class="panel" style="margin-bottom:16px">
-        <div style="padding:12px"><canvas id="canvas" width="800" height="400"></canvas></div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h3>Results</h3></div>
-        <div class="panel-body">
-          <div class="results">
-            <div class="result"><span>Resultant |R|</span><strong id="rMag">—</strong></div>
-            <div class="result"><span>Direction θ</span><strong id="rAng">—</strong></div>
-            <div class="result"><span>Rx</span><strong id="rX">—</strong></div>
-            <div class="result"><span>Ry</span><strong id="rY">—</strong></div>
-          </div>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:16px">
-        <div class="panel-head"><h3>Formulas</h3></div>
-        <div class="panel-body formulas">
-          <div>Rx = A cosθₐ + B cosθᵦ</div>
-          <div>Ry = A sinθₐ + B sinθᵦ</div>
-          <div>|R| = √(Rx² + Ry²)</div>
-          <div>θ = atan2(Ry, Rx)</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<section class="hero"><div class="eyebrow">VECTORS</div><h1>2D Vector Addition Laboratory</h1><p class="lead">Add two plane vectors tip-to-tail. Read the magnitude and direction of the resultant — the foundation for forces, velocities, and displacement problems.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">|A| <b id="AV">8</b></label><input type="range" id="A" min="1" max="15" step="0.5" value="8">
+<label class="row">|B| <b id="BV">6</b></label><input type="range" id="B" min="1" max="15" step="0.5" value="6">
+<label class="row">Angle of B from A <b id="angV">50°</b></label><input type="range" id="ang" min="0" max="180" step="1" value="50"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Tip-to-tail: place the tail of B at the tip of A. The resultant R runs from the start of A to the tip of B.</div>
+<ul><li>Components: R_x = A + B cosθ, R_y = B sinθ (A along x).</li>
+<li>|R|² = A² + B² + 2AB cosθ.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Magnitude</h3>
+<code>|R| = √(A² + B² + 2AB cosθ)</code>
+<h3>Direction from A</h3>
+<code>tanφ = (B sinθ) / (A + B cosθ)</code>
+<h3>Problem tip</h3>
+Resolve into perpendicular components, add components, then rebuild the magnitude. This lab shows both the geometry and the numbers.</div></div>
+</div></div>
 </main>
-<script>
-(function(){
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  const $ = id => document.getElementById(id);
-
-  const aMag = $('aMag'), aMagNum = $('aMagNum');
-  const aAng = $('aAng'), aAngNum = $('aAngNum');
-  const bMag = $('bMag'), bMagNum = $('bMagNum');
-  const bAng = $('bAng'), bAngNum = $('bAngNum');
-
-  function sync(range, num, label, suffix, decimals) {
-    range.addEventListener('input', () => {
-      num.value = range.value;
-      label.textContent = Number(range.value).toFixed(decimals) + suffix;
-      draw();
-    });
-    num.addEventListener('input', () => {
-      let v = parseFloat(num.value);
-      if (isNaN(v)) return;
-      v = Math.max(+range.min, Math.min(+range.max, v));
-      range.value = num.value = v;
-      label.textContent = v.toFixed(decimals) + suffix;
-      draw();
-    });
-  }
-
-  sync(aMag, aMagNum, $('aMagVal'), '', 1);
-  sync(aAng, aAngNum, $('aAngVal'), '°', 0);
-  sync(bMag, bMagNum, $('bMagVal'), '', 1);
-  sync(bAng, bAngNum, $('bAngVal'), '°', 0);
-
-  $('resetBtn').addEventListener('click', () => {
-    aMag.value = aMagNum.value = 8;
-    aAng.value = aAngNum.value = 30;
-    bMag.value = bMagNum.value = 6;
-    bAng.value = bAngNum.value = 120;
-    $('aMagVal').textContent = '8.0';
-    $('aAngVal').textContent = '30°';
-    $('bMagVal').textContent = '6.0';
-    $('bAngVal').textContent = '120°';
-    draw();
-  });
-
-  function draw() {
-    const A = +aMag.value, θa = +aAng.value * Math.PI / 180;
-    const B = +bMag.value, θb = +bAng.value * Math.PI / 180;
-    const Ax = A * Math.cos(θa), Ay = A * Math.sin(θa);
-    const Bx = B * Math.cos(θb), By = B * Math.sin(θb);
-    const Rx = Ax + Bx, Ry = Ay + By;
-    const R = Math.hypot(Rx, Ry);
-    const θ = Math.atan2(Ry, Rx) * 180 / Math.PI;
-
-    $('rMag').textContent = R.toFixed(2);
-    $('rAng').textContent = θ.toFixed(1) + '°';
-    $('rX').textContent = Rx.toFixed(2);
-    $('rY').textContent = Ry.toFixed(2);
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(1, rect.width);
-    const H = Math.max(1, rect.height || 400);
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    ctx.fillStyle = '#07101f';
-    ctx.fillRect(0, 0, W, H);
-
-    const cx = W / 2, cy = H / 2;
-    const scale = Math.min(W, H) * 0.32 / 15;
-
-    // Axes
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(40, cy); ctx.lineTo(W - 40, cy);
-    ctx.moveTo(cx, 30); ctx.lineTo(cx, H - 30);
-    ctx.stroke();
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '12px system-ui';
-    ctx.fillText('+x', W - 50, cy - 10);
-    ctx.fillText('+y', cx + 10, 40);
-
-    function arrow(x1, y1, x2, y2, color, label) {
-      const dx = x2 - x1, dy = y2 - y1;
-      const len = Math.hypot(dx, dy);
-      if (len < 3) return;
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
-      ctx.lineWidth = 2.8;
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-      const ang = Math.atan2(dy, dx);
-      const h = 10;
-      ctx.beginPath();
-      ctx.moveTo(x2, y2);
-      ctx.lineTo(x2 - h * Math.cos(ang - 0.4), y2 - h * Math.sin(ang - 0.4));
-      ctx.lineTo(x2 - h * Math.cos(ang + 0.4), y2 - h * Math.sin(ang + 0.4));
-      ctx.closePath();
-      ctx.fill();
-      if (label) {
-        ctx.font = 'bold 13px system-ui';
-        ctx.fillText(label, x2 + 10, y2 - 8);
-      }
-    }
-
-    // Vectors (y is inverted in canvas)
-    arrow(cx, cy, cx + Ax * scale, cy - Ay * scale, '#63e6ff', 'A');
-    arrow(cx, cy, cx + Bx * scale, cy - By * scale, '#a78bfa', 'B');
-    arrow(cx, cy, cx + Rx * scale, cy - Ry * scale, '#7cf0bd', 'R');
-
-    // Component dashed lines for A
-    ctx.setLineDash([5, 4]);
-    ctx.strokeStyle = 'rgba(99,230,255,0.45)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(cx + Ax * scale, cy);
-    ctx.lineTo(cx + Ax * scale, cy - Ay * scale);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - Ay * scale);
-    ctx.lineTo(cx + Ax * scale, cy - Ay * scale);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
-
-  if (window.ResizeObserver) {
-    new ResizeObserver(draw).observe(canvas);
-  } else {
-    window.addEventListener('resize', draw);
-  }
-  draw();
-})();
-</script>
 <script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const aEl=document.getElementById('A'),bEl=document.getElementById('B'),angEl=document.getElementById('ang');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+function sync(){AV.textContent=aEl.value;BV.textContent=bEl.value;angV.textContent=angEl.value+'°';draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();
+  const A=+aEl.value,B=+bEl.value,th=+angEl.value*Math.PI/180;
+  const Rx=A+B*Math.cos(th), Ry=B*Math.sin(th);
+  const R=Math.hypot(Rx,Ry), phi=Math.atan2(Ry,Rx);
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const cx=W*0.28,cy=H*0.55,sc=8;
+  // axes
+  ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(40,cy);ctx.lineTo(W-40,cy);ctx.moveTo(cx,30);ctx.lineTo(cx,H-30);ctx.stroke();
+  function arrow(x1,y1,x2,y2,col,label){
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    const ang=Math.atan2(y2-y1,x2-x1);
+    ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-10*Math.cos(ang-0.4),y2-10*Math.sin(ang-0.4));ctx.lineTo(x2-10*Math.cos(ang+0.4),y2-10*Math.sin(ang+0.4));ctx.closePath();ctx.fill();
+    ctx.font='12px system-ui';ctx.fillText(label,x2+6,y2-6);
+  }
+  arrow(cx,cy,cx+A*sc,cy,'#63e6ff','A');
+  arrow(cx+A*sc,cy,cx+A*sc+B*sc*Math.cos(th),cy-B*sc*Math.sin(th),'#a78bfa','B');
+  arrow(cx,cy,cx+Rx*sc,cy-Ry*sc,'#fbbf24','R = A+B');
+  // parallelogram ghost
+  ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+B*sc*Math.cos(th),cy-B*sc*Math.sin(th));ctx.lineTo(cx+Rx*sc,cy-Ry*sc);ctx.stroke();
+  ctx.setLineDash([]);
+  res.innerHTML='<div class="result"><span>|R|</span><strong>'+R.toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>direction φ</span><strong>'+(phi*180/Math.PI).toFixed(1)+'°</strong></div>'+
+    '<div class="result"><span>R_x</span><strong>'+Rx.toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>R_y</span><strong>'+Ry.toFixed(2)+'</strong></div>';
+}
+aEl.oninput=bEl.oninput=angEl.oninput=sync;
+resetBtn.onclick=function(){aEl.value=8;bEl.value=6;angEl.value=50;sync();};
+sync();
+})();
+
+</script>
 </body>
 </html>
