@@ -1,58 +1,112 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Organ Pipes | Vinit Simulation Hub</title>
+<title>Organ Pipe Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.12)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:#63e6ff;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,28px);margin:8px 0 4px}.lead{color:#9cabc8;margin:0}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:rgba(16,24,48,.55);border:1px solid rgba(255,255,255,.12);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:#63e6ff}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:#f2f6ff;padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:#9cabc8}
-.formulas{font-size:12px;color:#9cabc8;line-height:1.7}code{color:#63e6ff}
-</style></head><body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>WAVES</a><a href="../index.html" style="color:#63e6ff">← Hub</a></div></header>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>WAVES</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">WAVES</div><h1>Organ Pipes</h1><p class="lead">Open pipe harmonics.</p></section>
+<section class="hero"><div class="eyebrow">ORGAN PIPES</div><h1>Organ Pipe Laboratory</h1><p class="lead">Open and closed pipes support different harmonics. Open: all integer harmonics. Closed: odd harmonics only.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">L (m) <span id="LV">0.6</span></label><input type="range" id="L" min="0.2" max="2" step="0.05" value="0.6">
-<label class="row">n <span id="nV">1</span></label><input type="range" id="n" min="1" max="4" step="1" value="1">
-<label class="row">v (m/s) <span id="vV">340</span></label><input type="range" id="v" min="300" max="400" step="5" value="340"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Length L <b id="LV">0.60 m</b></label><input type="range" id="L" min="0.2" max="2" step="0.05" value="0.6">
+<label class="row">Mode index n <b id="nV">1</b></label><input type="range" id="n" min="1" max="4" step="1" value="1">
+<label class="row">Pipe type</label>
+<select id="type" style="width:100%;padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff;margin-top:4px">
+<option value="open">Open at both ends</option>
+<option value="closed">Closed at one end</option>
+</select>
+<label class="row">v sound <b id="vV">340 m/s</b></label><input type="range" id="v" min="300" max="380" step="5" value="340"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Open end ≈ displacement antinode. Closed end ≈ displacement node.</div>
+<ul><li>Open fundamental: λ = 2L.</li>
+<li>Closed fundamental: λ = 4L (half the open frequency for same L).</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>f_n = n v / (2L)</code> (open)</div></div>
-</div></div></main>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Open pipe</h3>
+<code>f_n = n v / (2L)</code> · n = 1,2,3,…
+<h3>Closed pipe</h3>
+<code>f_n = (2n−1) v / (4L)</code> · n = 1,2,3,…
+<h3>Problem tip</h3>
+End correction is sometimes added in lab problems: L_eff = L + e.</div></div>
+</div></div>
+</main>
 <script src="../lab-theme.js?v=3"></script>
-<script>(function(){
+<script>
+
+(function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const L=document.getElementById('L');
-const n=document.getElementById('n');
-const v=document.getElementById('v');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('LV').textContent=L.value;document.getElementById('nV').textContent=n.value;document.getElementById('vV').textContent=v.value;draw();}
-L.oninput=sync;
-n.oninput=sync;
-v.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-function draw(){
- const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const f=+n.value*+v.value/(2*+L.value);
-ctx.strokeStyle='#63e6ff';ctx.strokeRect(W*0.3,50,W*0.4,H-100);
-for(let i=0;i<=+n.value;i++){const y=50+i*(H-100)/+n.value;ctx.beginPath();ctx.moveTo(W*0.3,y);ctx.lineTo(W*0.7,y);ctx.stroke();}
-res.innerHTML=`<div class="result"><span>f</span><strong>${f.toFixed(1)} Hz</strong></div>`;
+const LEl=document.getElementById('L'),nEl=document.getElementById('n'),typeEl=document.getElementById('type'),vEl=document.getElementById('v');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=true,t=0;
+function sync(){LV.textContent=LEl.value+' m';nV.textContent=nEl.value;vV.textContent=vEl.value+' m/s';}
+function phys(){
+  const L=+LEl.value,n=+nEl.value,v=+vEl.value,open=typeEl.value==='open';
+  let f,lam;
+  if(open){lam=2*L/n;f=n*v/(2*L);}
+  else{lam=4*L/(2*n-1);f=(2*n-1)*v/(4*L);}
+  return{L,n,v,open,f,lam};
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;L.value=0.6;n.value=1;v.value=340;sync();playBtn.textContent='Play';};
-sync();requestAnimationFrame(loop);
-})();</script></body></html>
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const p=phys();
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const x0=W*0.25,y0=50,w=W*0.5,h=H-100;
+  ctx.strokeStyle='#64748b';ctx.lineWidth=2;ctx.strokeRect(x0,y0,w,h);
+  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();
+  // displacement amplitude sketch along length
+  for(let i=0;i<=80;i++){
+    const xi=i/80;
+    let amp;
+    if(p.open) amp=Math.sin(p.n*Math.PI*xi)*Math.cos(t*3);
+    else amp=Math.cos((2*p.n-1)*Math.PI*xi/2)*Math.cos(t*3);
+    const X=x0+xi*w, Y=y0+h/2+amp*40;
+    if(i===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y);
+  }
+  ctx.stroke();
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';
+  ctx.fillText(p.open?'open–open':'closed–open',x0,y0-10);
+  res.innerHTML='<div class="result"><span>f</span><strong>'+p.f.toFixed(1)+' Hz</strong></div>'+
+    '<div class="result"><span>λ</span><strong>'+p.lam.toFixed(3)+' m</strong></div>'+
+    '<div class="result"><span>mode</span><strong>'+(p.open?'open n='+p.n:'closed n='+p.n)+'</strong></div>';
+}
+function loop(){if(!playing){draw();return;}t+=0.03;draw();requestAnimationFrame(loop);}
+function reset(){playing=false;t=0;playBtn.textContent='Play';sync();draw();}
+LEl.oninput=nEl.oninput=typeEl.onchange=vEl.oninput=function(){sync();draw();};
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
+})();
+
+</script>
+</body>
+</html>
