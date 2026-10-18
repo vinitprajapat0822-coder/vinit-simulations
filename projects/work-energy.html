@@ -1,84 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0e1a">
-<title>Work–Energy Theorem | Vinit Simulation Hub</title>
-<style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:rgba(255,255,255,.12);--radius:18px}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,rgba(99,102,241,.18),transparent 42%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.75);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.nav{min-height:58px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center;font-weight:850}
-.logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 22px rgba(99,102,241,.35)}
-.brand small{display:block;font-size:10px;color:var(--muted)}.nav a:last-child{color:var(--cyan);font-size:13px}
-.hero{padding:24px 0 14px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);background:rgba(99,230,255,.08);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:750}
-.hero h1{font-size:clamp(24px,4.5vw,38px);margin:10px 0 6px}.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p{color:var(--muted);margin:0;max-width:680px}
-.layout{display:grid;grid-template-columns:minmax(260px,320px) 1fr;gap:14px;padding-bottom:28px}@media(max-width:860px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(18px);overflow:hidden}
-.panel-head{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:750}.panel-body{padding:14px}
-.field{margin-bottom:12px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.hint{color:var(--muted);font-size:11px}
-input[type=range]{width:100%;accent-color:var(--cyan)}.inputrow{display:grid;grid-template-columns:1fr 70px;gap:8px}
-input[type=number],select{width:100%;padding:7px;border-radius:10px;border:1px solid #31415f;background:#0a1220;color:var(--text)}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:750;cursor:pointer}.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}
-.actions{display:flex;gap:8px;margin-top:8px}.actions .btn{flex:1}
-canvas{display:block;width:100%;height:360px;border-radius:14px;background:linear-gradient(180deg,#0c1426,#070f1c);border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:12px;padding:10px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:15px}
-.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Work–Energy Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
 </head>
 <body>
-<header><div class="wrap nav">
-  <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>CONSERVATION · ENERGY</small></span></a>
-  <a href="../index.html">← Back to Hub</a>
-</div></header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>CONSERVATION</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">CONSERVATION · ENERGY</div>
-    <h1>Work–Energy Theorem</h1>
-    <p id="lab-lead"></p>
-  </section>
-  <div class="layout">
-    <aside class="panel"><div class="panel-head">Controls</div><div class="panel-body">
-      <div class="field"><label>Force F (N) <span class="hint" id="FV">10</span></label><input type="range" id="F" min="1" max="30" value="10"></div>
-<div class="field"><label>Distance s (m) <span class="hint" id="sV">5</span></label><input type="range" id="s" min="1" max="20" value="5"></div>
-<div class="field"><label>Mass m (kg) <span class="hint" id="mV">2</span></label><input type="range" id="m" min="0.5" max="10" step="0.5" value="2"></div>
-<div class="field"><label>u (m/s) <span class="hint" id="uV">0</span></label><input type="range" id="u" min="0" max="10" value="0"></div>
-      <div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div>
-    </div></aside>
-    <div>
-      <div class="panel" style="margin-bottom:14px"><div class="panel-body"><canvas id="canvas" width="800" height="360"></canvas></div></div>
-      <div class="panel" style="margin-bottom:14px"><div class="panel-head">Results</div><div class="panel-body"><div class="results" id="results"></div></div></div>
-      <div class="panel"><div class="panel-head">Formulas</div><div class="panel-body formulas"><div><code>W = F s</code> (constant F along displacement)</div><div><code>W<sub>net</sub> = ΔKE = ½mv² − ½mu²</code></div></div></div>
-    </div>
-  </div>
+<section class="hero"><div class="eyebrow">WORK & ENERGY</div><h1>Work–Energy Laboratory</h1><p class="lead">Work by a constant force W = Fs cosθ. Work–energy theorem: net work equals change in kinetic energy.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Force F <b id="FV">10 N</b></label><input type="range" id="F" min="1" max="30" step="1" value="10">
+<label class="row">Displacement s <b id="sV">5 m</b></label><input type="range" id="s" min="1" max="15" step="0.5" value="5">
+<label class="row">Angle θ (F to path) <b id="thV">0°</b></label><input type="range" id="th" min="0" max="90" step="5" value="0">
+<label class="row">Mass m <b id="mV">2 kg</b></label><input type="range" id="m" min="0.5" max="10" step="0.5" value="2"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Only the component of force along the displacement does work. Perpendicular force → W = 0.</div>
+<ul><li>θ = 90° → no work, no change in speed from that force.</li>
+<li>Work–energy: W_net = ΔKE.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Work</h3>
+<code>W = F s cosθ</code>
+<h3>Work–energy theorem</h3>
+<code>W_net = ΔKE = ½mv² − ½mu²</code>
+<h3>Problem tip</h3>
+Choose a system so that unknown forces do no work when possible (e.g. pure rolling, fixed pivot).</div></div>
+</div></div>
 </main>
+<script src="../lab-theme.js?v=3"></script>
 <script>
 
 (function(){
-const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
-document.getElementById('playBtn').style.display='none';
-document.getElementById('lab-lead').textContent='Net work equals change in kinetic energy.';
-function sync(){FV.textContent=F.value;sV.textContent=s.value;mV.textContent=m.value;uV.textContent=u.value;draw()}
-['F','s','m','u'].forEach(id=>document.getElementById(id).oninput=sync);
-function draw(){
- const dpr=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||700,H=360;
- canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
- ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const Work=parseFloat(F.value)*parseFloat(s.value);const kei=0.5*parseFloat(m.value)*parseFloat(u.value)**2;
- const kef=kei+Work;const v=Math.sqrt(Math.max(0,2*kef/parseFloat(m.value)));
- ctx.fillStyle='#63e6ff';ctx.fillRect(80,H/2-20,40,40);
- ctx.fillStyle='#a78bfa';ctx.fillRect(80,H/2-8,Math.min(W-160,parseFloat(s.value)*20),16);
- document.getElementById('results').innerHTML='<div class="result"><span>Work W</span><strong>'+Work.toFixed(1)+' J</strong></div><div class="result"><span>KE initial</span><strong>'+kei.toFixed(1)+' J</strong></div><div class="result"><span>KE final</span><strong>'+kef.toFixed(1)+' J</strong></div><div class="result"><span>v final</span><strong>'+v.toFixed(2)+' m/s</strong></div>';
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const FEl=document.getElementById('F'),sEl=document.getElementById('s'),thEl=document.getElementById('th'),mEl=document.getElementById('m');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=false,x=60,last=0;
+function sync(){FV.textContent=FEl.value+' N';sV.textContent=sEl.value+' m';thV.textContent=thEl.value+'°';mV.textContent=mEl.value+' kg';}
+function phys(){const F=+FEl.value,s=+sEl.value,th=+thEl.value*Math.PI/180,m=+mEl.value;
+  const W=F*s*Math.cos(th); const a=(F*Math.cos(th))/m; const v=Math.sqrt(Math.max(0,2*a*s));
+  return{F,s,th,m,W,a,v};
 }
-document.getElementById('resetBtn').onclick=()=>{F.value=10;s.value=5;m.value=2;u.value=0;sync()};
-sync();
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const p=phys();
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#1e293b';ctx.fillRect(0,H-70,W,70);
+  const progress=playing?Math.min(1,x/400):0;
+  const bx=60+progress*(W-160);
+  ctx.fillStyle='#63e6ff';ctx.fillRect(bx,H-110,40,40);
+  // force arrow
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+  const fx=bx+20,fy=H-90;
+  ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx+50*Math.cos(p.th),fy-50*Math.sin(p.th));ctx.stroke();
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('F',fx+55*Math.cos(p.th),fy-55*Math.sin(p.th));
+  res.innerHTML='<div class="result"><span>W = Fs cosθ</span><strong>'+p.W.toFixed(1)+' J</strong></div>'+
+    '<div class="result"><span>a along path</span><strong>'+p.a.toFixed(2)+' m/s²</strong></div>'+
+    '<div class="result"><span>v after s (from rest)</span><strong>'+p.v.toFixed(2)+' m/s</strong></div>'+
+    '<div class="result"><span>ΔKE</span><strong>'+(0.5*p.m*p.v*p.v).toFixed(1)+' J</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;
+  x+=80*dt;if(x>400){x=400;playing=false;playBtn.textContent='Play';}draw();if(playing)requestAnimationFrame(loop);}
+function reset(){playing=false;x=60;last=0;playBtn.textContent='Play';sync();draw();}
+FEl.oninput=sEl.oninput=thEl.oninput=mEl.oninput=function(){sync();if(!playing)draw();};
+playBtn.onclick=function(){if(!playing)x=60;playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;reset();
 })();
 
 </script>
-<script src="../lab-theme.js?v=3"></script>
 </body>
 </html>
