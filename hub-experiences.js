@@ -113,12 +113,11 @@
             n.angle +
             'rad" title="' +
             esc(n.label) +
-            '">' +
-            '<span class="sp-dot"></span><span class="sp-name">' +
+            '"><span class="sp-inner"><span class="sp-dot"></span><span class="sp-name">' +
             esc(n.label) +
             "</span><small>" +
             n.live +
-            "</small></button></div>"
+            "</small></span></button></div>"
           );
         })
         .join("") +
