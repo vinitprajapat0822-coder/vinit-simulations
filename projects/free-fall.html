@@ -1,378 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080b16">
-<title>Free Fall Lab | Vinit Simulation Hub</title>
-<style>
-:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-button,input{font:inherit}a{color:inherit;text-decoration:none}
-.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:#080b16f2;border-bottom:1px solid var(--line)}
-.nav{min-height:60px;display:flex;align-items:center;justify-content:space-between}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800}
-.logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#17334b;color:var(--cyan);font-size:20px}
-.brand small{display:block;font-size:10px;color:var(--muted);letter-spacing:1px}
-.nav a{color:var(--cyan);font-size:13px}
-.hero{padding:28px 0 18px}
-.eyebrow{display:inline-block;border:1px solid #63e6ff44;background:#63e6ff11;color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
-h1{font-size:clamp(26px,5vw,42px);margin:10px 0 6px}
-.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p{color:var(--muted);margin:0;max-width:600px}
-.layout{display:grid;grid-template-columns:300px 1fr;gap:16px;padding-bottom:30px}
-@media(max-width:860px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-.panel-head{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700}
-.panel-body{padding:16px}
-.field{margin-bottom:14px}
-.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
-.hint{color:var(--muted);font-size:12px}
-.inputrow{display:grid;grid-template-columns:1fr 76px;gap:8px}
-input[type=range]{width:100%;accent-color:var(--cyan)}
-input[type=number]{width:100%;padding:8px;border-radius:8px;border:1px solid #31415f;background:#080e1d;color:var(--text)}
-.actions{display:flex;gap:8px;margin-top:12px}
-.btn{flex:1;padding:11px;border-radius:10px;border:1px solid #34425e;background:#141e33;color:var(--text);font-weight:700;cursor:pointer}
-.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}
-.note{margin-top:12px;padding:10px;border-radius:8px;background:#63e6ff0d;border:1px solid #63e6ff22;font-size:12px;color:var(--muted)}
-canvas{display:block;width:100%;height:400px;background:#0a1220;border-radius:12px}
-.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.result{background:#0c1426;border:1px solid #2a3a58;border-radius:10px;padding:12px}
-.result span{display:block;font-size:11px;color:var(--muted)}
-.result strong{font-size:18px}
-.formulas{font-size:13px;color:var(--muted);line-height:1.8}
-.formulas code{color:var(--cyan)}
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Fall Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:70ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="../index.html">
-      <span class="logo">∑</span>
-      <span>VINIT SIMULATION HUB<small>FREE FALL</small></span>
-    </a>
-    <a href="../index.html">← Back to Hub</a>
-  </div>
-</header>
-
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>KINEMATICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">KINEMATICS · GRAVITY</div>
-    <h1>Free Fall <span class="grad">Lab</span></h1>
-    <p>Motion under gravity. Adjust height, initial velocity and g. Press Play to see the motion.</p>
-  </section>
-
-  <div class="layout">
-    <aside class="panel">
-      <div class="panel-head">Controls</div>
-      <div class="panel-body">
-        <div class="field">
-          <label>Height (h) <span class="hint" id="hVal">40 m</span></label>
-          <div class="inputrow">
-            <input type="range" id="h" min="5" max="100" step="1" value="40">
-            <input type="number" id="hNum" min="5" max="100" value="40">
-          </div>
-        </div>
-        <div class="field">
-          <label>Initial Velocity (u) <span class="hint" id="uVal">0 m/s</span></label>
-          <div class="inputrow">
-            <input type="range" id="u" min="-20" max="20" step="0.5" value="0">
-            <input type="number" id="uNum" min="-20" max="20" step="0.5" value="0">
-          </div>
-        </div>
-        <div class="field">
-          <label>Gravity (g) <span class="hint" id="gVal">9.8 m/s²</span></label>
-          <div class="inputrow">
-            <input type="range" id="g" min="1" max="20" step="0.1" value="9.8">
-            <input type="number" id="gNum" min="1" max="20" step="0.1" value="9.8">
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn primary" id="playBtn">Play</button>
-          <button class="btn" id="resetBtn">Reset</button>
-        </div>
-        <div class="note">Downward is positive. Air resistance is neglected.</div>
-      </div>
-    </aside>
-
-    <div>
-      <div class="panel" style="margin-bottom:16px">
-        <div class="panel-body">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-            <strong>Simulation</strong>
-            <span id="timeLabel" style="color:var(--muted)">t = 0.00 s</span>
-          </div>
-          <canvas id="canvas" width="700" height="400"></canvas>
-        </div>
-      </div>
-
-      <div class="panel" style="margin-bottom:16px">
-        <div class="panel-head">Results</div>
-        <div class="panel-body">
-          <div class="results">
-            <div class="result"><span>Time of Flight</span><strong id="rT">—</strong></div>
-            <div class="result"><span>Impact Speed</span><strong id="rV">—</strong></div>
-            <div class="result"><span>Current Height</span><strong id="rY">—</strong></div>
-            <div class="result"><span>Max Height</span><strong id="rMax">—</strong></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">Formulas</div>
-        <div class="panel-body formulas">
-          <div>y = h + u t + ½ g t²</div>
-          <div>v = u + g t</div>
-          <div>v² = u² + 2g(y − h)</div>
-          <div>Time of flight from quadratic equation (y = 0)</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<section class="hero"><div class="eyebrow">FREE FALL</div><h1>Free Fall Laboratory</h1><p class="lead">Drop or throw a body straight down from height h. See how time of fall and impact speed depend on h, g, and initial downward speed.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Height h <b id="hV">20 m</b></label><input type="range" id="h" min="2" max="80" step="0.5" value="20">
+<label class="row">g <b id="gV">9.8 m/s²</b></label><input type="range" id="g" min="1.6" max="20" step="0.1" value="9.8">
+<label class="row">Initial speed downward u₀ <b id="u0V">0 m/s</b></label><input type="range" id="u0" min="0" max="20" step="0.5" value="0"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Acceleration is constant <b style="color:#fff">g downward</b>. Velocity grows linearly; distance grows as t² if u₀=0.</div>
+<ul><li>From rest: <b style="color:#fff">v² = 2gh</b> at the ground.</li>
+<li>Same height on Moon (smaller g) → longer fall time, smaller impact speed.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Equations (down positive)</h3>
+<code>v = u₀ + g t</code><br>
+<code>y = u₀ t + ½ g t²</code><br>
+<code>v² = u₀² + 2 g y</code>
+<h3>Time to fall from height h</h3>
+<code>T = [−u₀ + √(u₀² + 2gh)] / g</code>
+<h3>Use in problems</h3>
+<ul><li>Set u₀=0 for pure free fall from rest.</li>
+<li>Change g to 1.6 to mimic Moon and compare T and v.</li></ul></div></div>
+</div></div>
 </main>
-
-<script>
-(function(){
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-
-  let playing = false;
-  let t = 0;
-  let lastTs = 0;
-  let animId = null;
-
-  const hEl = document.getElementById('h');
-  const hNum = document.getElementById('hNum');
-  const uEl = document.getElementById('u');
-  const uNum = document.getElementById('uNum');
-  const gEl = document.getElementById('g');
-  const gNum = document.getElementById('gNum');
-  const playBtn = document.getElementById('playBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const timeLabel = document.getElementById('timeLabel');
-  const rT = document.getElementById('rT');
-  const rV = document.getElementById('rV');
-  const rY = document.getElementById('rY');
-  const rMax = document.getElementById('rMax');
-  const hVal = document.getElementById('hVal');
-  const uVal = document.getElementById('uVal');
-  const gVal = document.getElementById('gVal');
-
-  function sync(range, num, label, unit, dec) {
-    range.addEventListener('input', function() {
-      num.value = range.value;
-      label.textContent = Number(range.value).toFixed(dec) + unit;
-      reset();
-    });
-    num.addEventListener('input', function() {
-      var v = parseFloat(num.value);
-      if (isNaN(v)) return;
-      v = Math.max(+range.min, Math.min(+range.max, v));
-      range.value = num.value = v;
-      label.textContent = v.toFixed(dec) + unit;
-      reset();
-    });
-  }
-
-  sync(hEl, hNum, hVal, ' m', 0);
-  sync(uEl, uNum, uVal, ' m/s', 1);
-  sync(gEl, gNum, gVal, ' m/s²', 1);
-
-  function getP() {
-    return {
-      h: parseFloat(hEl.value) || 40,
-      u: parseFloat(uEl.value) || 0,
-      g: parseFloat(gEl.value) || 9.8
-    };
-  }
-
-  function flightTime(p) {
-    // h + u*t + 0.5*g*t² = 0
-    var a = 0.5 * p.g;
-    var b = p.u;
-    var c = p.h;
-    var disc = b*b - 4*a*c;
-    if (disc < 0) return 0;
-    var t1 = (-b + Math.sqrt(disc)) / (2*a);
-    var t2 = (-b - Math.sqrt(disc)) / (2*a);
-    return Math.max(t1, t2, 0);
-  }
-
-  function pos(p, t) {
-    return p.h + p.u * t + 0.5 * p.g * t * t;
-  }
-
-  function vel(p, t) {
-    return p.u + p.g * t;
-  }
-
-  function reset() {
-    playing = false;
-    t = 0;
-    if (animId) {
-      cancelAnimationFrame(animId);
-      animId = null;
-    }
-    playBtn.textContent = 'Play';
-    timeLabel.textContent = 't = 0.00 s';
-    update();
-  }
-
-  playBtn.addEventListener('click', function() {
-    // toggle play/pause and manage RAF handle to avoid duplicate loops
-    if (playing) {
-      playing = false;
-      playBtn.textContent = 'Play';
-      if (animId) {
-        cancelAnimationFrame(animId);
-        animId = null;
-      }
-    } else {
-      playing = true;
-      playBtn.textContent = 'Pause';
-      lastTs = 0;
-      animId = requestAnimationFrame(loop);
-    }
-  });
-
-  resetBtn.addEventListener('click', function() {
-    hEl.value = hNum.value = 40;
-    uEl.value = uNum.value = 0;
-    gEl.value = gNum.value = 9.8;
-    hVal.textContent = '40 m';
-    uVal.textContent = '0.0 m/s';
-    gVal.textContent = '9.8 m/s²';
-    reset();
-  });
-
-  function loop(ts) {
-    if (!playing) return;
-    if (!lastTs) lastTs = ts;
-    var dt = Math.min((ts - lastTs) / 1000, 0.05);
-    lastTs = ts;
-
-    var p = getP();
-    var T = flightTime(p);
-    t += dt;
-    if (t >= T) {
-      t = T;
-      playing = false;
-      playBtn.textContent = 'Play';
-      if (animId) { cancelAnimationFrame(animId); animId = null; }
-    }
-    timeLabel.textContent = 't = ' + t.toFixed(2) + ' s';
-    update();
-    if (playing) animId = requestAnimationFrame(loop);
-  }
-
-  function update() {
-    var p = getP();
-    var T = flightTime(p);
-    var y = Math.max(0, pos(p, t));
-    var vImp = vel(p, T);
-
-    rT.textContent = T.toFixed(2) + ' s';
-    rV.textContent = Math.abs(vImp).toFixed(2) + ' m/s';
-    rY.textContent = y.toFixed(2) + ' m';
-
-    if (p.u < 0) {
-      var tPeak = -p.u / p.g;
-      var maxH = p.h + p.u * tPeak + 0.5 * p.g * tPeak * tPeak;
-      rMax.textContent = Math.max(0, maxH).toFixed(2) + ' m';
-    } else {
-      rMax.textContent = '—';
-    }
-
-    draw(p, y);
-  }
-
-  function draw(p, y) {
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var rect = canvas.getBoundingClientRect();
-    var W = Math.max(300, rect.width);
-    var H = Math.max(300, rect.height || 400);
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    // Background
-    ctx.fillStyle = '#0a1220';
-    ctx.fillRect(0, 0, W, H);
-
-    // Ground
-    var groundY = H * 0.88;
-    ctx.fillStyle = '#1a2e22';
-    ctx.fillRect(0, groundY, W, H - groundY);
-    ctx.strokeStyle = '#3d6b54';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, groundY);
-    ctx.lineTo(W, groundY);
-    ctx.stroke();
-
-    // Height scale
-    var maxH = Math.max(p.h * 1.2, 20);
-    var usable = groundY - 40;
-    ctx.strokeStyle = '#445';
-    ctx.fillStyle = '#8af';
-    ctx.font = '11px system-ui';
-    ctx.textAlign = 'right';
-    var step = maxH > 60 ? 20 : 10;
-    for (var hh = 0; hh <= maxH; hh += step) {
-      var py = groundY - (hh / maxH) * usable;
-      ctx.beginPath();
-      ctx.moveTo(36, py);
-      ctx.lineTo(44, py);
-      ctx.stroke();
-      ctx.fillText(hh + 'm', 34, py + 4);
-    }
-    ctx.beginPath();
-    ctx.moveTo(44, 40);
-    ctx.lineTo(44, groundY);
-    ctx.stroke();
-
-    // Object
-    var yPx = groundY - (y / maxH) * usable;
-    ctx.beginPath();
-    ctx.arc(W / 2, yPx, 12, 0, Math.PI * 2);
-    ctx.fillStyle = '#63e6ff';
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 12px system-ui';
-    ctx.textAlign = 'left';
-    ctx.fillText('y = ' + y.toFixed(1) + ' m', W / 2 + 18, yPx + 4);
-
-    // Velocity arrow
-    var v = vel(p, t);
-    if (Math.abs(v) > 0.3) {
-      var len = Math.min(50, Math.abs(v) * 2);
-      var dir = v > 0 ? 1 : -1;
-      var ax = W / 2 - 30;
-      ctx.strokeStyle = '#ff8e9c';
-      ctx.fillStyle = '#ff8e9c';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(ax, yPx);
-      ctx.lineTo(ax, yPx + dir * len);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(ax, yPx + dir * len);
-      ctx.lineTo(ax - 5, yPx + dir * len - dir * 8);
-      ctx.lineTo(ax + 5, yPx + dir * len - dir * 8);
-      ctx.fill();
-    }
-  }
-
-  // Initial draw
-  update();
-
-  window.addEventListener('resize', function() {
-    update();
-  });
-})();
-</script>
 <script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const hEl=document.getElementById('h'),gEl=document.getElementById('g'),uEl=document.getElementById('u0');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=false,t=0,last=0;
+function sync(){hV.textContent=hEl.value+' m';gV.textContent=gEl.value+' m/s²';u0V.textContent=uEl.value+' m/s';}
+function phys(){const h=+hEl.value,g=+gEl.value,u0=+uEl.value;
+  // y measured downward positive from release
+  // with initial velocity u0 downward
+  // h = u0 t + 0.5 g t^2 => solve t
+  const disc=u0*u0+2*g*h; const T=(-u0+Math.sqrt(disc))/g;
+  const vland=u0+g*T;
+  return {h,g,u0,T,vland};
+}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const p=phys();const pad=40;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  // tower / ground
+  const scale=(H-pad*2)/Math.max(p.h,1);
+  const groundY=H-pad;
+  ctx.fillStyle='#1e293b';ctx.fillRect(0,groundY,W,pad);
+  ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(W*0.35,pad);ctx.lineTo(W*0.35,groundY);ctx.stroke();
+  const time=Math.min(t,p.T);
+  const y=p.u0*time+0.5*p.g*time*time; // down from top
+  const v=p.u0+p.g*time;
+  const py=pad+y*scale;
+  // trail
+  ctx.strokeStyle='rgba(99,230,255,0.3)';ctx.beginPath();ctx.moveTo(W*0.35,pad);ctx.lineTo(W*0.35,py);ctx.stroke();
+  ctx.fillStyle='#63e6ff';ctx.shadowColor='rgba(99,230,255,0.5)';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(W*0.35,Math.min(py,groundY-8),9,0,6.28);ctx.fill();ctx.shadowBlur=0;
+  // velocity arrow
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.35,py);ctx.lineTo(W*0.35,py+Math.min(60,v*3));ctx.stroke();
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('v ↓',W*0.35+12,py+20);
+  res.innerHTML='<div class="result"><span>Time to ground T</span><strong>'+p.T.toFixed(2)+' s</strong></div>'+
+    '<div class="result"><span>Impact speed</span><strong>'+p.vland.toFixed(2)+' m/s</strong></div>'+
+    '<div class="result"><span>t now</span><strong>'+time.toFixed(2)+' s</strong></div>'+
+    '<div class="result"><span>v now</span><strong>'+v.toFixed(2)+' m/s</strong></div>'+
+    '<div class="result"><span>distance fallen</span><strong>'+Math.min(y,p.h).toFixed(2)+' m</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;t+=dt;
+  const p=phys();if(t>=p.T){t=p.T;playing=false;playBtn.textContent='Play';}draw();if(playing)requestAnimationFrame(loop);}
+function reset(){playing=false;t=0;last=0;playBtn.textContent='Play';sync();draw();}
+hEl.oninput=gEl.oninput=uEl.oninput=function(){sync();if(!playing){t=0;draw();}};
+playBtn.onclick=function(){const p=phys();if(t>=p.T)t=0;playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;reset();
+})();
+
+</script>
 </body>
 </html>
