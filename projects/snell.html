@@ -2,40 +2,59 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0a0e1a">
-<title>Snell's Law | Vinit Simulation Hub</title>
+<title>Snell's Law & TIR Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:var(--cyan);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,30px);margin:8px 0 4px}p.lead{color:var(--muted);margin:0 0 8px}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:var(--cyan)}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
-.formulas{font-size:12px;color:var(--muted);line-height:1.7}code{color:var(--cyan)}
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+select.sel{width:100%;padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff;margin-top:4px}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span><span>OPTICS</span></a><a href="../index.html" style="color:var(--cyan)">← Hub</a></div></header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>OPTICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">OPTICS</div><h1>Snell's Law</h1><p class="lead">Refraction / TIR at a boundary.</p></section>
+<section class="hero"><div class="eyebrow">REFRACTION</div><h1>Snell's Law & TIR Laboratory</h1><p class="lead">A ray hits a boundary between two media. Watch refraction bend toward or away from the normal, and find when total internal reflection begins.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">n₁ <span id="n1V">1.0</span></label><input type="range" id="n1" min="1" max="2" step="0.05" value="1.0">
-<label class="row">n₂ <span id="n2V">1.5</span></label><input type="range" id="n2" min="1" max="2.2" step="0.05" value="1.5">
-<label class="row">θ₁ (°) <span id="thiV">40</span></label><input type="range" id="thi" min="5" max="85" step="1" value="40"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">n₁ <b id="n1V">1.00</b></label><input type="range" id="n1" min="1" max="2.2" step="0.01" value="1">
+<label class="row">n₂ <b id="n2V">1.50</b></label><input type="range" id="n2" min="1" max="2.2" step="0.01" value="1.5">
+<label class="row">Incident angle θ₁ <b id="thV">40°</b></label><input type="range" id="th" min="0" max="85" step="1" value="40"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">When light goes into a denser medium (n₂ > n₁), it bends <b style="color:#fff">toward</b> the normal. Into rarer medium, it bends away — and may undergo TIR.</div>
+<ul><li>Critical angle exists only when n₁ > n₂.</li>
+<li>sin c = n₂/n₁.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>n₁ sinθ₁ = n₂ sinθ₂</code></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Snell’s law</h3>
+<code>n₁ sinθ₁ = n₂ sinθ₂</code>
+<h3>Critical angle (n₁ > n₂)</h3>
+<code>sin c = n₂ / n₁</code>
+<h3>Problem tip</h3>
+Always measure angles from the normal, not from the surface.</div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
@@ -43,36 +62,37 @@ label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0
 
 (function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const n1=document.getElementById('n1');
-const n2=document.getElementById('n2');
-const thi=document.getElementById('thi');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('n1V').textContent=n1.value;document.getElementById('n2V').textContent=n2.value;document.getElementById('thiV').textContent=thi.value;draw();}
-n1.oninput=sync;
-n2.oninput=sync;
-thi.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+const n1=document.getElementById('n1'),n2=document.getElementById('n2'),th=document.getElementById('th');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+function sync(){n1V.textContent=(+n1.value).toFixed(2);n2V.textContent=(+n2.value).toFixed(2);thV.textContent=th.value+'°';draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-
-const n1=+n1.value,n2=+n2.value,th1=+thi.value*Math.PI/180;
-const s=n1*Math.sin(th1)/n2; let th2=null,tir=Math.abs(s)>1; if(!tir) th2=Math.asin(s);
-const cx=W/2,cy=H/2;
-ctx.fillStyle='#0f172a';ctx.fillRect(0,0,W,H/2);ctx.fillStyle='#1e3a5f';ctx.fillRect(0,H/2,W,H/2);
-ctx.strokeStyle='#475569';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(cx,20);ctx.lineTo(cx,H-20);ctx.stroke();ctx.setLineDash([]);
-const L=110;
-ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-L*Math.sin(th1),cy-L*Math.cos(th1));ctx.lineTo(cx,cy);ctx.stroke();
-if(tir){ctx.strokeStyle='#f87171';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+L*Math.sin(th1),cy-L*Math.cos(th1));ctx.stroke();}
-else{ctx.strokeStyle='#63e6ff';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+L*Math.sin(th2),cy+L*Math.cos(th2));ctx.stroke();}
-res.innerHTML=`<div class="result"><span>θ₂</span><strong>${tir?'TIR':(th2*180/Math.PI).toFixed(1)+'°'}</strong></div>`;
-
+  const [W,H]=size();
+  const a=+n1.value,b=+n2.value,th1=+th.value*Math.PI/180;
+  const s=a*Math.sin(th1)/b;let th2=null,tir=Math.abs(s)>1;if(!tir)th2=Math.asin(s);
+  ctx.fillStyle='#0f172a';ctx.fillRect(0,0,W,H/2);
+  ctx.fillStyle='#1e3a5f';ctx.fillRect(0,H/2,W,H/2);
+  ctx.fillStyle='#64748b';ctx.font='12px system-ui';ctx.fillText('n₁ = '+a.toFixed(2),20,24);ctx.fillText('n₂ = '+b.toFixed(2),20,H/2+20);
+  const cx=W/2,cy=H/2,L=120;
+  ctx.strokeStyle='#475569';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(cx,20);ctx.lineTo(cx,H-20);ctx.stroke();ctx.setLineDash([]);
+  // incident
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-L*Math.sin(th1),cy-L*Math.cos(th1));ctx.lineTo(cx,cy);ctx.stroke();
+  if(tir){
+    ctx.strokeStyle='#ff8e9c';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+L*Math.sin(th1),cy-L*Math.cos(th1));ctx.stroke();
+  } else {
+    ctx.strokeStyle='#63e6ff';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+L*Math.sin(th2),cy+L*Math.cos(th2));ctx.stroke();
+  }
+  const cAng=b<a?Math.asin(b/a)*180/Math.PI:null;
+  res.innerHTML='<div class="result"><span>θ₁</span><strong>'+th.value+'°</strong></div>'+
+    '<div class="result"><span>θ₂</span><strong>'+(tir?'TIR':(th2*180/Math.PI).toFixed(1)+'°')+'</strong></div>'+
+    '<div class="result"><span>critical angle</span><strong>'+(cAng===null?'n₂≥n₁':cAng.toFixed(1)+'°')+'</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.033,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=()=>{playing=false;t=0;last=0;n1.value=1.0;n2.value=1.5;thi.value=40;sync();playBtn.textContent='Play';draw();};
-sync();requestAnimationFrame(loop);
+n1.oninput=n2.oninput=th.oninput=sync;
+resetBtn.onclick=function(){n1.value=1;n2.value=1.5;th.value=40;sync();};
+sync();
 })();
 
 </script>
-</body></html>
+</body>
+</html>
