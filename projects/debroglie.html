@@ -1,251 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080b16">
-<title>de Broglie Wavelength Lab | Vinit Simulation Hub</title>
-<style>
-:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:#273451;--radius:18px}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#151a40 0,transparent 40%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-button,input,select{font:inherit}a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:#080b16f2;border-bottom:1px solid var(--line)}.nav{min-height:60px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:850}.logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#17334b;color:var(--cyan)}.brand small{display:block;font-size:10px;color:var(--muted)}.nav a{color:var(--cyan);font-size:13px}
-.hero{padding:26px 0 16px}.eyebrow{display:inline-block;border:1px solid #63e6ff40;background:#63e6ff0d;color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}.hero h1{font-size:clamp(26px,5vw,42px);margin:10px 0 6px}.grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--muted);margin:0;max-width:700px}
-.layout{display:grid;grid-template-columns:320px 1fr;gap:16px;padding-bottom:28px}@media(max-width:860px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.panel-head{padding:13px 15px;border-bottom:1px solid var(--line);font-weight:700}.panel-body{padding:15px}
-.field{margin-bottom:13px}.field label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:1fr 75px;gap:8px}input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number],select{width:100%;padding:7px;border-radius:8px;border:1px solid #31415f;background:#080e1d;color:var(--text);min-height:38px}
-.btn{padding:10px;border-radius:10px;border:1px solid #34425e;background:#141e33;color:var(--text);font-weight:700;cursor:pointer;width:100%;margin-top:8px}.btn.primary{background:var(--cyan);color:#07111b;border-color:var(--cyan)}
-.howto{margin-top:12px;padding:12px;border-radius:10px;background:#63e6ff0d;border:1px solid #63e6ff33;font-size:12.5px;color:var(--muted);line-height:1.65}
-.howto strong{color:var(--cyan)}.howto ol{margin:8px 0 0 18px;padding:0}
-canvas{display:block;width:100%;height:360px;background:#0a1220;border-radius:12px}
-.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:10px;padding:11px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:15px}
-.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
-.insight{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600}.insight.yes{background:#0d2e28;border:1px solid #1f6b55;color:#7cf0bd}.insight.no{background:#2a2030;border:1px solid #5b4a6a;color:#c4b5fd}
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>de Broglie Wavelength Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="../index.html"><span class="logo">∑</span><span>VINIT SIMULATION HUB<small>DE BROGLIE</small></span></a>
-    <a href="../index.html">← Back to Hub</a>
-  </div>
-</header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>MODERN PHYSICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">MODERN PHYSICS · WAVE-PARTICLE DUALITY</div>
-    <h1>de Broglie <span class="grad">Wavelength</span></h1>
-    <p>Every moving particle has a wavelength: <strong style="color:var(--cyan)">λ = h / (mv)</strong>. Change mass and speed — watch λ update. This is why electrons show interference but cricket balls do not.</p>
-  </section>
-  <div class="layout">
-    <aside class="panel">
-      <div class="panel-head">Controls</div>
-      <div class="panel-body">
-        <div class="field">
-          <label>What is moving?</label>
-          <select id="mass">
-            <option value="9.1e-31" selected>Electron (very light)</option>
-            <option value="1.67e-27">Proton</option>
-            <option value="1e-26">Tiny molecule</option>
-            <option value="0.15">Cricket ball (150 g)</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Speed order (10^v m/s) <span class="hint" id="vVal">10⁶ m/s</span></label>
-          <div class="inputrow">
-            <input type="range" id="vel" min="1" max="7" step="0.1" value="6">
-            <input type="number" id="velNum" min="1" max="7" step="0.1" value="6">
-          </div>
-        </div>
-        <button class="btn primary" id="resetBtn">Reset to Electron</button>
-
-        <div class="howto">
-          <strong>How to use this lab</strong>
-          <ol>
-            <li>Keep <b>Electron</b> selected. Move the speed slider.</li>
-            <li>Watch <b>Wavelength λ</b> change in Results.</li>
-            <li>Now select <b>Cricket ball</b> — λ becomes extremely small.</li>
-            <li>Conclusion: only tiny, fast particles show wave nature clearly.</li>
-          </ol>
-        </div>
-      </div>
-    </aside>
-    <div>
-      <div class="panel" style="margin-bottom:16px">
-        <div class="panel-body">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-            <strong>Matter wave (schematic)</strong>
-            <span id="lambdaLabel" style="color:var(--muted);font-size:13px">λ = —</span>
-          </div>
-          <canvas id="canvas" width="700" height="360"></canvas>
-        </div>
-      </div>
-      <div class="panel" style="margin-bottom:16px">
-        <div class="panel-head">Results</div>
-        <div class="panel-body">
-          <div class="results">
-            <div class="result"><span>Momentum p = mv</span><strong id="rP">—</strong></div>
-            <div class="result"><span>Wavelength λ = h/p</span><strong id="rL">—</strong></div>
-            <div class="result"><span>Similar in size to</span><strong id="rC">—</strong></div>
-            <div class="result"><span>Wave effects?</span><strong id="rW">—</strong></div>
-          </div>
-          <div id="insight" class="insight yes">Electron waves are comparable to atoms → interference possible.</div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head">Core idea</div>
-        <div class="panel-body formulas">
-          <div><code>λ = h / p = h / (m v)</code></div>
-          <div>h = 6.626 × 10⁻³⁴ J·s (Planck constant)</div>
-          <div><b>Small m or large v</b> → larger λ → wave nature easier to see</div>
-          <div><b>Large m</b> (ball, human) → λ ~ 10⁻³⁴ m → wave nature invisible</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<section class="hero"><div class="eyebrow">MATTER WAVES</div><h1>de Broglie Wavelength Laboratory</h1><p class="lead">Any particle with momentum p has wavelength λ = h/p. Electrons show measurable wavelengths; macroscopic objects have absurdly small λ.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Mass (× m_electron) <b id="mV">1</b></label><input type="range" id="m" min="1" max="100" step="1" value="1">
+<label class="row">Speed (× 10⁶ m/s) <b id="vV">1</b></label><input type="range" id="v" min="0.1" max="10" step="0.1" value="1"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Electron diffraction experiments confirmed matter waves. Larger mass or speed → smaller λ.</div>
+<ul><li>λ_electron can be comparable to atomic spacings.</li>
+<li>A cricket ball’s λ is ~10⁻³⁴ m — not observable as a wave.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>de Broglie</h3>
+<code>λ = h / p = h / (mv)</code>
+<h3>With kinetic energy</h3>
+<code>λ = h / √(2mK)</code>
+<h3>Problem tip</h3>
+For electrons accelerated by V volts: K = eV, then use λ = h/√(2m eV).</div></div>
+</div></div>
 </main>
-<script>
-(function(){
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  const h = 6.626e-34;
-
-  const mass = document.getElementById('mass');
-  const vel = document.getElementById('vel');
-  const velNum = document.getElementById('velNum');
-  const vVal = document.getElementById('vVal');
-
-  function bind() {
-    vel.addEventListener('input', () => {
-      velNum.value = vel.value;
-      const v = Math.pow(10, parseFloat(vel.value));
-      vVal.textContent = v >= 1000 ? v.toExponential(0).replace('e+','×10^') + ' m/s' : v.toFixed(0) + ' m/s';
-      update();
-    });
-    velNum.addEventListener('input', () => {
-      let x = parseFloat(velNum.value);
-      if (isNaN(x)) return;
-      x = Math.max(1, Math.min(7, x));
-      vel.value = velNum.value = x;
-      const v = Math.pow(10, x);
-      vVal.textContent = v.toExponential(0).replace('e+','×10^') + ' m/s';
-      update();
-    });
-    mass.addEventListener('change', update);
-  }
-  bind();
-
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    mass.value = '9.1e-31';
-    vel.value = velNum.value = 6;
-    vVal.textContent = '1×10⁶ m/s';
-    update();
-  });
-
-  function calc() {
-    const m = parseFloat(mass.value);
-    const v = Math.pow(10, parseFloat(vel.value));
-    const p = m * v;
-    const lambda = h / p;
-    return { m, v, p, lambda };
-  }
-
-  function comparable(lambda) {
-    if (lambda > 1e-3) return 'mm scale';
-    if (lambda > 1e-6) return 'Cell size';
-    if (lambda > 1e-9) return 'Atom / molecule';
-    if (lambda > 1e-12) return 'Atomic nucleus';
-    return 'Far below nucleus';
-  }
-
-  function update() {
-    const c = calc();
-    document.getElementById('rP').textContent = c.p.toExponential(2) + ' kg·m/s';
-    document.getElementById('rL').textContent = c.lambda.toExponential(2) + ' m';
-    document.getElementById('rC').textContent = comparable(c.lambda);
-    const observable = c.lambda > 1e-11;
-    document.getElementById('rW').textContent = observable ? 'Can show waves' : 'Practically none';
-    document.getElementById('lambdaLabel').textContent = 'λ = ' + c.lambda.toExponential(2) + ' m';
-
-    const insight = document.getElementById('insight');
-    if (c.m < 1e-28) {
-      insight.className = 'insight yes';
-      insight.textContent = 'Electron / proton: λ can match atomic sizes → diffraction & interference experiments work.';
-    } else if (c.m < 1e-20) {
-      insight.className = 'insight yes';
-      insight.textContent = 'Molecular beams can still show matter-wave effects in special experiments.';
-    } else {
-      insight.className = 'insight no';
-      insight.textContent = 'Everyday objects: λ is insanely small. Wave nature exists in theory but is impossible to observe.';
-    }
-    draw(c);
-  }
-
-  function draw(c) {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(300, rect.width);
-    const H = Math.max(280, rect.height || 360);
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    ctx.fillStyle = '#0a1220';
-    ctx.fillRect(0, 0, W, H);
-
-    const midY = H / 2;
-    // Visual wavelength from log scale
-    const logL = Math.log10(Math.max(c.lambda, 1e-40));
-    const visualLambda = Math.min(140, Math.max(12, 25 + (logL + 34) * 6));
-
-    ctx.strokeStyle = '#63e6ff';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    for (let x = 0; x <= W; x++) {
-      const y = midY + Math.sin((x / visualLambda) * Math.PI * 2) * 48;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // Particle
-    ctx.beginPath();
-    ctx.arc(W * 0.25, midY, 9, 0, Math.PI * 2);
-    ctx.fillStyle = '#a78bfa';
-    ctx.fill();
-    ctx.fillStyle = '#e2e8f0';
-    ctx.font = '12px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('particle', W * 0.25, midY + 28);
-
-    // lambda marker
-    ctx.strokeStyle = '#7cf0bd';
-    ctx.fillStyle = '#7cf0bd';
-    ctx.lineWidth = 1.5;
-    const bx = W * 0.55;
-    ctx.beginPath();
-    ctx.moveTo(bx, midY - 62);
-    ctx.lineTo(bx + visualLambda, midY - 62);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(bx, midY - 62);
-    ctx.lineTo(bx, midY - 56);
-    ctx.moveTo(bx + visualLambda, midY - 62);
-    ctx.lineTo(bx + visualLambda, midY - 56);
-    ctx.stroke();
-    ctx.font = 'bold 12px system-ui';
-    ctx.fillText('λ (schematic)', bx + visualLambda / 2, midY - 70);
-
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '12px system-ui';
-    ctx.textAlign = 'left';
-    ctx.fillText('Shorter wave → smaller λ → heavier / slower particle', 16, H - 16);
-  }
-
-  update();
-  window.addEventListener('resize', update);
-})();
-</script>
 <script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const m=document.getElementById('m'),v=document.getElementById('v');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+const h=6.626e-34;
+function sync(){mV.textContent=m.value;vV.textContent=v.value;draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();
+  // mass options: electron mass scale vs larger
+  const mass=+m.value*9.11e-31; // m=1 → electron
+  const vel=+v.value*1e6; // in 10^6 m/s units on slider
+  const p=mass*vel; const lam=h/p;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  // wave sketch
+  const scale=Math.min(80, Math.max(8, lam*1e12));
+  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();
+  for(let i=0;i<W;i++){const y=Math.sin(i/scale)*40;if(i===0)ctx.moveTo(i,H/2+y);else ctx.lineTo(i,H/2+y);}
+  ctx.stroke();
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('matter wave (schematic)',20,30);
+  res.innerHTML='<div class="result"><span>λ = h/p</span><strong>'+lam.toExponential(3)+' m</strong></div>'+
+    '<div class="result"><span>p</span><strong>'+p.toExponential(3)+' kg·m/s</strong></div>'+
+    '<div class="result"><span>mass scale</span><strong>'+m.value+' m_e</strong></div>';
+}
+m.oninput=v.oninput=sync;
+resetBtn.onclick=function(){m.value=1;v.value=1;sync();};
+sync();
+})();
+
+</script>
 </body>
 </html>
