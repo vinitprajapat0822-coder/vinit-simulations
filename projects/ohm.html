@@ -2,39 +2,57 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0a0e1a">
-<title>Ohm's Law Lab | Vinit Simulation Hub</title>
+<title>Ohm's Law Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:var(--cyan);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,30px);margin:8px 0 4px}p.lead{color:var(--muted);margin:0 0 8px}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:var(--cyan)}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
-.formulas{font-size:12px;color:var(--muted);line-height:1.7}code{color:var(--cyan)}
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span><span>EM</span></a><a href="../index.html" style="color:var(--cyan)">← Hub</a></div></header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>E & M</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">EM</div><h1>Ohm's Law Lab</h1><p class="lead">Current and power from V and R.</p></section>
+<section class="hero"><div class="eyebrow">OHM'S LAW</div><h1>Ohm's Law Laboratory</h1><p class="lead">For an ohmic resistor, I = V/R. Power dissipated is VI = I²R = V²/R.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">V (V) <span id="VV">12</span></label><input type="range" id="V" min="1" max="24" step="0.5" value="12">
-<label class="row">R (Ω) <span id="RV">6</span></label><input type="range" id="R" min="1" max="50" step="0.5" value="6"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Voltage V <b id="VV">12 V</b></label><input type="range" id="V" min="1" max="24" step="0.5" value="12">
+<label class="row">Resistance R <b id="RV">6 Ω</b></label><input type="range" id="R" min="1" max="50" step="0.5" value="6"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Ohm’s law is not universal — it defines ohmic behaviour. Many devices are non-ohmic.</div>
+<ul><li>Double V → double I (fixed R).</li>
+<li>Power grows as V² for fixed R.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>I = V/R</code> · <code>P = VI</code></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Ohm</h3>
+<code>V = I R</code>
+<h3>Power</h3>
+<code>P = V I = I² R = V² / R</code>
+<h3>Problem tip</h3>
+In series, current is common; in parallel, voltage is common.</div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
@@ -42,30 +60,28 @@ label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0
 
 (function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const V=document.getElementById('V');
-const R=document.getElementById('R');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('VV').textContent=V.value;document.getElementById('RV').textContent=R.value;draw();}
-V.oninput=sync;
-R.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+const V=document.getElementById('V'),R=document.getElementById('R');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+function sync(){VV.textContent=V.value+' V';RV.textContent=R.value+' Ω';draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-
-const I=(+V.value)/(+R.value),P=(+V.value)*I;
-ctx.strokeStyle='#63e6ff';ctx.lineWidth=3;ctx.strokeRect(W*0.2,H*0.3,W*0.6,H*0.4);
-ctx.fillStyle='#a78bfa';ctx.fillRect(W*0.28,H*0.45,50,24);
-ctx.fillStyle='#fbbf24';ctx.fillRect(W*0.62,H*0.42,55,30);
-ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('V',W*0.3,H*0.43);ctx.fillText('R',W*0.65,H*0.4);
-res.innerHTML=`<div class="result"><span>I</span><strong>${I.toFixed(2)} A</strong></div><div class="result"><span>P</span><strong>${P.toFixed(1)} W</strong></div>`;
-
+  const [W,H]=size();
+  const v=+V.value,r=+R.value,I=v/r,P=v*I;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.strokeRect(W*0.2,H*0.3,W*0.6,H*0.4);
+  ctx.fillStyle='#fbbf24';ctx.fillRect(W*0.28,H*0.42,50,30);
+  ctx.fillStyle='#a78bfa';ctx.fillRect(W*0.6,H*0.42,55,30);
+  ctx.fillStyle='#0a1220';ctx.font='12px system-ui';ctx.fillText('V',W*0.3,H*0.4);ctx.fillText('R',W*0.62,H*0.4);
+  res.innerHTML='<div class="result"><span>I = V/R</span><strong>'+I.toFixed(3)+' A</strong></div>'+
+    '<div class="result"><span>P = VI</span><strong>'+P.toFixed(2)+' W</strong></div>'+
+    '<div class="result"><span>P = V²/R</span><strong>'+((v*v)/r).toFixed(2)+' W</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.033,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=()=>{playing=false;t=0;last=0;V.value=12;R.value=6;sync();playBtn.textContent='Play';draw();};
-sync();requestAnimationFrame(loop);
+V.oninput=R.oninput=sync;
+resetBtn.onclick=function(){V.value=12;R.value=6;sync();};
+sync();
 })();
 
 </script>
-</body></html>
+</body>
+</html>
