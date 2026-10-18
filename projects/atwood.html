@@ -2,39 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0a0e1a">
-<title>Atwood Machine | Vinit Simulation Hub</title>
+<title>Atwood Machine Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:var(--cyan);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,30px);margin:8px 0 4px}p.lead{color:var(--muted);margin:0 0 8px}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:var(--cyan)}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
-.formulas{font-size:12px;color:var(--muted);line-height:1.7}code{color:var(--cyan)}
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:70ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span><span>FORCES</span></a><a href="../index.html" style="color:var(--cyan)">← Hub</a></div></header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FORCES</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">FORCES</div><h1>Atwood Machine</h1><p class="lead">Two masses over a pulley — acceleration and tension.</p></section>
+<section class="hero"><div class="eyebrow">ATWOOD MACHINE</div><h1>Atwood Machine Laboratory</h1><p class="lead">Two masses connected by a string over a light pulley. Find acceleration and tension — the classic connected-body problem.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">m₁ (kg) <span id="m1V">4</span></label><input type="range" id="m1" min="0.5" max="10" step="0.5" value="4">
-<label class="row">m₂ (kg) <span id="m2V">2</span></label><input type="range" id="m2" min="0.5" max="10" step="0.5" value="2"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Mass m₁ <b id="m1V">4 kg</b></label><input type="range" id="m1" min="0.5" max="10" step="0.5" value="4">
+<label class="row">Mass m₂ <b id="m2V">2 kg</b></label><input type="range" id="m2" min="0.5" max="10" step="0.5" value="2"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">The heavier mass descends with acceleration less than g, because the string tension holds it back.</div>
+<ul><li>If m₁ = m₂, a = 0 and T = mg.</li>
+<li>If m₂ → 0, a → g and T → 0.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>a = (m₁−m₂)g / (m₁+m₂)</code><br><code>T = 2 m₁ m₂ g / (m₁+m₂)</code></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Ideal Atwood (light, frictionless pulley)</h3>
+<code>a = (m₁ − m₂) g / (m₁ + m₂)</code><br>
+<code>T = 2 m₁ m₂ g / (m₁ + m₂)</code>
+<h3>How to derive</h3>
+Write Newton’s second law for each mass and eliminate T, or use the single equation for the system of two masses.
+<h3>Problem tip</h3>
+Always define which direction is positive for a. This lab takes m₁ downward positive when m₁ > m₂.</div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
@@ -42,34 +61,45 @@ label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0
 
 (function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const m1=document.getElementById('m1');
-const m2=document.getElementById('m2');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('m1V').textContent=m1.value;document.getElementById('m2V').textContent=m2.value;draw();}
-m1.oninput=sync;
-m2.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-
-let y=0;
-function draw(){
-  const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-  const m1=+m1.value,m2=+m2.value,g=9.8;
-  const a=(m1-m2)*g/(m1+m2), T=2*m1*m2*g/(m1+m2);
-  y+=a*0.02; if(y>60)y=-60; if(y<-60)y=60;
-  const cx=W/2,cy=50;
-  ctx.strokeStyle='#64748b';ctx.beginPath();ctx.arc(cx,cy,18,0,6.28);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx-40,cy);ctx.lineTo(cx-40,120+y);ctx.moveTo(cx+40,cy);ctx.lineTo(cx+40,120-y);ctx.stroke();
-  ctx.fillStyle='#63e6ff';ctx.fillRect(cx-55,120+y,30,30);
-  ctx.fillStyle='#a78bfa';ctx.fillRect(cx+25,120-y,30,30);
-  res.innerHTML=`<div class="result"><span>a</span><strong>${a.toFixed(2)} m/s²</strong></div><div class="result"><span>T</span><strong>${T.toFixed(1)} N</strong></div>`;
+const m1El=document.getElementById('m1'),m2El=document.getElementById('m2');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=true,y=0,v=0,last=0;
+function sync(){m1V.textContent=m1El.value+' kg';m2V.textContent=m2El.value+' kg';}
+function phys(){const m1=+m1El.value,m2=+m2El.value,g=9.8;
+  const a=(m1-m2)*g/(m1+m2); const T=2*m1*m2*g/(m1+m2);
+  return {m1,m2,a,T,g};
 }
-
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.033,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=()=>{playing=false;t=0;last=0;m1.value=4;m2.value=2;sync();playBtn.textContent='Play';draw();};
-sync();requestAnimationFrame(loop);
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const p=phys();
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const cx=W/2,cy=55;
+  // pulley
+  ctx.strokeStyle='#94a3b8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,22,0,6.28);ctx.stroke();
+  ctx.fillStyle='#334155';ctx.beginPath();ctx.arc(cx,cy,8,0,6.28);ctx.fill();
+  const y1=130+y, y2=130-y;
+  ctx.strokeStyle='#64748b';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-22,cy);ctx.lineTo(cx-50,y1);ctx.moveTo(cx+22,cy);ctx.lineTo(cx+50,y2);ctx.stroke();
+  // masses
+  const s1=20+p.m1*3,s2=20+p.m2*3;
+  ctx.fillStyle='#63e6ff';ctx.fillRect(cx-50-s1/2,y1,s1,s1);
+  ctx.fillStyle='#a78bfa';ctx.fillRect(cx+50-s2/2,y2,s2,s2);
+  ctx.fillStyle='#0a1220';ctx.font='12px system-ui';ctx.textAlign='center';
+  ctx.fillText('m1',cx-50,y1+s1/2+4);ctx.fillText('m2',cx+50,y2+s2/2+4);
+  ctx.textAlign='left';
+  res.innerHTML='<div class="result"><span>Acceleration a</span><strong>'+p.a.toFixed(2)+' m/s²</strong></div>'+
+    '<div class="result"><span>Tension T</span><strong>'+p.T.toFixed(1)+' N</strong></div>'+
+    '<div class="result"><span>Direction</span><strong>'+(p.a>0.01?'m1 down':p.a<-0.01?'m2 down':'balanced')+'</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;
+  const p=phys();v+=p.a*dt;y+=v*dt*25; if(y>80){y=80;v=0;} if(y<-80){y=-80;v=0;}
+  draw();requestAnimationFrame(loop);}
+function reset(){playing=false;y=0;v=0;last=0;playBtn.textContent='Play';sync();draw();}
+m1El.oninput=m2El.oninput=function(){sync();y=0;v=0;draw();};
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
 })();
 
 </script>
-</body></html>
+</body>
+</html>
