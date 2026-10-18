@@ -1,0 +1,86 @@
+/* Theme-matched Liquid Glass for individual labs */
+body.lab-themed {
+  --lg-blur: 28px;
+  --lg-border: rgba(255,255,255,0.16);
+  --lg-panel: rgba(16,24,48,0.5);
+  --lg-text: #f2f6ff;
+  --lg-muted: #9cabc8;
+  --lg-accent: #63e6ff;
+  --lg-bg: #080b16;
+  color: var(--lg-text);
+  background: var(--lg-bg) !important;
+}
+body.lab-themed header,
+body.lab-themed .panel,
+body.lab-themed .nav {
+  background: var(--lg-panel) !important;
+  border-color: var(--lg-border) !important;
+  backdrop-filter: blur(var(--lg-blur)) saturate(165%);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(165%);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.14);
+}
+body.lab-themed canvas {
+  border: 1px solid var(--lg-border) !important;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.25), 0 0 30px color-mix(in srgb, var(--lg-accent) 15%, transparent);
+  border-radius: 16px;
+}
+body.lab-themed .btn.primary,
+body.lab-themed a[href="../index.html"]:last-child {
+  color: var(--lg-accent) !important;
+}
+body.lab-themed .logo {
+  background: linear-gradient(145deg, var(--lg-accent), color-mix(in srgb, var(--lg-accent) 40%, #a78bfa)) !important;
+}
+
+/* Control Room */
+body.lab-theme-control-room {
+  --lg-accent: #38bdf8;
+  --lg-panel: rgba(10,28,56,0.55);
+  --lg-bg: radial-gradient(ellipse at 20% 0%, #0a1a3a, #050d1c 55%);
+}
+body.lab-theme-control-room .panel { border-left: 3px solid var(--lg-accent); }
+
+/* Constellation */
+body.lab-theme-constellation {
+  --lg-accent: #7dd3fc;
+  --lg-panel: rgba(12,16,40,0.55);
+  --lg-bg: #03050f;
+}
+body.lab-theme-constellation {
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 70% 60%, #7dd3fc 50%, transparent 100%),
+    radial-gradient(1px 1px at 40% 80%, #f0c674 50%, transparent 100%) !important;
+  background-color: #03050f !important;
+}
+
+/* Holographic — highest liquid glass intensity */
+body.lab-theme-holographic {
+  --lg-blur: 36px;
+  --lg-accent: #c084fc;
+  --lg-panel: rgba(36,16,64,0.42);
+  --lg-border: rgba(230,190,255,0.28);
+  --lg-bg: radial-gradient(ellipse at 50% 20%, #2a1050, #0c0520 50%, #060312 100%);
+}
+body.lab-theme-holographic .panel {
+  box-shadow: 0 0 40px rgba(192,132,252,0.2), inset 0 1px 0 rgba(255,255,255,0.18) !important;
+}
+
+/* Terminal / Hacker */
+body.lab-theme-terminal {
+  --lg-accent: #4ade80;
+  --lg-panel: rgba(4,20,12,0.82);
+  --lg-border: rgba(61,255,138,0.28);
+  --lg-text: #c8ffd8;
+  --lg-muted: #6a9e7c;
+  --lg-bg: #020805;
+  font-family: ui-monospace, SF Mono, Menlo, Consolas, monospace !important;
+}
+body.lab-theme-terminal {
+  background-image:
+    linear-gradient(rgba(0,255,80,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,80,0.03) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+  background-color: #020805 !important;
+}
+body.lab-theme-terminal .panel { border-radius: 4px !important; }
