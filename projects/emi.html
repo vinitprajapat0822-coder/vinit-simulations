@@ -1,59 +1,104 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Electromagnetic Induction | Vinit Simulation Hub</title>
+<title>Motional EMF Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.12)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:#63e6ff;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,28px);margin:8px 0 4px}.lead{color:#9cabc8;margin:0}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:rgba(16,24,48,.55);border:1px solid rgba(255,255,255,.12);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:#63e6ff}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:#f2f6ff;padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:#9cabc8}
-.formulas{font-size:12px;color:#9cabc8;line-height:1.7}code{color:#63e6ff}
-</style></head><body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>EM</a><a href="../index.html" style="color:#63e6ff">← Hub</a></div></header>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+select.sel{width:100%;padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff;margin-top:4px}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>E & M</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">EM</div><h1>Electromagnetic Induction</h1><p class="lead">Motional emf ε = Bℓv.</p></section>
+<section class="hero"><div class="eyebrow">ELECTROMAGNETIC INDUCTION</div><h1>Motional EMF Laboratory</h1><p class="lead">A conducting rod slides on rails in a uniform magnetic field. The induced emf is Bℓv for this standard geometry.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">B (T) <span id="BV">0.6</span></label><input type="range" id="B" min="0.1" max="2" step="0.1" value="0.6">
-<label class="row">ℓ (m) <span id="lV">0.4</span></label><input type="range" id="l" min="0.1" max="1" step="0.05" value="0.4">
-<label class="row">v (m/s) <span id="vV">3</span></label><input type="range" id="v" min="0.5" max="12" step="0.5" value="3"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">B <b id="BV">0.50 T</b></label><input type="range" id="B" min="0.1" max="2" step="0.05" value="0.5">
+<label class="row">Length ℓ <b id="lV">0.40 m</b></label><input type="range" id="l" min="0.1" max="1" step="0.05" value="0.4">
+<label class="row">Speed v <b id="vV">3 m/s</b></label><input type="range" id="v" min="0.5" max="12" step="0.5" value="3"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Flux through the loop changes because the area is changing. Faraday: ε = dΦ/dt leads to <b style="color:#fff">ε = Bℓv</b>.</div>
+<ul><li>Direction of induced current: Lenz’s law (oppose the change in flux).</li>
+<li>Faster rod or stronger B → larger emf.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>ε = B ℓ v</code></div></div>
-</div></div></main>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Motional emf (rod on rails)</h3>
+<code>ε = B ℓ v</code><br>
+(B perpendicular to the plane, v perpendicular to the rod)
+<h3>Faraday</h3>
+<code>ε = − dΦ_B / dt</code> · <code>Φ_B = B · A</code>
+<h3>Problem tip</h3>
+Check that B, ℓ, and v are mutually oriented as in the standard derivation before using ε = Bℓv.</div></div>
+</div></div>
+</main>
 <script src="../lab-theme.js?v=3"></script>
-<script>(function(){
+<script>
+
+(function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const B=document.getElementById('B');
-const l=document.getElementById('l');
-const v=document.getElementById('v');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('BV').textContent=B.value;document.getElementById('lV').textContent=l.value;document.getElementById('vV').textContent=v.value;draw();}
-B.oninput=sync;
-l.oninput=sync;
-v.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+const BEl=document.getElementById('B'),lEl=document.getElementById('l'),vEl=document.getElementById('v');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=true,x=0,last=0;
+function sync(){BV.textContent=BEl.value+' T';lV.textContent=lEl.value+' m';vV.textContent=vEl.value+' m/s';}
+function phys(){const B=+BEl.value,l=+lEl.value,v=+vEl.value;return{B,l,v,emf:B*l*v};}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
- const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const emf=+B.value*+l.value*+v.value;
-ctx.strokeStyle='#64748b';ctx.strokeRect(W*0.25,H*0.2,W*0.5,H*0.6);
-const x=W*0.25+((t*+v.value*30)%(W*0.5));
-ctx.fillStyle='#63e6ff';ctx.fillRect(x,H*0.2,6,H*0.6);
-res.innerHTML=`<div class="result"><span>ε</span><strong>${emf.toFixed(3)} V</strong></div>`;
+  const [W,H]=size();const p=phys();
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  // B region
+  const x0=W*0.25,y0=H*0.2,w=W*0.5,h=H*0.6;
+  ctx.fillStyle='rgba(99,230,255,0.06)';ctx.fillRect(x0,y0,w,h);
+  ctx.strokeStyle='#334155';ctx.strokeRect(x0,y0,w,h);
+  // B marks (into page)
+  ctx.fillStyle='#475569';
+  for(let i=0;i<4;i++)for(let j=0;j<3;j++){ctx.beginPath();ctx.arc(x0+40+i*50,y0+40+j*50,3,0,6.28);ctx.fill();}
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('B into page',x0+8,y0-8);
+  // rails + moving bar
+  x=(x+p.v*0.8)%(w-20);
+  const bx=x0+20+x;
+  ctx.strokeStyle='#64748b';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(x0,y0+20);ctx.lineTo(x0+w,y0+20);ctx.moveTo(x0,y0+h-20);ctx.lineTo(x0+w,y0+h-20);ctx.stroke();
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(bx,y0+20);ctx.lineTo(bx,y0+h-20);ctx.stroke();
+  ctx.fillStyle='#fbbf24';ctx.font='12px system-ui';ctx.fillText('rod velocity →',bx+8,y0+h/2);
+  res.innerHTML='<div class="result"><span>ε = Bℓv</span><strong>'+p.emf.toFixed(3)+' V</strong></div>'+
+    '<div class="result"><span>B</span><strong>'+p.B.toFixed(2)+' T</strong></div>'+
+    '<div class="result"><span>ℓ</span><strong>'+p.l.toFixed(2)+' m</strong></div>'+
+    '<div class="result"><span>v</span><strong>'+p.v.toFixed(1)+' m/s</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;B.value=0.6;l.value=0.4;v.value=3;sync();playBtn.textContent='Play';};
-sync();requestAnimationFrame(loop);
-})();</script></body></html>
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;draw();requestAnimationFrame(loop);}
+function reset(){playing=false;x=0;playBtn.textContent='Play';sync();draw();}
+BEl.oninput=lEl.oninput=vEl.oninput=function(){sync();draw();};
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
+})();
+
+</script>
+</body>
+</html>
