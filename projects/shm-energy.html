@@ -1,55 +1,102 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Energy in SHM | Vinit Simulation Hub</title>
+<title>Energy in SHM Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.12)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:#63e6ff;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,28px);margin:8px 0 4px}.lead{color:#9cabc8;margin:0}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:rgba(16,24,48,.55);border:1px solid rgba(255,255,255,.12);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:#63e6ff}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:#f2f6ff;padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:#9cabc8}
-.formulas{font-size:12px;color:#9cabc8;line-height:1.7}code{color:#63e6ff}
-</style></head><body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>WAVES</a><a href="../index.html" style="color:#63e6ff">← Hub</a></div></header>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+select.sel{width:100%;padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff;margin-top:4px}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>WAVES</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">WAVES</div><h1>Energy in SHM</h1><p class="lead">Energy swaps between KE and PE.</p></section>
+<section class="hero"><div class="eyebrow">SHM ENERGY</div><h1>Energy in SHM Laboratory</h1><p class="lead">In ideal SHM, total mechanical energy is constant. Watch PE and KE trade places as the mass oscillates.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">A (m) <span id="AV">1</span></label><input type="range" id="A" min="0.1" max="2" step="0.1" value="1">
-<label class="row">k (N/m) <span id="kV">20</span></label><input type="range" id="k" min="5" max="40" step="1" value="20"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Amplitude A <b id="AV">0.30 m</b></label><input type="range" id="A" min="0.05" max="0.5" step="0.01" value="0.3">
+<label class="row">k <b id="kV">25 N/m</b></label><input type="range" id="k" min="5" max="80" step="1" value="25">
+<label class="row">m <b id="mV">1 kg</b></label><input type="range" id="m" min="0.2" max="5" step="0.1" value="1"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">At maximum displacement, PE is maximum and KE is zero. At equilibrium, KE is maximum and PE is zero (if U = 0 at equilibrium).</div>
+<ul><li>E = ½kA² does not depend on m.</li>
+<li>Doubling A multiplies energy by 4.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>E = ½kA²</code></div></div>
-</div></div></main>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Energy in SHM</h3>
+<code>E = ½kA² = constant</code><br>
+<code>U(x) = ½kx²</code><br>
+<code>KE = E − U</code>
+<h3>Problem tip</h3>
+If asked for speed at displacement x: ½mv² = ½k(A² − x²).</div></div>
+</div></div>
+</main>
 <script src="../lab-theme.js?v=3"></script>
-<script>(function(){
+<script>
+
+(function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const A=document.getElementById('A');
-const k=document.getElementById('k');
+const AEl=document.getElementById('A'),kEl=document.getElementById('k'),mEl=document.getElementById('m');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
 let playing=true,t=0,last=0;
-function sync(){document.getElementById('AV').textContent=A.value;document.getElementById('kV').textContent=k.value;draw();}
-A.oninput=sync;
-k.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function sync(){AV.textContent=AEl.value+' m';kV.textContent=kEl.value+' N/m';mV.textContent=mEl.value+' kg';}
+function phys(){const A=+AEl.value,k=+kEl.value,m=+mEl.value,w=Math.sqrt(k/m);return{A,k,m,w,E:0.5*k*A*A,T:2*Math.PI/w};}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
- const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const x=(+A.value)*Math.cos(t*2),U=0.5*(+k.value)*x*x,E=0.5*(+k.value)*(+A.value)**2;
-ctx.fillStyle='#63e6ff';ctx.fillRect(100,H-40-U*30,50,U*30);
-ctx.fillStyle='#a78bfa';ctx.fillRect(180,H-40-(E-U)*30,50,(E-U)*30);
-res.innerHTML=`<div class="result"><span>E</span><strong>${E.toFixed(2)} J</strong></div><div class="result"><span>U</span><strong>${U.toFixed(2)} J</strong></div>`;
+  const [W,H]=size();const p=phys();
+  const x=p.A*Math.cos(p.w*t);const U=0.5*p.k*x*x;const K=Math.max(0,p.E-U);
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  // oscillator
+  const midY=H*0.32,sc=160,base=60,px=W/2+x*sc;
+  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();
+  for(let i=0;i<=12;i++){const xx=base+i*(px-base)/12;const yy=midY+(i%2?12:-12)*(i&&i<12?1:0);if(i===0)ctx.moveTo(base,midY);else ctx.lineTo(xx,yy);}ctx.stroke();
+  ctx.fillStyle='#a78bfa';ctx.fillRect(px-14,midY-14,28,28);
+  // PE/KE bars
+  const barX=50,barW=220,barY=H*0.62;
+  ctx.fillStyle='#64748b';ctx.font='12px system-ui';ctx.fillText('Potential energy',barX,barY-8);
+  ctx.fillStyle='#63e6ff';ctx.fillRect(barX,barY,Math.max(2,(U/p.E)*barW),18);
+  ctx.fillStyle='#64748b';ctx.fillText('Kinetic energy',barX,barY+40);
+  ctx.fillStyle='#fbbf24';ctx.fillRect(barX,barY+48,Math.max(2,(K/p.E)*barW),18);
+  ctx.fillStyle='#94a3b8';ctx.fillText('Total E = ½kA² (constant)',barX,barY+90);
+  res.innerHTML='<div class="result"><span>x</span><strong>'+x.toFixed(3)+' m</strong></div>'+
+    '<div class="result"><span>U</span><strong>'+U.toFixed(3)+' J</strong></div>'+
+    '<div class="result"><span>KE</span><strong>'+K.toFixed(3)+' J</strong></div>'+
+    '<div class="result"><span>E</span><strong>'+p.E.toFixed(3)+' J</strong></div>'+
+    '<div class="result"><span>T</span><strong>'+p.T.toFixed(2)+' s</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;A.value=1;k.value=20;sync();playBtn.textContent='Play';};
-sync();requestAnimationFrame(loop);
-})();</script></body></html>
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
+function reset(){playing=false;t=0;last=0;playBtn.textContent='Play';sync();draw();}
+AEl.oninput=kEl.oninput=mEl.oninput=function(){sync();draw();};
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
+})();
+
+</script>
+</body>
+</html>
