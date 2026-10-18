@@ -58,37 +58,134 @@
       "</div></div></div></div></div>";
   }
 
+  
   function constellation() {
     var nodes = cats.map(function (c, i) {
       var angle = (i / Math.max(cats.length, 1)) * Math.PI * 2 - Math.PI / 2;
-      var r = 38;
-      return { c: c, x: 50 + r * Math.cos(angle), y: 50 + r * Math.sin(angle), live: liveList(c).length };
+      var orbit = 22 + (i % 4) * 10;
+      return {
+        c: c,
+        orbit: orbit,
+        angle: angle,
+        live: liveList(c).length,
+        label: label(c)
+      };
     });
-    var lines = nodes.map(function (n) {
-      return '<line x1="50" y1="50" x2="' + n.x + '" y2="' + n.y + '" class="st-link"/>';
-    }).join("");
-    var circles = nodes.map(function (n) {
-      return '<circle cx="' + n.x + '" cy="' + n.y + '" r="' + (n.c === selected ? 3.2 : 2.4) +
-        '" class="st-node' + (n.c === selected ? " on" : "") + '" data-category="' + esc(n.c) + '"/>';
-    }).join("");
-    var labels = nodes.map(function (n) {
-      return '<button type="button" class="st-label' + (n.c === selected ? " on" : "") +
-        '" data-category="' + esc(n.c) + '" style="left:' + n.x + "%;top:" + n.y + '%">' +
-        esc(label(n.c)) + "<small>" + n.live + " live</small></button>";
-    }).join("");
-    var items = liveList(selected).map(function (x) {
-      return '<a href="' + esc(x.url) + '" class="st-item"><b>' + esc(x.icon || "●") + "</b> " + esc(x.title) + "</a>";
-    }).join("") || "<span>No live labs</span>";
-    return '<div class="st-wrap"><div class="st-head"><h2>★ Star Map</h2><p>Live sectors only</p></div>' +
-      '<div class="st-map"><svg viewBox="0 0 100 100" class="st-svg">' + lines +
-      '<circle cx="50" cy="50" r="4" class="st-core"/>' + circles +
-      '</svg><div class="st-labels">' + labels + "</div></div>" +
-      '<div class="st-panel"><h3>' + esc(label(selected)) + '</h3><div class="st-items">' +
-      items + "</div></div></div>";
+    var items = liveList(selected)
+      .map(function (x) {
+        return (
+          '<a href="' +
+          esc(x.url) +
+          '" class="st-item"><b>' +
+          esc(x.icon || "●") +
+          "</b> " +
+          esc(x.title) +
+          "</a>"
+        );
+      })
+      .join("") || "<span>No live labs</span>";
+
+    return (
+      '<div class="st-wrap solar">' +
+      '<div class="st-head"><h2>✦ Solar Topic Map</h2>' +
+      "<p>Drag to rotate · each orbit is a subject · tap a planet for live labs</p></div>" +
+      '<div class="solar-stage" id="solar-stage">' +
+      '<div class="solar-scene" id="solar-scene">' +
+      '<div class="solar-sun">∑</div>' +
+      nodes
+        .map(function (n, i) {
+          var on = n.c === selected ? " on" : "";
+          return (
+            '<div class="solar-orbit" style="width:' +
+            n.orbit * 2 +
+            "%;height:" +
+            n.orbit * 2 +
+            '%;margin-left:-' +
+            n.orbit +
+            "%;margin-top:-" +
+            n.orbit +
+            '%">' +
+            '<button type="button" class="solar-planet' +
+            on +
+            '" data-category="' +
+            esc(n.c) +
+            '" style="--a:' +
+            n.angle +
+            'rad" title="' +
+            esc(n.label) +
+            '">' +
+            '<span class="sp-dot"></span><span class="sp-name">' +
+            esc(n.label) +
+            "</span><small>" +
+            n.live +
+            "</small></button></div>"
+          );
+        })
+        .join("") +
+      "</div></div>" +
+      '<div class="st-panel"><h3>' +
+      esc(label(selected)) +
+      ' · Live</h3><div class="st-items">' +
+      items +
+      "</div></div></div>"
+    );
   }
 
-  /* Holographic — playing-card stack with swipe */
-  function holographic() {
+  function bindSolarDrag() {
+    var stage = document.getElementById("solar-stage");
+    var scene = document.getElementById("solar-scene");
+    if (!stage || !scene) return;
+    var rotX = -18, rotY = 12;
+    var dragging = false, lx = 0, ly = 0;
+    function apply() {
+      scene.style.transform =
+        "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
+    }
+    apply();
+    function down(x, y) {
+      dragging = true;
+      lx = x;
+      ly = y;
+    }
+    function move(x, y) {
+      if (!dragging) return;
+      rotY += (x - lx) * 0.35;
+      rotX -= (y - ly) * 0.35;
+      rotX = Math.max(-55, Math.min(55, rotX));
+      lx = x;
+      ly = y;
+      apply();
+    }
+    function up() {
+      dragging = false;
+    }
+    stage.addEventListener("mousedown", function (e) {
+      down(e.clientX, e.clientY);
+    });
+    window.addEventListener("mousemove", function (e) {
+      move(e.clientX, e.clientY);
+    });
+    window.addEventListener("mouseup", up);
+    stage.addEventListener(
+      "touchstart",
+      function (e) {
+        var t = e.changedTouches[0];
+        down(t.clientX, t.clientY);
+      },
+      { passive: true }
+    );
+    stage.addEventListener(
+      "touchmove",
+      function (e) {
+        var t = e.changedTouches[0];
+        move(t.clientX, t.clientY);
+      },
+      { passive: true }
+    );
+    stage.addEventListener("touchend", up);
+  }
+
+function holographic() {
     stackItems = liveList(selected);
     if (stackIndex >= stackItems.length) stackIndex = 0;
     if (!stackItems.length) {
@@ -245,6 +342,7 @@
       else if (theme === "terminal") stage.innerHTML = terminal();
       else stage.innerHTML = controlRoom();
       if (theme === "holographic") bindHolographicGestures();
+      if (theme === "constellation") bindSolarDrag();
     } catch (err) {
       stage.innerHTML = '<div style="padding:20px;color:#f88">Render error: ' +
         esc(String(err && err.message ? err.message : err)) + "</div>";
