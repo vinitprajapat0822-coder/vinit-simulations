@@ -186,9 +186,9 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="hub-home-themes.css?v=33">
+  <link rel="stylesheet" href="hub-home-themes.css?v=40">
   <link rel="stylesheet" href="hub-features.css?v=1">
-  <link rel="stylesheet" href="hub-experiences.css?v=30">
+  <link rel="stylesheet" href="hub-experiences.css?v=40">
 
 <style id="cat-section-styles">
 .cat-section{margin-bottom:22px;width:100%;grid-column:1/-1}
@@ -205,12 +205,82 @@
 body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
 </style>
 
+
+<style id="vinit-monogram">
+.vinit-mark{position:relative;width:42px;height:42px;border-radius:14px;display:grid!important;place-items:center;
+  background:linear-gradient(145deg,rgba(255,255,255,.45),rgba(255,255,255,.06) 42%,rgba(120,80,255,.3)),
+  radial-gradient(circle at 30% 25%,rgba(255,255,255,.55),transparent 46%),
+  linear-gradient(160deg,#67e8f9,#a78bfa 48%,#6366f1)!important;
+  border:1px solid rgba(255,255,255,.38)!important;
+  box-shadow:0 10px 28px rgba(99,102,241,.38),inset 0 1px 0 rgba(255,255,255,.55)!important;
+  overflow:hidden}
+.vinit-mark .vm-stack{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;line-height:1;color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.vinit-mark .vm-v{font-size:13px;font-weight:900;letter-spacing:-.06em}
+.vinit-mark .vm-mid{font-size:7px;font-weight:800;letter-spacing:.14em;opacity:.95;margin-top:1px}
+.vinit-mark .vm-t{font-size:9px;font-weight:900;margin-top:1px;letter-spacing:-.04em}
+.vinit-mark::before{content:"";position:absolute;inset:2px;border-radius:12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 40%);pointer-events:none}
+</style>
+
 </head>
 <body class="catalog-locked catalog-locked" data-theme="holographic" data-appearance="evening" data-ambient="on">
+
+<div id="vsh-splash" class="vsh-splash" role="dialog" aria-modal="true" aria-label="Welcome">
+  <div class="vsh-splash-card">
+    <div class="vsh-splash-logo vinit-mark" aria-hidden="true"><span class="vm-stack"><span class="vm-v">V</span><span class="vm-mid">INI</span><span class="vm-t">T</span></span></div>
+    <h1>Welcome to Vinit Simulation Hub</h1>
+    <p>Interactive physics labs for JEE &amp; curious minds. Explore kinematics, modern physics, waves, optics and more — by experimenting, not memorizing.</p>
+    <p class="vsh-splash-tip">Tip: Use themes (Holographic, Star Map, Control Room, Terminal) and Ambient light for your preferred look.</p>
+    <div class="vsh-splash-bar"><span id="vsh-splash-fill"></span></div>
+    <div class="vsh-splash-count" id="vsh-splash-count">Loading experience…</div>
+  </div>
+</div>
+<style>
+.vsh-splash{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 20%,#1a1040,#070b16 60%);color:#f2f6ff;font-family:system-ui,sans-serif;transition:opacity .45s ease,visibility .45s}
+.vsh-splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.vsh-splash-card{width:min(420px,90vw);padding:28px 24px;border-radius:28px;text-align:center;
+  background:rgba(30,18,55,.45);border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(28px) saturate(170%);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.18)}
+.vsh-splash-logo{width:64px;height:64px;margin:0 auto 16px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(145deg,rgba(255,255,255,.4),rgba(167,139,250,.5) 50%,#6366f1);
+  border:1px solid rgba(255,255,255,.4);box-shadow:0 12px 32px rgba(99,102,241,.4);font-weight:900}
+.vsh-splash-card h1{margin:0 0 10px;font-size:1.35rem;letter-spacing:-.02em}
+.vsh-splash-card p{margin:0 0 10px;color:#b8c4dc;font-size:14px;line-height:1.55}
+.vsh-splash-tip{font-size:12px!important;color:#9db0cc!important}
+.vsh-splash-bar{height:4px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:16px 0 8px}
+.vsh-splash-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#67e8f9,#a78bfa);transition:width .1s linear}
+.vsh-splash-count{font-size:12px;color:#8b9bb8;font-weight:600}
+html.vsh-booting{overflow:hidden}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+<script>
+(function(){
+  document.documentElement.classList.add("vsh-booting");
+  var splash=document.getElementById("vsh-splash");
+  var fill=document.getElementById("vsh-splash-fill");
+  var count=document.getElementById("vsh-splash-count");
+  var total=5500, start=performance.now();
+  function frame(now){
+    var p=Math.min(1,(now-start)/total);
+    if(fill) fill.style.width=(p*100).toFixed(1)+"%";
+    if(count) count.textContent=p<1?("Welcome · "+Math.ceil((1-p)*total/1000)+"s"):"Ready";
+    if(p<1) requestAnimationFrame(frame);
+    else {
+      if(splash) splash.classList.add("hide");
+      document.documentElement.classList.remove("vsh-booting");
+      setTimeout(function(){ if(splash&&splash.parentNode) splash.parentNode.removeChild(splash); },500);
+    }
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
   <header class="nav-wrap">
     <nav class="container nav" aria-label="Main">
       <a class="brand" href="#home">
-        <span class="brand-icon" aria-hidden="true" title="Vinit Simulation Hub"><span class="brand-icon-glyph">∑</span></span>
+        <span class="brand-icon vinit-mark" aria-label="VINIT monogram" title="VINIT"><span class="vm-stack" aria-hidden="true"><span class="vm-v">V</span><span class="vm-mid">INI</span><span class="vm-t">T</span></span></span></span>
         <span>VINIT SIMULATION HUB<small>SCIENCE · VISUALIZED</small></span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false"
@@ -543,7 +613,7 @@ body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;
       }
     })();
     </script>
-  <script src="hub-experiences.js?v=30"></script>
+  <script src="hub-experiences.js?v=40"></script>
   <script src="hub-features.js?v=3" defer></script>
   <script id="vsh-mobile-menu-v2">
     (function () {
