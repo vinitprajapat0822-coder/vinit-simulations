@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RC Charging Laboratory | Vinit Simulation Hub</title>
+<link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>E & M</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">RC CIRCUIT</div><h1>RC Charging Laboratory</h1><p class="lead">A capacitor charges through a resistor toward the battery voltage. Time constant τ = RC sets how fast V_C approaches V.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">R <b id="RV">1000 Ω</b></label><input type="range" id="R" min="100" max="5000" step="50" value="1000">
+<label class="row">C <b id="CV">100 μF</b></label><input type="range" id="C" min="10" max="500" step="10" value="100">
+<label class="row">Battery V <b id="VV">12 V</b></label><input type="range" id="V" min="1" max="24" step="1" value="12"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">After one τ, V_C ≈ 63% of V. After ~5τ the capacitor is essentially fully charged.</div>
+<ul><li>Current starts at V/R and falls to zero.</li>
+<li>Larger R or C → slower charging.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Charging</h3>
+<code>V_C = V(1 − e^{−t/RC})</code><br>
+<code>I = (V/R) e^{−t/RC}</code><br>
+<code>τ = RC</code>
+<h3>Problem tip</h3>
+For discharge: V_C = V₀ e^{−t/RC}.</div></div>
+</div></div>
+</main>
+<script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const R=document.getElementById('R'),C=document.getElementById('C'),V=document.getElementById('V');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=false,t=0,last=0;
+function sync(){RV.textContent=R.value+' Ω';CV.textContent=C.value+' μF';VV.textContent=V.value+' V';}
+function phys(){
+  const r=+R.value,c=+C.value*1e-6,v0=+V.value;
+  const tau=r*c; const Vc=v0*(1-Math.exp(-t/tau)); const I=(v0/r)*Math.exp(-t/tau);
+  return{r,c,v0,tau,Vc,I};
+}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const p=phys();const pad=50;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  // Vc vs t
+  ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(pad,H-pad);ctx.lineTo(W-pad,H-pad);ctx.moveTo(pad,pad);ctx.lineTo(pad,H-pad);ctx.stroke();
+  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();
+  const tmax=p.tau*5;
+  for(let i=0;i<=80;i++){
+    const tt=i/80*tmax; const vc=p.v0*(1-Math.exp(-tt/p.tau));
+    const X=pad+(tt/tmax)*(W-2*pad); const Y=H-pad-(vc/p.v0)*(H-2*pad);
+    if(i===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y);
+  }
+  ctx.stroke();
+  const X=pad+Math.min(1,t/tmax)*(W-2*pad);
+  const Y=H-pad-(p.Vc/p.v0)*(H-2*pad);
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(X,Y,5,0,6.28);ctx.fill();
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('V_C(t)',pad+8,pad+12);
+  res.innerHTML='<div class="result"><span>τ = RC</span><strong>'+(p.tau*1000).toFixed(1)+' ms</strong></div>'+
+    '<div class="result"><span>V_C</span><strong>'+p.Vc.toFixed(2)+' V</strong></div>'+
+    '<div class="result"><span>I</span><strong>'+(p.I*1000).toFixed(2)+' mA</strong></div>'+
+    '<div class="result"><span>t/τ</span><strong>'+(t/p.tau).toFixed(2)+'</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.05,(ts-last)/1000);last=ts;
+  t+=dt*Math.max(0.05,(+R.value)*(+C.value)*1e-6);
+  if(t> (+R.value)*(+C.value)*1e-6*5){playing=false;playBtn.textContent='Play';}
+  draw();if(playing)requestAnimationFrame(loop);}
+function reset(){playing=false;t=0;last=0;playBtn.textContent='Play';sync();draw();}
+R.oninput=C.oninput=V.oninput=function(){sync();if(!playing)draw();};
+playBtn.onclick=function(){if(!playing)t=0;playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;reset();
+})();
+
+</script>
+</body>
+</html>
