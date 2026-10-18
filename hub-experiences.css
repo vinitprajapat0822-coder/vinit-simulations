@@ -536,3 +536,46 @@
   margin: 0;
 }
 .hg-empty { padding: 24px; }
+
+
+/* Solar system constellation */
+.st-wrap.solar{overflow:visible}
+.solar-stage{
+  height:min(380px,70vw);perspective:900px;cursor:grab;
+  display:flex;align-items:center;justify-content:center;
+  touch-action:none;user-select:none;
+}
+.solar-stage:active{cursor:grabbing}
+.solar-scene{
+  position:relative;width:min(320px,80vw);height:min(320px,80vw);
+  transform-style:preserve-3d;transition:transform .05s linear;
+}
+.solar-sun{
+  position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;
+  border-radius:50%;display:grid;place-items:center;font-weight:900;color:#1a1200;
+  background:radial-gradient(circle at 35% 30%,#fff7ad,#f0c674 45%,#d97706);
+  box-shadow:0 0 40px rgba(240,198,116,.55),0 0 80px rgba(240,198,116,.25);
+  z-index:5;
+}
+.solar-orbit{
+  position:absolute;left:50%;top:50%;border:1px dashed rgba(125,211,252,.25);
+  border-radius:50%;transform-style:preserve-3d;pointer-events:none;
+}
+.solar-planet{
+  position:absolute;left:50%;top:0;transform:
+    translate(-50%,-50%) rotate(var(--a)) translateY(0) rotate(calc(-1 * var(--a)));
+  border:none;background:transparent;color:#e0f2fe;cursor:pointer;pointer-events:auto;
+  display:flex;flex-direction:column;align-items:center;gap:2px;min-width:56px;
+}
+.solar-planet .sp-dot{
+  width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#fff,#7dd3fc 60%,#38bdf8);
+  box-shadow:0 0 12px rgba(125,211,252,.6);
+}
+.solar-planet.on .sp-dot{
+  background:radial-gradient(circle at 30% 30%,#fff,#f0c674 60%,#f59e0b);
+  box-shadow:0 0 16px rgba(240,198,116,.7);width:18px;height:18px;
+}
+.solar-planet .sp-name{font-size:10px;font-weight:700;white-space:nowrap;
+  background:rgba(8,12,28,.75);padding:2px 6px;border-radius:99px;border:1px solid rgba(125,211,252,.25)}
+.solar-planet small{font-size:9px;color:#7dd3fc}
