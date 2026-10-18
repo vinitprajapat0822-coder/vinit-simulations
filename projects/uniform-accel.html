@@ -1,352 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080b16">
-<meta name="description" content="Interactive Uniform Acceleration Lab: explore SUVAT equations with real-time graphs, animation and step-by-step calculations for JEE.">
-<title>Uniform Acceleration Lab | Vinit Simulation Hub</title>
-<style>
-:root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--panel2:#151f36;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:.3px}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
-.hero{padding:35px 0 24px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750;letter-spacing:1.4px}.hero h1{font-size:clamp(30px,5vw,52px);letter-spacing:-1.6px;line-height:1.08;margin:14px 0 10px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{max-width:780px;color:var(--muted);margin:0}
-.layout{display:grid;grid-template-columns:minmax(290px,340px) minmax(0,1fr);gap:16px;align-items:start;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2eF2,#0d1324F7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h2,.panel-head h3{font-size:16px;margin:0}.panel-body{padding:17px}
-.field{margin-bottom:14px}.field label{display:flex;justify-content:space-between;gap:8px;color:#dce6fb;font-size:13px;margin-bottom:6px}.hint{color:var(--muted);font-size:11px}.inputrow{display:grid;grid-template-columns:minmax(0,1fr) 83px;gap:9px;align-items:center}.inputrow input[type=range]{width:100%;accent-color:var(--cyan)}input[type=number]{width:100%;min-height:39px;padding:7px 9px;color:var(--text);background:#080e1d;border:1px solid #31415f;border-radius:10px;font-variant-numeric:tabular-nums}
-.btn{border:1px solid #34425e;border-radius:10px;background:#141e33;color:var(--text);padding:10px 11px;cursor:pointer;font-size:13px;font-weight:750;min-height:42px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#07111b}.btn:hover{border-color:var(--cyan)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.actions .btn{flex:1}
-.note{padding:10px 12px;border-radius:10px;background:#63e6ff0a;border:1px solid #63e6ff25;color:var(--muted);font-size:12px;margin-top:13px}.note strong{color:var(--cyan)}
-.maincol{display:grid;gap:16px;min-width:0}.canvasbox{padding:12px}.canvas-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 4px 10px}.canvas-top strong{font-size:14px}.canvas-top span{font-size:11px;color:var(--muted)}canvas{display:block;width:100%;height:380px;border-radius:13px;background:#080e1c;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.result{background:#0c1426;border:1px solid #2a3a58;border-radius:12px;padding:12px}.result span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.result strong{font-size:17px;font-variant-numeric:tabular-nums}
-.formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan);font-size:12px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-@media(max-width:520px){canvas{height:300px}.hero h1{font-size:28px}}
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uniform Acceleration Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="../index.html">
-      <span class="logo">∑</span>
-      <span>VINIT SIMULATION HUB<small>UNIFORM ACCELERATION</small></span>
-    </a>
-    <a href="../index.html">← Back to Hub</a>
-  </div>
-</header>
-
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>KINEMATICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">KINEMATICS · SUVAT</div>
-    <h1>Uniform <span class="grad">Acceleration Lab</span></h1>
-    <p>Master the five SUVAT equations. Adjust initial velocity, acceleration and time. Watch position & velocity graphs update live with particle animation.</p>
-  </section>
-
-  <div class="layout">
-    <aside class="panel">
-      <div class="panel-head"><h2>Controls</h2></div>
-      <div class="panel-body">
-        <div class="field">
-          <label>Initial Velocity (u) <span class="hint" id="uVal">10 m/s</span></label>
-          <div class="inputrow">
-            <input type="range" id="u" min="-20" max="20" step="0.5" value="10">
-            <input type="number" id="uNum" min="-20" max="20" step="0.5" value="10">
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Acceleration (a) <span class="hint" id="aVal">-2 m/s²</span></label>
-          <div class="inputrow">
-            <input type="range" id="a" min="-10" max="10" step="0.25" value="-2">
-            <input type="number" id="aNum" min="-10" max="10" step="0.25" value="-2">
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Time (t) <span class="hint" id="tVal">6 s</span></label>
-          <div class="inputrow">
-            <input type="range" id="t" min="0.5" max="15" step="0.25" value="6">
-            <input type="number" id="tNum" min="0.5" max="15" step="0.25" value="6">
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn primary" id="playBtn">Play</button>
-          <button class="btn" id="resetBtn">Reset</button>
-        </div>
-
-        <div class="note">
-          <strong>Constant acceleration.</strong> All five SUVAT relations are calculated instantly.
-        </div>
-      </div>
-    </aside>
-
-    <div class="maincol">
-      <div class="panel">
-        <div class="canvasbox">
-          <div class="canvas-top">
-            <strong>Motion + Graphs</strong>
-            <span id="timeLabel">t = 0.00 s</span>
-          </div>
-          <canvas id="canvas" width="800" height="380"></canvas>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head"><h3>Results</h3></div>
-        <div class="panel-body">
-          <div class="results">
-            <div class="result"><span>Final Velocity (v)</span><strong id="rV">—</strong></div>
-            <div class="result"><span>Displacement (s)</span><strong id="rS">—</strong></div>
-            <div class="result"><span>Average Velocity</span><strong id="rAvg">—</strong></div>
-            <div class="result"><span>Time to stop*</span><strong id="rStop">—</strong></div>
-          </div>
-          <p style="font-size:12px;color:var(--muted);margin:10px 0 0">* Time to stop shown only when motion will reverse (u and a opposite signs).</p>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head"><h3>SUVAT Equations</h3></div>
-        <div class="panel-body formulas">
-          <div>1. <code>v = u + at</code></div>
-          <div>2. <code>s = ut + ½at²</code></div>
-          <div>3. <code>v² = u² + 2as</code></div>
-          <div>4. <code>s = vt − ½at²</code></div>
-          <div>5. <code>s = (u+v)/2 × t</code></div>
-        </div>
-      </div>
-    </div>
-  </div>
+<section class="hero"><div class="eyebrow">1D ACCELERATION</div><h1>Uniform Acceleration Laboratory</h1><p class="lead">Constant acceleration along a straight line. Connect the SUVAT equations to a moving object and its velocity–time graph (area = displacement).</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Initial velocity u <b id="uV">5 m/s</b></label><input type="range" id="u" min="-15" max="20" step="0.5" value="5">
+<label class="row">Acceleration a <b id="aV">2 m/s²</b></label><input type="range" id="a" min="-6" max="6" step="0.1" value="2">
+<label class="row">Duration T <b id="TV">6 s</b></label><input type="range" id="T" min="1" max="15" step="0.5" value="6"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">On a <b style="color:#fff">v–t graph</b>, slope is acceleration and area under the curve is displacement.</div>
+<ul><li>If a and u have opposite signs, the object may stop and reverse.</li>
+<li>s = ut + ½at² still holds with signed quantities.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>SUVAT (constant a)</h3>
+<code>v = u + at</code><br>
+<code>s = ut + ½at²</code><br>
+<code>v² = u² + 2as</code><br>
+<code>s = (u+v)t/2</code>
+<h3>Problem tip</h3>
+Pick a positive direction once. Then every quantity in the formula is a signed number — this lab uses that convention.</div></div>
+</div></div>
 </main>
-
-<script>
-(function(){
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  const $ = id => document.getElementById(id);
-
-  let playing = false;
-  let currentT = 0;
-  let lastTs = 0;
-
-  const uIn = $('u'), uNum = $('uNum');
-  const aIn = $('a'), aNum = $('aNum');
-  const tIn = $('t'), tNum = $('tNum');
-
-  function sync(range, num, label, suffix, decimals=1) {
-    range.addEventListener('input', () => {
-      num.value = range.value;
-      if(label) label.textContent = Number(range.value).toFixed(decimals) + suffix;
-      resetAnim();
-    });
-    num.addEventListener('input', () => {
-      let v = parseFloat(num.value);
-      if(isNaN(v)) return;
-      v = Math.max(+range.min, Math.min(+range.max, v));
-      range.value = v;
-      num.value = v;
-      if(label) label.textContent = v.toFixed(decimals) + suffix;
-      resetAnim();
-    });
-  }
-
-  sync(uIn, uNum, $('uVal'), ' m/s', 1);
-  sync(aIn, aNum, $('aVal'), ' m/s²', 2);
-  sync(tIn, tNum, $('tVal'), ' s', 2);
-
-  function getP() {
-    return {
-      u: parseFloat(uIn.value),
-      a: parseFloat(aIn.value),
-      T: parseFloat(tIn.value)
-    };
-  }
-
-  function vel(p, t) { return p.u + p.a * t; }
-  function pos(p, t) { return p.u * t + 0.5 * p.a * t * t; }
-
-  function resetAnim() {
-    playing = false;
-    currentT = 0;
-    $('playBtn').textContent = 'Play';
-    $('timeLabel').textContent = 't = 0.00 s';
-    update();
-  }
-
-  $('playBtn').addEventListener('click', () => {
-    playing = !playing;
-    $('playBtn').textContent = playing ? 'Pause' : 'Play';
-    if (playing) {
-      lastTs = 0;
-      requestAnimationFrame(loop);
-    }
-  });
-
-  $('resetBtn').addEventListener('click', () => {
-    uIn.value = uNum.value = 10;
-    aIn.value = aNum.value = -2;
-    tIn.value = tNum.value = 6;
-    $('uVal').textContent = '10.0 m/s';
-    $('aVal').textContent = '-2.00 m/s²';
-    $('tVal').textContent = '6.00 s';
-    resetAnim();
-  });
-
-  function loop(ts) {
-    if (!playing) return;
-    if (!lastTs) lastTs = ts;
-    const dt = Math.min((ts - lastTs) / 1000, 0.05);
-    lastTs = ts;
-    const p = getP();
-    currentT += dt;
-    if (currentT > p.T) {
-      currentT = p.T;
-      playing = false;
-      $('playBtn').textContent = 'Play';
-    }
-    $('timeLabel').textContent = 't = ' + currentT.toFixed(2) + ' s';
-    update();
-    if (playing) requestAnimationFrame(loop);
-  }
-
-  function updateResults(p) {
-    const v = vel(p, p.T);
-    const s = pos(p, p.T);
-    const avg = (p.u + v) / 2;
-    $('rV').textContent = v.toFixed(2) + ' m/s';
-    $('rS').textContent = s.toFixed(2) + ' m';
-    $('rAvg').textContent = avg.toFixed(2) + ' m/s';
-
-    // Time to stop
-    if (p.u * p.a < 0 && Math.abs(p.a) > 1e-9) {
-      const tStop = -p.u / p.a;
-      $('rStop').textContent = tStop > 0 ? tStop.toFixed(2) + ' s' : '—';
-    } else {
-      $('rStop').textContent = '—';
-    }
-  }
-
-  function draw() {
-    const p = getP();
-    updateResults(p);
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(1, rect.width);
-    const H = Math.max(1, rect.height || 380);
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#07101f';
-    ctx.fillRect(0, 0, W, H);
-
-    // Top: particle track
-    const trackH = H * 0.28;
-    const trackY = 20;
-    ctx.fillStyle = '#0a1220';
-    ctx.fillRect(20, trackY, W - 40, trackH);
-
-    // Find position range
-    let minS = 0, maxS = 0;
-    for (let i = 0; i <= 40; i++) {
-      const s = pos(p, (i/40)*p.T);
-      minS = Math.min(minS, s);
-      maxS = Math.max(maxS, s);
-    }
-    const rangeS = Math.max(Math.abs(minS), Math.abs(maxS), 5) * 1.2;
-
-    // Track line
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(40, trackY + trackH/2);
-    ctx.lineTo(W - 40, trackY + trackH/2);
-    ctx.stroke();
-
-    // Particle
-    const sNow = pos(p, currentT);
-    const px = 40 + ((sNow - (-rangeS)) / (2*rangeS)) * (W - 80);
-    ctx.fillStyle = '#63e6ff';
-    ctx.beginPath();
-    ctx.arc(px, trackY + trackH/2, 9, 0, Math.PI*2);
-    ctx.fill();
-    ctx.fillStyle = '#e0f2fe';
-    ctx.font = 'bold 11px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('x = ' + sNow.toFixed(1) + ' m', px, trackY + trackH/2 - 16);
-
-    // Two graphs below
-    const graphTop = trackY + trackH + 18;
-    const graphH = (H - graphTop - 20) / 2;
-    const padL = 48, padR = 16;
-
-    // Position graph
-    drawGraph(padL, graphTop, W - padL - padR, graphH - 8, p, 'Position s (m)', '#63e6ff', (tt) => pos(p, tt), rangeS);
-    // Velocity graph
-    let maxV = Math.max(Math.abs(p.u), Math.abs(vel(p, p.T)), 3) * 1.2;
-    drawGraph(padL, graphTop + graphH + 4, W - padL - padR, graphH - 8, p, 'Velocity v (m/s)', '#7cf0bd', (tt) => vel(p, tt), maxV);
-  }
-
-  function drawGraph(x, y, w, h, p, title, color, yFn, maxAbs) {
-    ctx.fillStyle = '#0a1220';
-    ctx.fillRect(x, y, w, h);
-
-    const midY = y + h/2;
-
-    // Grid + zero
-    ctx.strokeStyle = '#1b2b40';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const yy = y + (i/4)*h;
-      ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x+w, yy); ctx.stroke();
-    }
-    ctx.strokeStyle = '#334155';
-    ctx.beginPath(); ctx.moveTo(x, midY); ctx.lineTo(x+w, midY); ctx.stroke();
-
-    // Title
-    ctx.fillStyle = color;
-    ctx.font = 'bold 11px system-ui';
-    ctx.textAlign = 'left';
-    ctx.fillText(title, x + 6, y + 13);
-
-    // Curve
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2.2;
-    ctx.beginPath();
-    const steps = 100;
-    for (let i = 0; i <= steps; i++) {
-      const tt = (i/steps) * p.T;
-      const val = yFn(tt);
-      const xx = x + (tt / p.T) * w;
-      const yy = midY - (val / maxAbs) * (h/2);
-      if (i === 0) ctx.moveTo(xx, yy);
-      else ctx.lineTo(xx, yy);
-    }
-    ctx.stroke();
-
-    // Current marker
-    const cx = x + (currentT / p.T) * w;
-    const cy = midY - (yFn(currentT) / maxAbs) * (h/2);
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(cx, cy, 4.5, 0, Math.PI*2);
-    ctx.fill();
-  }
-
-  function update() {
-    draw();
-  }
-
-  if ('ResizeObserver' in window) {
-    new ResizeObserver(update).observe(canvas);
-  } else {
-    window.addEventListener('resize', update);
-  }
-
-  update();
-})();
-</script>
 <script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const uEl=document.getElementById('u'),aEl=document.getElementById('a'),TEl=document.getElementById('T');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=false,t=0,last=0,trail=[];
+function sync(){uV.textContent=uEl.value+' m/s';aV.textContent=aEl.value+' m/s²';TV.textContent=TEl.value+' s';}
+function phys(){const u=+uEl.value,a=+aEl.value,Tm=+TEl.value;const v=u+a*Tm;const s=u*Tm+0.5*a*Tm*Tm;return{u,a,Tm,v,s};}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const p=phys();const pad=50;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  // split: motion track top, v-t graph bottom
+  const mid=H*0.42;
+  ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(pad,mid-20);ctx.lineTo(W-pad,mid-20);ctx.stroke();
+  const time=Math.min(t,p.Tm);
+  const sNow=p.u*time+0.5*p.a*time*time;
+  const vNow=p.u+p.a*time;
+  const sMax=Math.max(Math.abs(p.s),1);
+  const x=pad+(Math.abs(sNow)/sMax)*(W-2*pad)*0.9*(sNow>=0?1:0)+ (sNow<0?0:0);
+  const xPos=pad+((sNow - Math.min(0,p.s))/(Math.max(p.s,0)-Math.min(0,p.s)+1e-6))*(W-2*pad);
+  const xx=pad+((time/Math.max(p.Tm,0.01))*(W-2*pad));
+  // car on track
+  const carX=pad+(time/Math.max(p.Tm,0.01))*(W-2*pad-40);
+  ctx.fillStyle='#63e6ff';ctx.fillRect(carX,mid-44,36,22);
+  ctx.fillStyle='#94a3b8';ctx.font='11px system-ui';ctx.fillText('object',carX,mid-50);
+  // v-t graph
+  const gTop=mid+20,gBot=H-pad,gH=gBot-gTop;
+  ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(pad,gBot);ctx.lineTo(W-pad,gBot);ctx.moveTo(pad,gTop);ctx.lineTo(pad,gBot);ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.fillText('v–t graph',pad+8,gTop+12);
+  const vMax=Math.max(Math.abs(p.u),Math.abs(p.v),1);
+  const yU=gBot-(p.u/vMax)*(gH*0.45);
+  const yV=gBot-(p.v/vMax)*(gH*0.45);
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pad,yU);ctx.lineTo(W-pad,yV);ctx.stroke();
+  // area shade
+  ctx.fillStyle='rgba(99,230,255,0.12)';ctx.beginPath();ctx.moveTo(pad,gBot);ctx.lineTo(pad,yU);ctx.lineTo(W-pad,yV);ctx.lineTo(W-pad,gBot);ctx.fill();
+  // current point
+  const yNow=gBot-(vNow/vMax)*(gH*0.45);
+  const xNow=pad+(time/Math.max(p.Tm,0.01))*(W-2*pad);
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(xNow,yNow,5,0,6.28);ctx.fill();
+  res.innerHTML='<div class="result"><span>v at T</span><strong>'+p.v.toFixed(2)+' m/s</strong></div>'+
+    '<div class="result"><span>displacement s</span><strong>'+p.s.toFixed(2)+' m</strong></div>'+
+    '<div class="result"><span>v now</span><strong>'+vNow.toFixed(2)+' m/s</strong></div>'+
+    '<div class="result"><span>s now</span><strong>'+sNow.toFixed(2)+' m</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;t+=dt;
+  const p=phys();if(t>=p.Tm){t=p.Tm;playing=false;playBtn.textContent='Play';}draw();if(playing)requestAnimationFrame(loop);}
+function reset(){playing=false;t=0;last=0;playBtn.textContent='Play';sync();draw();}
+uEl.oninput=aEl.oninput=TEl.oninput=function(){sync();if(!playing){t=0;draw();}};
+playBtn.onclick=function(){const p=phys();if(t>=p.Tm)t=0;playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;reset();
+})();
+
+</script>
 </body>
 </html>
