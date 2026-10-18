@@ -2,40 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0a0e1a">
-<title>Hooke's Law & Springs | Vinit Simulation Hub</title>
+<title>Hooke's Law & Mass–Spring | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:var(--cyan);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,30px);margin:8px 0 4px}p.lead{color:var(--muted);margin:0 0 8px}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:var(--cyan)}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
-.formulas{font-size:12px;color:var(--muted);line-height:1.7}code{color:var(--cyan)}
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span><span>FORCES</span></a><a href="../index.html" style="color:var(--cyan)">← Hub</a></div></header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FORCES / OSCILLATIONS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">FORCES</div><h1>Hooke's Law & Springs</h1><p class="lead">Restoring force and elastic PE.</p></section>
+<section class="hero"><div class="eyebrow">HOOKE'S LAW</div><h1>Hooke's Law & Mass–Spring</h1><p class="lead">A mass on a spring oscillates. Force is −kx; energy sloshes between spring PE and KE while total E stays constant (ideal case).</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">k (N/m) <span id="kV">25</span></label><input type="range" id="k" min="5" max="80" step="1" value="25">
-<label class="row">Amplitude (m) <span id="ampV">0.25</span></label><input type="range" id="amp" min="0.05" max="0.5" step="0.05" value="0.25">
-<label class="row">m (kg) <span id="mV">1</span></label><input type="range" id="m" min="0.2" max="5" step="0.1" value="1"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Spring constant k <b id="kV">20 N/m</b></label><input type="range" id="k" min="5" max="80" step="1" value="20">
+<label class="row">Mass m <b id="mV">1 kg</b></label><input type="range" id="m" min="0.2" max="5" step="0.1" value="1">
+<label class="row">Amplitude A <b id="AV">0.25 m</b></label><input type="range" id="A" min="0.05" max="0.45" step="0.01" value="0.25"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Restoring force always points toward equilibrium: <b style="color:#fff">F = −kx</b>.</div>
+<ul><li>Period T = 2π √(m/k) — independent of amplitude for ideal Hooke’s law.</li>
+<li>Max PE at the ends; max KE at the centre.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>F = −kx</code><br><code>U = ½kx²</code><br><code>ω = √(k/m)</code></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Force & energy</h3>
+<code>F = −kx</code><br>
+<code>U = ½kx²</code><br>
+<code>E = ½kA²</code> (mechanical, no damping)
+<h3>SHM</h3>
+<code>ω = √(k/m)</code> · <code>T = 2π/ω</code> · <code>x = A cos(ωt)</code></div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
@@ -43,35 +61,43 @@ label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0
 
 (function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const k=document.getElementById('k');
-const amp=document.getElementById('amp');
-const m=document.getElementById('m');
+const kEl=document.getElementById('k'),mEl=document.getElementById('m'),AEl=document.getElementById('A');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
 let playing=true,t=0,last=0;
-function sync(){document.getElementById('kV').textContent=k.value;document.getElementById('ampV').textContent=amp.value;document.getElementById('mV').textContent=m.value;draw();}
-k.oninput=sync;
-amp.oninput=sync;
-m.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-
+function sync(){kV.textContent=kEl.value+' N/m';mV.textContent=mEl.value+' kg';AV.textContent=AEl.value+' m';}
+function phys(){const k=+kEl.value,m=+mEl.value,A=+AEl.value;const w=Math.sqrt(k/m);return{k,m,A,w,T:2*Math.PI/w,E:0.5*k*A*A};}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-  const k=+k.value,A=+amp.value,m=+m.value,w=Math.sqrt(k/m);
-  const x=A*Math.cos(w*t);
-  const base=80, px=W/2+x*200;
+  const [W,H]=size();const p=phys();
+  const x=p.A*Math.cos(p.w*t); const v=-p.A*p.w*Math.sin(p.w*t);
+  const U=0.5*p.k*x*x; const K=p.E-U;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const base=70, midY=H*0.4, sc=180;
+  const px=W/2+x*sc;
+  // spring
   ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();
-  for(let i=0;i<16;i++){const xx=base+i*(px-base)/16;ctx.lineTo(xx,H/2+(i%2?14:-14));}
-  ctx.stroke();
-  ctx.fillStyle='#a78bfa';ctx.fillRect(px-16,H/2-16,32,32);
-  const F=-k*x,U=0.5*k*x*x;
-  res.innerHTML=`<div class="result"><span>x</span><strong>${x.toFixed(3)} m</strong></div><div class="result"><span>F</span><strong>${F.toFixed(2)} N</strong></div><div class="result"><span>U</span><strong>${U.toFixed(3)} J</strong></div><div class="result"><span>T</span><strong>${(2*Math.PI/w).toFixed(2)} s</strong></div>`;
+  const coils=14;for(let i=0;i<=coils;i++){const xx=base+i*(px-base)/coils;const yy=midY+((i%2)?16:-16)*(i>0&&i<coils?1:0);if(i===0)ctx.moveTo(xx,midY);else ctx.lineTo(xx,yy);}ctx.lineTo(px,midY);ctx.stroke();
+  ctx.fillStyle='#334155';ctx.fillRect(base-16,midY-28,16,56);
+  ctx.fillStyle='#a78bfa';ctx.fillRect(px-16,midY-16,32,32);
+  // energy bars
+  const barY=H*0.72;
+  ctx.fillStyle='#64748b';ctx.font='12px system-ui';ctx.fillText('Energy',40,barY-10);
+  ctx.fillStyle='#63e6ff';ctx.fillRect(40,barY,Math.max(2,U/p.E*200),16);
+  ctx.fillStyle='#fbbf24';ctx.fillRect(40,barY+24,Math.max(2,K/p.E*200),16);
+  ctx.fillStyle='#94a3b8';ctx.fillText('PE',250,barY+12);ctx.fillText('KE',250,barY+36);
+  res.innerHTML='<div class="result"><span>T</span><strong>'+p.T.toFixed(2)+' s</strong></div>'+
+    '<div class="result"><span>ω</span><strong>'+p.w.toFixed(2)+' rad/s</strong></div>'+
+    '<div class="result"><span>x</span><strong>'+x.toFixed(3)+' m</strong></div>'+
+    '<div class="result"><span>F = −kx</span><strong>'+(-p.k*x).toFixed(2)+' N</strong></div>'+
+    '<div class="result"><span>E total</span><strong>'+p.E.toFixed(3)+' J</strong></div>';
 }
-
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.033,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=()=>{playing=false;t=0;last=0;k.value=25;amp.value=0.25;m.value=1;sync();playBtn.textContent='Play';draw();};
-sync();requestAnimationFrame(loop);
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
+function reset(){playing=false;t=0;last=0;playBtn.textContent='Play';sync();draw();}
+kEl.oninput=mEl.oninput=AEl.oninput=function(){sync();draw();};
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
 })();
 
 </script>
-</body></html>
+</body>
+</html>
