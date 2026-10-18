@@ -1,5 +1,5 @@
 /* Vinit Simulation Hub — Activity Catalog */
-/* cache-bust v13 - 100+ live labs */
+/* cache-bust v14 - 100+ live labs */
 const CATALOG = [
   // KINEMATICS (14)
   { id: "projectile", title: "Projectile Motion Lab", desc: "Trajectories, range, max height, flight time, target angles & minimum launch speed.", category: "kinematics", tags: "projectile trajectory launch angle gravity range", status: "live", url: "projects/projectile.html", icon: "🚀" },
@@ -136,24 +136,9 @@ const CATALOG = [
   { id: "gravity-sandbox", title: "Gravity Sandbox", desc: "Place masses and watch gravitational attraction.", category: "fun", tags: "gravity sandbox nbody", status: "coming-soon", icon: "🌌" },
   { id: "collision-gallery", title: "Collision Gallery", desc: "Fun elastic/inelastic collision demos.", category: "fun", tags: "collision gallery fun", status: "coming-soon", icon: "🎱" },
   { id: "light-spectrum", title: "Visible Spectrum", desc: "Wavelength to colour interactive map.", category: "fun", tags: "spectrum wavelength colour", status: "coming-soon", icon: "🌈" },
-  { id: "physics-puzzles", title: "Physics Puzzles", desc: "Small interactive physics challenges.", category: "fun", tags: "puzzles challenges physics", status: "coming-soon", icon: "🧩" }
-];
-
-const CATEGORIES = [
-  { id: "all", label: "All" },
-  { id: "kinematics", label: "Kinematics" , url: "projects/kinematics-1d.html" , status: "live" },
-  { id: "forces", label: "Forces" },
-  { id: "conservation", label: "Energy & Momentum" },
-  { id: "waves", label: "Waves" },
-  { id: "optics", label: "Optics" , url: "projects/optics-quiz.html" , status: "live" },
-  { id: "em", label: "E & M" , url: "projects/emi.html" , status: "live" },
-  { id: "rotation", label: "Rotation" , url: "projects/rotational-ke.html" , status: "live" },
-  { id: "fluids", label: "Fluids" },
-  { id: "modern", label: "Modern" },
-  { id: "tools", label: "Tools" },
-  { id: "fun", label: "Fun" },
-  { id: "coming-soon", label: "Coming Soon" }
-,
+  { id: "physics-puzzles", title: "Physics Puzzles", desc: "Small interactive physics challenges.", category: "fun", tags: "puzzles challenges physics", status: "coming-soon", icon: "🧩" },
+  { id: "magnetic-force", title: "Magnetic Force on a Wire", desc: "F = ILB sinθ on a current-carrying wire with right-hand rule intuition.", category: "em", tags: "magnetic force current wire lorentz", status: "live", url: "projects/magnetic-force.html", icon: "🧲" },
+  { id: "rc-charging", title: "RC Charging Circuit", desc: "Capacitor charging through a resistor — time constant τ = RC, Vc and current curves.", category: "em", tags: "rc circuit charging time constant capacitor", status: "live", url: "projects/rc-charging.html", icon: "⏱️" },
   { id: "newtons-law-live", title: "Newton's Second Law", desc: "F = ma interactive", category: "forces", tags: "newtons-law", status: "live", url: "projects/newtons-law.html", icon: "⚖️" },
   { id: "friction-live", title: "Friction Lab", desc: "Static vs kinetic friction", category: "forces", tags: "friction", status: "live", url: "projects/friction.html", icon: "🧱" },
   { id: "momentum-live", title: "Conservation of Momentum", desc: "1D collisions", category: "conservation", tags: "momentum", status: "live", url: "projects/momentum.html", icon: "💥" },
@@ -163,6 +148,20 @@ const CATEGORIES = [
   { id: "circular-motion-live", title: "Uniform Circular Motion", desc: "Centripetal acceleration", category: "kinematics", tags: "circular-motion", status: "live", url: "projects/circular-motion.html", icon: "🔄" },
   { id: "capacitor-live", title: "RC Charging Curve", desc: "Capacitor charge vs time", category: "em", tags: "capacitor", status: "live", url: "projects/capacitor.html", icon: "🔋" },
   { id: "lens-live", title: "Thin Lens Equation", desc: "Lens formula", category: "optics", tags: "lens", status: "live", url: "projects/lens.html", icon: "🔦" }
-  { id: "magnetic-force", title: "Magnetic Force on a Wire", desc: "F = ILB sinθ on a current-carrying wire with right-hand rule intuition.", category: "em", tags: "magnetic force current wire lorentz", status: "live", url: "projects/magnetic-force.html", icon: "🧲" },
-  { id: "rc-charging", title: "RC Charging Circuit", desc: "Capacitor charging through a resistor — time constant τ = RC, Vc and current curves.", category: "em", tags: "rc circuit charging time constant capacitor", status: "live", url: "projects/rc-charging.html", icon: "⏱️" },
+];
+
+const CATEGORIES = [
+  { id: "all", label: "All" },
+  { id: "kinematics", label: "Kinematics" },
+  { id: "forces", label: "Forces" },
+  { id: "conservation", label: "Energy & Momentum" },
+  { id: "waves", label: "Waves" },
+  { id: "optics", label: "Optics" },
+  { id: "em", label: "E & M" },
+  { id: "rotation", label: "Rotation" },
+  { id: "fluids", label: "Fluids" },
+  { id: "modern", label: "Modern" },
+  { id: "tools", label: "Tools" },
+  { id: "fun", label: "Fun" },
+  { id: "coming-soon", label: "Coming Soon" }
 ];
