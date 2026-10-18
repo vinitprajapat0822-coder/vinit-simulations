@@ -1,59 +1,90 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Force Equilibrium | Vinit Simulation Hub</title>
+<title>Resultant of Two Forces | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.12)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:#63e6ff;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,28px);margin:8px 0 4px}.lead{color:#9cabc8;margin:0}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:rgba(16,24,48,.55);border:1px solid rgba(255,255,255,.12);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:#63e6ff}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:#f2f6ff;padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:#9cabc8}
-.formulas{font-size:12px;color:#9cabc8;line-height:1.7}code{color:#63e6ff}
-</style></head><body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FORCES</a><a href="../index.html" style="color:#63e6ff">← Hub</a></div></header>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FORCES</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">FORCES</div><h1>Force Equilibrium</h1><p class="lead">Resultant of two forces.</p></section>
+<section class="hero"><div class="eyebrow">VECTOR FORCES</div><h1>Resultant of Two Forces</h1><p class="lead">Two forces at an angle. Resultant magnitude from the law of cosines; components make the calculation straightforward.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">F₁ <span id="f1V">10</span></label><input type="range" id="f1" min="1" max="20" step="0.5" value="10">
-<label class="row">F₂ <span id="f2V">8</span></label><input type="range" id="f2" min="1" max="20" step="0.5" value="8">
-<label class="row">angle (°) <span id="angV">120</span></label><input type="range" id="ang" min="0" max="180" step="5" value="120"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">F₁ <b id="f1V">10 N</b></label><input type="range" id="f1" min="1" max="20" step="0.5" value="10">
+<label class="row">F₂ <b id="f2V">8 N</b></label><input type="range" id="f2" min="1" max="20" step="0.5" value="8">
+<label class="row">Angle between them <b id="angV">60°</b></label><input type="range" id="ang" min="0" max="180" step="5" value="60"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Equilibrium of a particle needs the vector sum of all forces to be zero — add a third force equal to −R.</div>
+<ul><li>θ = 0° → forces add (maximum R).</li>
+<li>θ = 180° → forces subtract.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>R² = F1²+F2²+2F1F2 cosθ</code></div></div>
-</div></div></main>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Magnitude</h3>
+<code>R = √(F₁² + F₂² + 2 F₁ F₂ cosθ)</code>
+<h3>Components</h3>
+<code>R_x = F₁ + F₂ cosθ</code> · <code>R_y = F₂ sinθ</code>
+<h3>Problem tip</h3>
+Resolve into perpendicular components, then recombine — fewer errors than pure geometry.</div></div>
+</div></div>
+</main>
 <script src="../lab-theme.js?v=3"></script>
-<script>(function(){
+<script>
+
+(function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const f1=document.getElementById('f1');
-const f2=document.getElementById('f2');
-const ang=document.getElementById('ang');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('f1V').textContent=f1.value;document.getElementById('f2V').textContent=f2.value;document.getElementById('angV').textContent=ang.value;draw();}
-f1.oninput=sync;
-f2.oninput=sync;
-ang.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+const f1=document.getElementById('f1'),f2=document.getElementById('f2'),ang=document.getElementById('ang');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+function sync(){f1V.textContent=f1.value+' N';f2V.textContent=f2.value+' N';angV.textContent=ang.value+'°';draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
- const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const th=+ang.value*Math.PI/180;const Rx=+f1.value++f2.value*Math.cos(th),Ry=+f2.value*Math.sin(th);const R=Math.hypot(Rx,Ry);
-const cx=W/2,cy=H/2;
-ctx.strokeStyle='#63e6ff';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx++f1.value*10,cy);ctx.stroke();
-ctx.strokeStyle='#a78bfa';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx++f2.value*10*Math.cos(th),cy-+f2.value*10*Math.sin(th));ctx.stroke();
-res.innerHTML=`<div class="result"><span>R</span><strong>${R.toFixed(2)} N</strong></div>`;
+  const [W,H]=size();
+  const A=+f1.value,B=+f2.value,th=+ang.value*Math.PI/180;
+  const Rx=A+B*Math.cos(th),Ry=B*Math.sin(th),R=Math.hypot(Rx,Ry);
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const cx=W*0.3,cy=H*0.55,sc=6;
+  function arrow(x1,y1,x2,y2,col,lab){ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.font='12px system-ui';ctx.fillText(lab,x2+6,y2);}
+  arrow(cx,cy,cx+A*sc,cy,'#63e6ff','F1');
+  arrow(cx,cy,cx+B*sc*Math.cos(th),cy-B*sc*Math.sin(th),'#a78bfa','F2');
+  arrow(cx,cy,cx+Rx*sc,cy-Ry*sc,'#fbbf24','R');
+  res.innerHTML='<div class="result"><span>|R|</span><strong>'+R.toFixed(2)+' N</strong></div>'+
+    '<div class="result"><span>R_x</span><strong>'+Rx.toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>R_y</span><strong>'+Ry.toFixed(2)+'</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;f1.value=10;f2.value=8;ang.value=120;sync();playBtn.textContent='Play';};
-sync();requestAnimationFrame(loop);
-})();</script></body></html>
+f1.oninput=f2.oninput=ang.oninput=sync;
+resetBtn.onclick=function(){f1.value=10;f2.value=8;ang.value=60;sync();};
+sync();
+})();
+
+</script>
+</body>
+</html>
