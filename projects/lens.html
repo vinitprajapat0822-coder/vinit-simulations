@@ -2,39 +2,56 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0a0e1a">
-<title>Thin Lens Equation | Vinit Simulation Hub</title>
+<title>Thin Lens Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:var(--cyan);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,30px);margin:8px 0 4px}p.lead{color:var(--muted);margin:0 0 8px}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:var(--cyan)}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
-.formulas{font-size:12px;color:var(--muted);line-height:1.7}code{color:var(--cyan)}
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span><span>OPTICS</span></a><a href="../index.html" style="color:var(--cyan)">← Hub</a></div></header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>OPTICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">OPTICS</div><h1>Thin Lens Equation</h1><p class="lead">Lens formula and magnification.</p></section>
+<section class="hero"><div class="eyebrow">LENS FORMULA</div><h1>Thin Lens Laboratory</h1><p class="lead">Convex lens: set focal length and object distance. Image distance and magnification follow from the lens formula.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">f (cm) <span id="fV">20</span></label><input type="range" id="f" min="8" max="40" step="1" value="20">
-<label class="row">|u| (cm) <span id="uV">45</span></label><input type="range" id="u" min="15" max="90" step="1" value="45"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Focal length f <b id="fV">20 cm</b></label><input type="range" id="f" min="8" max="40" step="1" value="20">
+<label class="row">Object distance |u| <b id="uV">40 cm</b></label><input type="range" id="u" min="12" max="100" step="1" value="40"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Sign convention (Cartesian): light travels left→right; distances to the left of the optical element are negative for object in standard textbook form used here with u &lt; 0.</div>
+<ul><li>|u| &gt; 2f → real, inverted, diminished image.</li>
+<li>|u| = f → image at infinity.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>1/f = 1/v − 1/u</code> · <code>m = v/u</code></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Lens formula</h3>
+<code>1/f = 1/v − 1/u</code><br>
+<code>m = v/u = h′/h</code>
+<h3>Problem tip</h3>
+Always draw a ray diagram for the region (beyond 2F, between F and 2F, inside F) before calculating.</div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
@@ -42,30 +59,43 @@ label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0
 
 (function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const f=document.getElementById('f');
-const u=document.getElementById('u');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('fV').textContent=f.value;document.getElementById('uV').textContent=u.value;draw();}
-f.oninput=sync;
-u.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+const fEl=document.getElementById('f'),uEl=document.getElementById('u');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+function sync(){fV.textContent=fEl.value+' cm';uV.textContent=uEl.value+' cm';draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-
-const f=+f.value,u=-Math.abs(+u.value);const inv=1/f-1/u;const v=1/inv;const m=v/u;
-const cx=W/2,cy=H/2;
-ctx.strokeStyle='#64748b';ctx.beginPath();ctx.moveTo(20,cy);ctx.lineTo(W-20,cy);ctx.moveTo(cx,40);ctx.lineTo(cx,H-40);ctx.stroke();
-ctx.fillStyle='#63e6ff';ctx.fillRect(cx+u*2,cy-25,8,25);
-if(isFinite(v)){ctx.fillStyle='#a78bfa';ctx.fillRect(cx+v*2,cy,8,Math.max(8,Math.abs(m)*25));}
-res.innerHTML=`<div class="result"><span>v</span><strong>${isFinite(v)?v.toFixed(1)+' cm':'∞'}</strong></div><div class="result"><span>m</span><strong>${isFinite(m)?m.toFixed(2):'—'}</strong></div>`;
-
+  const [W,H]=size();
+  const f=+fEl.value,u=-Math.abs(+uEl.value);
+  const inv=1/f-1/u; const v=1/inv; const m=v/u;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const cx=W/2,cy=H/2,sc=2.2;
+  // optical axis
+  ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(20,cy);ctx.lineTo(W-20,cy);ctx.stroke();
+  // lens
+  ctx.strokeStyle='#63e6ff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx,40);ctx.lineTo(cx,H-40);ctx.stroke();
+  // F marks
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(cx+f*sc,cy,4,0,6.28);ctx.fill();ctx.beginPath();ctx.arc(cx-f*sc,cy,4,0,6.28);ctx.fill();
+  ctx.fillStyle='#94a3b8';ctx.font='11px system-ui';ctx.fillText('F',cx+f*sc-4,cy+16);ctx.fillText('F',cx-f*sc-4,cy+16);
+  // object
+  const ox=cx+u*sc, oh=40;
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ox,cy);ctx.lineTo(ox,cy-oh);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,cy-oh);ctx.lineTo(ox-5,cy-oh+8);ctx.lineTo(ox+5,cy-oh+8);ctx.closePath();ctx.fillStyle='#a78bfa';ctx.fill();
+  // image
+  if(isFinite(v)){
+    const ix=cx+v*sc, ih=oh*m;
+    ctx.strokeStyle='#7cf0bd';ctx.beginPath();ctx.moveTo(ix,cy);ctx.lineTo(ix,cy-ih);ctx.stroke();
+  }
+  res.innerHTML='<div class="result"><span>v</span><strong>'+(isFinite(v)?v.toFixed(1)+' cm':'∞')+'</strong></div>'+
+    '<div class="result"><span>m</span><strong>'+(isFinite(m)?m.toFixed(2):'—')+'</strong></div>'+
+    '<div class="result"><span>type</span><strong>'+(isFinite(v)?(v>0?'real':'virtual'):'—')+'</strong></div>'+
+    '<div class="result"><span>orientation</span><strong>'+(isFinite(m)?(m<0?'inverted':'erect'):'—')+'</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.033,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=()=>{playing=false;t=0;last=0;f.value=20;u.value=45;sync();playBtn.textContent='Play';draw();};
-sync();requestAnimationFrame(loop);
+fEl.oninput=uEl.oninput=sync;
+resetBtn.onclick=function(){fEl.value=20;uEl.value=40;sync();};
+sync();
 })();
 
 </script>
-</body></html>
+</body>
+</html>
