@@ -1,57 +1,105 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Capacitors Combination | Vinit Simulation Hub</title>
+<title>Capacitor Combinations Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.12)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:#63e6ff;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,28px);margin:8px 0 4px}.lead{color:#9cabc8;margin:0}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:rgba(16,24,48,.55);border:1px solid rgba(255,255,255,.12);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:#63e6ff}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:#f2f6ff;padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:#9cabc8}
-.formulas{font-size:12px;color:#9cabc8;line-height:1.7}code{color:#63e6ff}
-</style></head><body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>EM</a><a href="../index.html" style="color:#63e6ff">← Hub</a></div></header>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>E & M</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">EM</div><h1>Capacitors Combination</h1><p class="lead">Series vs parallel equivalent C.</p></section>
+<section class="hero"><div class="eyebrow">CAPACITORS</div><h1>Capacitor Combinations Laboratory</h1><p class="lead">Series and parallel combinations of two capacitors. Compare C_eq, charge, and stored energy.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">C₁ (μF) <span id="c1V">4</span></label><input type="range" id="c1" min="1" max="20" step="1" value="4">
-<label class="row">C₂ (μF) <span id="c2V">6</span></label><input type="range" id="c2" min="1" max="20" step="1" value="6">
-<label class="row">0=series 1=parallel <span id="modeV">1</span></label><input type="range" id="mode" min="0" max="1" step="1" value="1"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">C₁ <b id="c1V">4 μF</b></label><input type="range" id="c1" min="1" max="20" step="1" value="4">
+<label class="row">C₂ <b id="c2V">6 μF</b></label><input type="range" id="c2" min="1" max="20" step="1" value="6">
+<label class="row">Combination</label>
+<select id="mode" style="width:100%;padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff;margin-top:4px">
+<option value="parallel">Parallel</option>
+<option value="series">Series</option>
+</select>
+<label class="row">Battery V <b id="VV">12 V</b></label><input type="range" id="V" min="1" max="24" step="1" value="12"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Parallel: same voltage, charges add. Series: same charge, voltages add.</div>
+<ul><li>Parallel C_eq is larger than either capacitor.</li>
+<li>Series C_eq is smaller than the smaller capacitor.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas">Series: 1/C=1/C1+1/C2 · Parallel: C=C1+C2</div></div>
-</div></div></main>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Parallel</h3>
+<code>C_eq = C₁ + C₂</code>
+<h3>Series</h3>
+<code>1/C_eq = 1/C₁ + 1/C₂</code>
+<h3>Energy</h3>
+<code>U = ½ C_eq V²</code></div></div>
+</div></div>
+</main>
 <script src="../lab-theme.js?v=3"></script>
-<script>(function(){
+<script>
+
+(function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const c1=document.getElementById('c1');
-const c2=document.getElementById('c2');
-const mode=document.getElementById('mode');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('c1V').textContent=c1.value;document.getElementById('c2V').textContent=c2.value;document.getElementById('modeV').textContent=mode.value;draw();}
-c1.oninput=sync;
-c2.oninput=sync;
-mode.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-function draw(){
- const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const C=+mode.value>0.5?(+c1.value++c2.value):(1/(1/+c1.value+1/+c2.value));
-ctx.strokeStyle='#63e6ff';ctx.strokeRect(W*0.25,H*0.3,18,H*0.4);ctx.strokeRect(W*0.65,H*0.3,18,H*0.4);
-res.innerHTML=`<div class="result"><span>C_eq</span><strong>${C.toFixed(2)} μF</strong></div>`;
+const c1=document.getElementById('c1'),c2=document.getElementById('c2'),mode=document.getElementById('mode'),V=document.getElementById('V');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+function sync(){c1V.textContent=c1.value+' μF';c2V.textContent=c2.value+' μF';VV.textContent=V.value+' V';draw();}
+function phys(){
+  const a=+c1.value,b=+c2.value,v=+V.value,series=mode.value==='series';
+  const Ceq=series?1/(1/a+1/b):(a+b);
+  const Q=Ceq*v;
+  return{a,b,v,series,Ceq,Q};
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;c1.value=4;c2.value=6;mode.value=1;sync();playBtn.textContent='Play';};
-sync();requestAnimationFrame(loop);
-})();</script></body></html>
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const p=phys();
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;
+  if(p.series){
+    // series sketch
+    ctx.strokeRect(W*0.25,H*0.35,20,H*0.3);ctx.strokeRect(W*0.55,H*0.35,20,H*0.3);
+    ctx.beginPath();ctx.moveTo(W*0.15,H*0.5);ctx.lineTo(W*0.25,H*0.5);ctx.moveTo(W*0.45,H*0.5);ctx.lineTo(W*0.55,H*0.5);ctx.moveTo(W*0.75,H*0.5);ctx.lineTo(W*0.85,H*0.5);ctx.stroke();
+  } else {
+    ctx.strokeRect(W*0.3,H*0.25,18,H*0.2);ctx.strokeRect(W*0.3,H*0.55,18,H*0.2);
+    ctx.beginPath();ctx.moveTo(W*0.2,H*0.35);ctx.lineTo(W*0.3,H*0.35);ctx.moveTo(W*0.2,H*0.65);ctx.lineTo(W*0.3,H*0.65);
+    ctx.moveTo(W*0.2,H*0.35);ctx.lineTo(W*0.2,H*0.65);ctx.moveTo(W*0.48,H*0.35);ctx.lineTo(W*0.48,H*0.65);ctx.lineTo(W*0.6,H*0.5);ctx.stroke();
+  }
+  ctx.fillStyle='#94a3b8';ctx.font='14px system-ui';ctx.fillText(p.series?'SERIES':'PARALLEL',W*0.4,40);
+  res.innerHTML='<div class="result"><span>C_eq</span><strong>'+p.Ceq.toFixed(2)+' μF</strong></div>'+
+    '<div class="result"><span>Q_total</span><strong>'+p.Q.toFixed(2)+' μC</strong></div>'+
+    '<div class="result"><span>U = ½CeqV²</span><strong>'+(0.5*p.Ceq*p.v*p.v).toFixed(2)+' μJ</strong></div>';
+}
+c1.oninput=c2.oninput=mode.onchange=V.oninput=sync;
+resetBtn.onclick=function(){c1.value=4;c2.value=6;mode.value='parallel';V.value=12;sync();};
+sync();
+})();
+
+</script>
+</body>
+</html>
