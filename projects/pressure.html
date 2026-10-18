@@ -1,54 +1,90 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fluid Pressure | Vinit Simulation Hub</title>
+<title>Hydrostatic Pressure Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.12)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:#63e6ff;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,28px);margin:8px 0 4px}.lead{color:#9cabc8;margin:0}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:rgba(16,24,48,.55);border:1px solid rgba(255,255,255,.12);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:#63e6ff}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:#f2f6ff;padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:#9cabc8}
-.formulas{font-size:12px;color:#9cabc8;line-height:1.7}code{color:#63e6ff}
-</style></head><body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FLUIDS</a><a href="../index.html" style="color:#63e6ff">← Hub</a></div></header>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FLUIDS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">FLUIDS</div><h1>Fluid Pressure</h1><p class="lead">Hydrostatic pressure ρgh.</p></section>
+<section class="hero"><div class="eyebrow">PRESSURE</div><h1>Hydrostatic Pressure Laboratory</h1><p class="lead">Pressure in a liquid increases with depth: P = ρgh (gauge pressure). Independent of container shape.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">ρ (kg/m³) <span id="rhoV">1000</span></label><input type="range" id="rho" min="500" max="2000" step="50" value="1000">
-<label class="row">h (m) <span id="hV">6</span></label><input type="range" id="h" min="0.5" max="20" step="0.5" value="6"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">ρ (kg/m³) <b id="rhoV">1000</b></label><input type="range" id="rho" min="500" max="2000" step="50" value="1000">
+<label class="row">Depth h <b id="hV">5 m</b></label><input type="range" id="h" min="0.5" max="20" step="0.5" value="5"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">At the same depth, pressure is the same in connected fluid (Pascal) — basis of hydraulic machines.</div>
+<ul><li>Double depth → double gauge pressure.</li>
+<li>Atmospheric pressure adds for absolute pressure.</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>P = ρgh</code></div></div>
-</div></div></main>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Hydrostatic gauge pressure</h3>
+<code>P = ρ g h</code>
+<h3>Absolute</h3>
+<code>P_abs = P_atm + ρgh</code>
+<h3>Problem tip</h3>
+Use consistent units: ρ in kg/m³, h in m → P in pascals.</div></div>
+</div></div>
+</main>
 <script src="../lab-theme.js?v=3"></script>
-<script>(function(){
+<script>
+
+(function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const rho=document.getElementById('rho');
-const h=document.getElementById('h');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('rhoV').textContent=rho.value;document.getElementById('hV').textContent=h.value;draw();}
-rho.oninput=sync;
-h.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+const rho=document.getElementById('rho'),h=document.getElementById('h');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+function sync(){rhoV.textContent=rho.value;hV.textContent=h.value+' m';draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
- const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const P=+rho.value*9.8*+h.value;
-ctx.fillStyle='#0c4a6e';ctx.fillRect(W*0.3,H-40-+h.value*10,W*0.4,+h.value*10);
-res.innerHTML=`<div class="result"><span>P</span><strong>${(P/1000).toFixed(1)} kPa</strong></div>`;
+  const [W,H]=size();
+  const rf=+rho.value,hh=+h.value,g=9.8,P=rf*g*hh;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const top=80, bot=H-40, depth=(bot-top)*Math.min(1,hh/20);
+  ctx.fillStyle='#0c4a6e';ctx.fillRect(W*0.25,bot-depth,W*0.5,depth);
+  ctx.strokeStyle='#64748b';ctx.strokeRect(W*0.25,top,W*0.5,bot-top);
+  // pressure arrows at bottom
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+  for(let i=0;i<5;i++){const x=W*0.3+i*40;ctx.beginPath();ctx.moveTo(x,bot);ctx.lineTo(x,bot-15-P/5000);ctx.stroke();}
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('depth h',W*0.25-50,(top+bot)/2);
+  res.innerHTML='<div class="result"><span>P = ρgh</span><strong>'+(P/1000).toFixed(2)+' kPa</strong></div>'+
+    '<div class="result"><span>P (Pa)</span><strong>'+P.toFixed(0)+'</strong></div>'+
+    '<div class="result"><span>ρ</span><strong>'+rf+' kg/m³</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;rho.value=1000;h.value=6;sync();playBtn.textContent='Play';};
-sync();requestAnimationFrame(loop);
-})();</script></body></html>
+rho.oninput=h.oninput=sync;
+resetBtn.onclick=function(){rho.value=1000;h.value=5;sync();};
+sync();
+})();
+
+</script>
+</body>
+</html>
