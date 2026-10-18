@@ -1,58 +1,90 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Power & Efficiency | Vinit Simulation Hub</title>
+<title>Power & Efficiency Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.12)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:#63e6ff;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,28px);margin:8px 0 4px}.lead{color:#9cabc8;margin:0}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:rgba(16,24,48,.55);border:1px solid rgba(255,255,255,.12);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:#63e6ff}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:#f2f6ff;padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:#9cabc8}
-.formulas{font-size:12px;color:#9cabc8;line-height:1.7}code{color:#63e6ff}
-</style></head><body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>CONSERVATION</a><a href="../index.html" style="color:#63e6ff">← Hub</a></div></header>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>CONSERVATION</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">CONSERVATION</div><h1>Power & Efficiency</h1><p class="lead">Mechanical power and efficiency.</p></section>
+<section class="hero"><div class="eyebrow">POWER</div><h1>Power & Efficiency Laboratory</h1><p class="lead">Instantaneous power for a force aligned with velocity is P = Fv. Efficiency η = P_out / P_in.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">F (N) <span id="FV">15</span></label><input type="range" id="F" min="1" max="40" step="1" value="15">
-<label class="row">v (m/s) <span id="vV">4</span></label><input type="range" id="v" min="0.5" max="20" step="0.5" value="4">
-<label class="row">η % <span id="effV">75</span></label><input type="range" id="eff" min="20" max="100" step="5" value="75"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Force F <b id="FV">15 N</b></label><input type="range" id="F" min="1" max="40" step="1" value="15">
+<label class="row">Speed v <b id="vV">4 m/s</b></label><input type="range" id="v" min="0.5" max="20" step="0.5" value="4">
+<label class="row">Efficiency η <b id="effV">75%</b></label><input type="range" id="eff" min="20" max="100" step="5" value="75"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Same work done faster means higher power. Engines are often limited by maximum power, not maximum force.</div>
+<ul><li>P = dW/dt</li>
+<li>For constant F parallel to v: P = Fv</li></ul></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>P = Fv</code> · <code>η = P_out/P_in</code></div></div>
-</div></div></main>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Power</h3>
+<code>P = F v</code> (F along v)<br>
+<code>P = dW/dt</code>
+<h3>Efficiency</h3>
+<code>η = P_out / P_in</code>
+<h3>Problem tip</h3>
+Average power = total work / total time.</div></div>
+</div></div>
+</main>
 <script src="../lab-theme.js?v=3"></script>
-<script>(function(){
+<script>
+
+(function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const F=document.getElementById('F');
-const v=document.getElementById('v');
-const eff=document.getElementById('eff');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('FV').textContent=F.value;document.getElementById('vV').textContent=v.value;document.getElementById('effV').textContent=eff.value;draw();}
-F.oninput=sync;
-v.oninput=sync;
-eff.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+const F=document.getElementById('F'),v=document.getElementById('v'),eff=document.getElementById('eff');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+function sync(){FV.textContent=F.value+' N';vV.textContent=v.value+' m/s';effV.textContent=eff.value+'%';draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
- const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const Pin=+F.value*+v.value,Pout=Pin*+eff.value/100;
-ctx.fillStyle='#63e6ff';ctx.fillRect(80,H-40-Pin*2,50,Pin*2);
-ctx.fillStyle='#a78bfa';ctx.fillRect(160,H-40-Pout*2,50,Pout*2);
-res.innerHTML=`<div class="result"><span>P_in</span><strong>${Pin.toFixed(1)} W</strong></div><div class="result"><span>P_out</span><strong>${Pout.toFixed(1)} W</strong></div>`;
+  const [W,H]=size();
+  const f=+F.value,vel=+v.value,e=+eff.value/100;
+  const Pin=f*vel,Pout=Pin*e;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const maxP=Math.max(Pin,1);
+  ctx.fillStyle='#63e6ff';ctx.fillRect(W*0.25,H-60-Pin/maxP*200,60,Pin/maxP*200);
+  ctx.fillStyle='#a78bfa';ctx.fillRect(W*0.55,H-60-Pout/maxP*200,60,Pout/maxP*200);
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('P_in',W*0.25,H-40);ctx.fillText('P_out',W*0.55,H-40);
+  res.innerHTML='<div class="result"><span>P = Fv</span><strong>'+Pin.toFixed(1)+' W</strong></div>'+
+    '<div class="result"><span>P_out</span><strong>'+Pout.toFixed(1)+' W</strong></div>'+
+    '<div class="result"><span>η</span><strong>'+(e*100).toFixed(0)+'%</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;F.value=15;v.value=4;eff.value=75;sync();playBtn.textContent='Play';};
-sync();requestAnimationFrame(loop);
-})();</script></body></html>
+F.oninput=v.oninput=eff.oninput=sync;
+resetBtn.onclick=function(){F.value=15;v.value=4;eff.value=75;sync();};
+sync();
+})();
+
+</script>
+</body>
+</html>
