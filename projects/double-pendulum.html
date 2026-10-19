@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Double Pendulum Chaos | Vinit Simulation Hub</title>
+<link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FUN</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">CHAOS</div><h1>Double Pendulum Chaos</h1><p class="lead">Two coupled pendulums. Tiny changes in initial state produce wildly different paths — sensitive dependence on initial conditions.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">g <b id="gV">9.8</b></label><input type="range" id="g" min="5" max="15" step="0.1" value="9.8"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Chaos here does not mean random — the motion is deterministic but unpredictable long-term because of sensitivity.</div>
+<ul><li>Trail shows the lower mass path.</li>
+<li>Reset and nudge angles mentally — paths diverge.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Idea</h3>
+Nonlinear coupled ODEs → chaotic trajectories in a large region of phase space.
+<h3>Problem tip</h3>
+Energy is roughly conserved in the ideal model; real systems damp.</div></div>
+</div></div>
+</main>
+<script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const gEl=document.getElementById('g');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=true,a1=2,a2=2.5,w1=0,w2=0,last=0,trail=[];
+function sync(){gV.textContent=gEl.value;}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function step(dt){
+  const g=+gEl.value,L1=1,L2=1,m1=1,m2=1;
+  // simplified equations
+  const den=2*m1+m2-m2*Math.cos(2*a1-2*a2);
+  const a1a=(-g*(2*m1+m2)*Math.sin(a1)-m2*g*Math.sin(a1-2*a2)-2*Math.sin(a1-a2)*m2*(w2*w2*L2+w1*w1*L1*Math.cos(a1-a2)))/(L1*den);
+  const a2a=(2*Math.sin(a1-a2)*(w1*w1*L1*(m1+m2)+g*(m1+m2)*Math.cos(a1)+w2*w2*L2*m2*Math.cos(a1-a2)))/(L2*den);
+  w1+=a1a*dt;w2+=a2a*dt;a1+=w1*dt;a2+=w2*dt;
+}
+function draw(){
+  const [W,H]=size();const cx=W/2,cy=60,s=70;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const x1=cx+s*Math.sin(a1),y1=cy+s*Math.cos(a1);
+  const x2=x1+s*Math.sin(a2),y2=y1+s*Math.cos(a2);
+  trail.push([x2,y2]);if(trail.length>120)trail.shift();
+  ctx.strokeStyle='rgba(99,230,255,0.35)';ctx.beginPath();
+  trail.forEach((p,i)=>{if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);});ctx.stroke();
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.fillStyle='#63e6ff';ctx.beginPath();ctx.arc(x1,y1,8,0,6.28);ctx.fill();
+  ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(x2,y2,8,0,6.28);ctx.fill();
+  res.innerHTML='<div class="result"><span>θ1</span><strong>'+(a1*180/Math.PI).toFixed(1)+'°</strong></div>'+
+    '<div class="result"><span>θ2</span><strong>'+(a2*180/Math.PI).toFixed(1)+'°</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.02,(ts-last)/1000);last=ts;
+  step(dt);draw();requestAnimationFrame(loop);}
+function reset(){playing=false;a1=2;a2=2.5;w1=0;w2=0;trail=[];last=0;playBtn.textContent='Play';sync();draw();}
+gEl.oninput=sync;
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
+})();
+
+</script>
+</body>
+</html>
