@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Physics Unit Converter | Vinit Simulation Hub</title>
+<link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>TOOLS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">UNITS</div><h1>Physics Unit Converter</h1><p class="lead">Convert common physics units for length, mass, energy and speed. Enter the value in SI base unit of the selected category.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Category</label>
+<select id="mode" style="width:100%;padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff">
+<option value="length">Length (value in metres)</option>
+<option value="mass">Mass (value in kg)</option>
+<option value="energy">Energy (value in joules)</option>
+<option value="speed">Speed (value in m/s)</option>
+</select>
+<label class="row">Value <b id="valV">1</b></label><input type="range" id="val" min="0.1" max="100" step="0.1" value="1"><div class="actions"><button class="btn primary" id="playBtn" style="display:none">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Always convert to SI before plugging into formulas — most exam mistakes are unit mistakes.</div>
+<ul><li>1 km/h = 1/3.6 m/s</li><li>1 eV = 1.6×10⁻¹⁹ J</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>SI base</h3>
+Length m · Mass kg · Time s · Energy J · Force N
+<h3>Problem tip</h3>
+Write units next to every intermediate step.</div></div>
+</div></div>
+</main>
+<script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const mode=document.getElementById('mode'),val=document.getElementById('val');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+playBtn.style.display='none';
+const tables={
+  length:{from:'m', factors:{mm:1e-3,cm:0.01,m:1,km:1e3,'inch':0.0254,ft:0.3048}},
+  mass:{from:'kg', factors:{g:1e-3,kg:1,t:1e3,lb:0.453592}},
+  energy:{from:'J', factors:{J:1,kJ:1e3,eV:1.602176634e-19,cal:4.184}},
+  speed:{from:'m/s', factors:{'m/s':1,'km/h':1/3.6,'mph':0.44704}}
+};
+function sync(){valV.textContent=val.value;draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const t=tables[mode.value];const x=+val.value;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#f2f6ff';ctx.font='16px system-ui';ctx.fillText(mode.value.toUpperCase()+' converter',40,40);
+  let y=80;const base=x; // interpret as SI base of mode
+  let html='';
+  Object.keys(t.factors).forEach(u=>{
+    const si=base; // user enters in first unit key order - use mode base
+    const out=si/t.factors[u]*t.factors[Object.keys(t.factors).find(k=>k===Object.keys(t.factors)[0])];
+  });
+  // simpler: value is in SI for that category
+  const siMap={length:'m',mass:'kg',energy:'J',speed:'m/s'};
+  ctx.fillStyle='#94a3b8';ctx.font='14px system-ui';
+  Object.entries(t.factors).forEach(([u,f],i)=>{
+    const out=base/f;
+    ctx.fillStyle='#63e6ff';ctx.fillText(out.toPrecision(6)+' '+u,40,y+i*28);
+    html+='<div class="result"><span>'+u+'</span><strong>'+out.toPrecision(6)+'</strong></div>';
+  });
+  res.innerHTML=html;
+}
+mode.onchange=val.oninput=sync;resetBtn.onclick=function(){mode.value='length';val.value=1;sync();};sync();
+})();
+
+</script>
+</body>
+</html>
