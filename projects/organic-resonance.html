@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resonance Electron-Flow Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#070a12;--panel:rgba(16,24,48,.7);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(7,10,18,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(167,139,250,.4);color:#c4b5fd;border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:75ch;margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:12px 0 28px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;backdrop-filter:blur(16px)}
+.card h3{margin:0 0 6px;font-size:16px}.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.card .go{display:inline-block;margin-top:12px;color:var(--cyan);font-weight:700;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(260px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden;backdrop-filter:blur(16px)}
+.ph{padding:10px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range],select{width:100%;accent-color:var(--violet)}
+select{padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:10px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(380px,50vh);background:#0a1220;border-radius:12px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.9);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--violet);padding:8px 12px;background:rgba(167,139,250,.08);border-radius:0 10px 10px 0;margin:10px 0}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="organic-home.html"><span class="logo">V</span>ORGANIC</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">GOC · RESONANCE</div><h1>Resonance Electron-Flow Lab</h1><p class="lead">Two resonance forms of a carboxylate-like fragment. Only electrons move — atom connectivity stays the same. The real species is a hybrid.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Resonance form <b id="fV">1</b></label><input type="range" id="form" min="1" max="2" step="1" value="1"><div class="actions"><button class="btn primary" id="playBtn" style="display:none">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Curved arrows show electron-pair movement between valid forms. Do not break the carbon skeleton when drawing resonance.</div>
+<ul><li>Both oxygens share negative charge in the hybrid.</li><li>Major/minor forms depend on charge placement and octet rules.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="380"></canvas></div></div>
+<div class="panel"><div class="ph">Live readout</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory · limits</div><div class="pb explain"><h3>Rules (teaching)</h3>
+Same atom connections · only e⁻ move · full octets preferred · charge separation costs energy
+<h3>Limits</h3>
+Simplified 2D schematic — not a full MO calculation.</div></div>
+</div></div>
+</main>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const form=document.getElementById('form');
+const resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+function sync(){fV.textContent=form.value;draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||380;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const f=+form.value;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  // carboxylate-like O-C-O schematic
+  const cx=W/2,cy=H*0.45;
+  function atom(x,y,lab,col){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,18,0,6.28);ctx.fill();ctx.fillStyle='#0a1220';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(lab,x,y+4);}
+  ctx.strokeStyle='#64748b';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cx-70,cy);ctx.lineTo(cx,cy);ctx.lineTo(cx+70,cy-40);ctx.moveTo(cx,cy);ctx.lineTo(cx+70,cy+40);ctx.stroke();
+  // double bond highlight by form
+  ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;
+  if(f===1){ctx.beginPath();ctx.moveTo(cx+4,cy-4);ctx.lineTo(cx+66,cy-36);ctx.stroke();}
+  else{ctx.beginPath();ctx.moveTo(cx+4,cy+4);ctx.lineTo(cx+66,cy+36);ctx.stroke();}
+  atom(cx-80,cy,'O','#7cf0bd');atom(cx,cy,'C','#94a3b8');atom(cx+80,cy-45,'O','#63e6ff');atom(cx+80,cy+45,'O','#63e6ff');
+  // charge labels
+  ctx.fillStyle='#ff8e9c';ctx.font='14px system-ui';ctx.textAlign='left';
+  if(f===1){ctx.fillText('−',cx+95,cy+50);ctx.fillText('δ',cx+95,cy-50);} else {ctx.fillText('−',cx+95,cy-50);ctx.fillText('δ',cx+95,cy+50);}
+  // curved arrow hint
+  ctx.strokeStyle='#a78bfa';ctx.beginPath();ctx.arc(cx+40,cy,28,f===1?0.2:3.5,f===1?1.2:4.5);ctx.stroke();
+  res.innerHTML='<div class="result"><span>Form</span><strong>'+f+' of 2</strong></div>'+
+    '<div class="result"><span>Meaning</span><strong>same connectivity</strong></div>'+
+    '<div class="result"><span>Real structure</span><strong>hybrid / average</strong></div>';
+}
+form.oninput=sync;resetBtn.onclick=function(){form.value=1;sync();};sync();
+})();
+
+</script>
+</body>
+</html>
