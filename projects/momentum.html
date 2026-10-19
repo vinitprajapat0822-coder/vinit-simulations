@@ -2,31 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>1D Collisions Laboratory | Vinit Simulation Hub</title>
+<title>Collision & Momentum Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+:root{color-scheme:dark;--bg:#070a14;--panel:rgba(14,22,44,.72);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+a{color:inherit;text-decoration:none}.wrap{width:min(1220px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(7,10,20,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 .nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;gap:8px;align-items:center;font-weight:800}
 .logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
 .hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
-h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
-.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:78ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:960px){.layout{grid-template-columns:1fr}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
 .ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
 label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
 label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
-select.sel{width:100%;padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff;margin-top:4px}
 .actions{display:flex;gap:8px;margin-top:12px}
 .btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
 .btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+canvas{display:block;width:100%;height:min(430px,54vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
 .results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
-.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result{background:rgba(8,14,28,.9);border:1px solid #2a3a58;border-radius:12px;padding:10px}
 .result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
 .explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
@@ -36,29 +35,29 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 <body>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>CONSERVATION</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">MOMENTUM</div><h1>1D Collisions Laboratory</h1><p class="lead">Two blocks collide in one dimension. Switch between elastic and perfectly inelastic collisions and watch momentum and kinetic energy.</p></section>
+<section class="hero"><div class="eyebrow">MOMENTUM</div><h1>Collision & Momentum Laboratory</h1><p class="lead">1D collisions with adjustable masses and restitution e. Watch total momentum stay constant while KE drops unless e = 1.</p></section>
 <div class="layout">
 <aside>
 <div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">m₁ <b id="m1V">2 kg</b></label><input type="range" id="m1" min="0.5" max="8" step="0.5" value="2">
-<label class="row">u₁ <b id="u1V">4 m/s</b></label><input type="range" id="u1" min="-8" max="10" step="0.5" value="4">
 <label class="row">m₂ <b id="m2V">2 kg</b></label><input type="range" id="m2" min="0.5" max="8" step="0.5" value="2">
-<label class="row">u₂ <b id="u2V">0 m/s</b></label><input type="range" id="u2" min="-8" max="10" step="0.5" value="0">
-<label class="row">Collision type</label>
-<select id="typ" class="sel"><option value="elastic">Elastic</option><option value="inelastic">Perfectly inelastic</option></select><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
-<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Momentum is conserved in both cases (no external force along the line). Kinetic energy is conserved only for the ideal elastic case.</div>
-<ul><li>Equal masses, elastic, target at rest → velocities exchange.</li>
-<li>Inelastic → they stick and move with common velocity.</li></ul></div></div>
+<label class="row">u₁ <b id="u1V">4</b></label><input type="range" id="u1" min="-2" max="8" step="0.5" value="4">
+<label class="row">u₂ <b id="u2V">0</b></label><input type="range" id="u2" min="-4" max="4" step="0.5" value="0">
+<label class="row">e <b id="eV">1.00</b></label><input type="range" id="e" min="0" max="1" step="0.05" value="1"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Equal masses, e = 1: velocities exchange. e = 0: they move together after impact (perfectly inelastic if they stick — here modelled via e).</div>
+<ul>
+<li>Total p is conserved (no external impulse).</li>
+<li>KE is conserved only for e = 1.</li>
+</ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
-<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Momentum</h3>
+<div class="panel"><div class="pb"><canvas id="c" width="960" height="430"></canvas></div></div>
+<div class="panel"><div class="ph">Live measurements</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory · problem links</div><div class="pb explain"><h3>Momentum</h3>
 <code>m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂</code>
-<h3>Elastic (1D)</h3>
-<code>v₁ = ((m₁−m₂)/(m₁+m₂))u₁ + (2m₂/(m₁+m₂))u₂</code><br>
-<code>v₂ = (2m₁/(m₁+m₂))u₁ + ((m₂−m₁)/(m₁+m₂))u₂</code>
-<h3>Perfectly inelastic</h3>
-<code>v = (m₁u₁ + m₂u₂)/(m₁+m₂)</code></div></div>
+<h3>Restitution</h3>
+<code>e = (separation speed)/(approach speed)</code>
+<h3>Problem tip</h3>
+Write both equations before substituting numbers — sign errors are common.</div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
@@ -66,48 +65,43 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 
 (function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const m1=document.getElementById('m1'),m2=document.getElementById('m2'),u1=document.getElementById('u1'),u2=document.getElementById('u2'),typ=document.getElementById('typ');
+const m1=document.getElementById('m1'),m2=document.getElementById('m2'),u1=document.getElementById('u1'),u2=document.getElementById('u2'),eEl=document.getElementById('e');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-let playing=false,x1=80,x2=280,v1=0,v2=0,hit=false,last=0;
-function sync(){m1V.textContent=m1.value+' kg';m2V.textContent=m2.value+' kg';u1V.textContent=u1.value+' m/s';u2V.textContent=u2.value+' m/s';}
-function resolve(){
-  const a=+m1.value,b=+m2.value,p=v1,q=v2;
-  if(typ.value==='inelastic'){const v=(a*p+b*q)/(a+b);v1=v2=v;}
-  else{v1=((a-b)/(a+b))*p+(2*b/(a+b))*q;v2=(2*a/(a+b))*p+((b-a)/(a+b))*q;}
+let playing=false,x1=100,x2=380,v1=0,v2=0,last=0,hit=false;
+function sync(){m1V.textContent=m1.value+' kg';m2V.textContent=m2.value+' kg';u1V.textContent=u1.value;u2V.textContent=u2.value;eV.textContent=(+eEl.value).toFixed(2);}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||900,H=canvas.clientHeight||430;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function collide(){
+  const M1=+m1.value,M2=+m2.value,e=+eEl.value;
+  const a=v1,b=v2;
+  v1=(a*(M1-e*M2)+(1+e)*M2*b)/(M1+M2);
+  v2=(b*(M2-e*M1)+(1+e)*M1*a)/(M1+M2);
+  hit=true;
 }
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
   const [W,H]=size();
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#1e293b';ctx.fillRect(0,H-70,W,70);
-  const s1=28+(+m1.value)*2,s2=28+(+m2.value)*2;
-  ctx.fillStyle='#63e6ff';ctx.fillRect(x1,H-70-s1,s1,s1);
-  ctx.fillStyle='#a78bfa';ctx.fillRect(x2,H-70-s2,s2,s2);
-  ctx.fillStyle='#0a1220';ctx.font='12px system-ui';ctx.fillText('1',x1+s1/2-4,H-70-s1/2+4);ctx.fillText('2',x2+s2/2-4,H-70-s2/2+4);
-  // velocity ticks
-  ctx.strokeStyle='#fbbf24';ctx.beginPath();ctx.moveTo(x1+s1,H-70-s1/2);ctx.lineTo(x1+s1+v1*6,H-70-s1/2);ctx.stroke();
-  ctx.strokeStyle='#7cf0bd';ctx.beginPath();ctx.moveTo(x2+s2,H-70-s2/2);ctx.lineTo(x2+s2+v2*6,H-70-s2/2);ctx.stroke();
-  const pBefore=(+m1.value)*(+u1.value)+(+m2.value)*(+u2.value);
-  const pAfter=(+m1.value)*v1+(+m2.value)*v2;
-  const keB=0.5*(+m1.value)*(+u1.value)**2+0.5*(+m2.value)*(+u2.value)**2;
-  const keA=0.5*(+m1.value)*v1*v1+0.5*(+m2.value)*v2*v2;
-  res.innerHTML='<div class="result"><span>p before</span><strong>'+pBefore.toFixed(2)+'</strong></div>'+
-    '<div class="result"><span>p after</span><strong>'+pAfter.toFixed(2)+'</strong></div>'+
-    '<div class="result"><span>KE before</span><strong>'+keB.toFixed(2)+' J</strong></div>'+
-    '<div class="result"><span>KE after</span><strong>'+keA.toFixed(2)+' J</strong></div>'+
+  const y=H-100;
+  ctx.fillStyle='#63e6ff';ctx.beginPath();ctx.arc(x1,y,16+(+m1.value),0,6.28);ctx.fill();
+  ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(x2,y,16+(+m2.value),0,6.28);ctx.fill();
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('1',x1-4,y+4);ctx.fillText('2',x2-4,y+4);
+  const p1=(+m1.value)*v1,p2=(+m2.value)*v2;
+  res.innerHTML=
     '<div class="result"><span>v₁</span><strong>'+v1.toFixed(2)+' m/s</strong></div>'+
-    '<div class="result"><span>v₂</span><strong>'+v2.toFixed(2)+' m/s</strong></div>';
+    '<div class="result"><span>v₂</span><strong>'+v2.toFixed(2)+' m/s</strong></div>'+
+    '<div class="result"><span>p total</span><strong>'+(p1+p2).toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>KE total</span><strong>'+(0.5*(+m1.value)*v1*v1+0.5*(+m2.value)*v2*v2).toFixed(2)+' J</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;
-  x1+=v1*dt*40;x2+=v2*dt*40;
-  const s1=28+(+m1.value)*2;
-  if(!hit&&x1+s1>=x2){resolve();hit=true;}
-  if(x1<20){x1=20;v1=Math.abs(v1);}
-  if(x2>canvas.clientWidth-60){x2=canvas.clientWidth-60;v2=-Math.abs(v2);}
-  draw();requestAnimationFrame(loop);}
-function reset(){playing=false;x1=80;x2=280;v1=0;v2=0;hit=false;last=0;playBtn.textContent='Play';sync();draw();}
-m1.oninput=m2.oninput=u1.oninput=u2.oninput=typ.onchange=function(){sync();if(!playing)draw();};
-playBtn.onclick=function(){if(!playing){v1=+u1.value;v2=+u2.value;hit=false;}playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+function loop(ts){
+  if(!playing){draw();return;}
+  if(!last)last=ts;const dt=Math.min(0.03,(ts-last)/1000);last=ts;
+  x1+=v1*dt*50;x2+=v2*dt*50;
+  if(!hit && x2-x1 < 32+(+m1.value)+(+m2.value) && v1>v2) collide();
+  draw();requestAnimationFrame(loop);
+}
+function reset(){playing=false;x1=100;x2=380;v1=+u1.value;v2=+u2.value;hit=false;last=0;playBtn.textContent='Play';sync();draw();}
+m1.oninput=m2.oninput=u1.oninput=u2.oninput=eEl.oninput=function(){sync();};
+playBtn.onclick=function(){if(!playing){x1=100;x2=380;v1=+u1.value;v2=+u2.value;hit=false;}playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
 resetBtn.onclick=reset;reset();
 })();
 
