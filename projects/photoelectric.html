@@ -5,17 +5,17 @@
 <title>Photoelectric Effect Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+:root{color-scheme:dark;--bg:#070a14;--panel:rgba(14,22,44,.72);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+a{color:inherit;text-decoration:none}.wrap{width:min(1220px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(7,10,20,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 .nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;gap:8px;align-items:center;font-weight:800}
 .logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
 .hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
-h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
-.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:78ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:960px){.layout{grid-template-columns:1fr}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
 .ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
 label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
@@ -23,9 +23,9 @@ label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cy
 .actions{display:flex;gap:8px;margin-top:12px}
 .btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
 .btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+canvas{display:block;width:100%;height:min(430px,54vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
 .results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
-.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result{background:rgba(8,14,28,.9);border:1px solid #2a3a58;border-radius:12px;padding:10px}
 .result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
 .explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
@@ -35,26 +35,29 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 <body>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>MODERN PHYSICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">PHOTOELECTRIC</div><h1>Photoelectric Effect Laboratory</h1><p class="lead">Light hits a metal surface. Electrons leave only if photon energy exceeds the work function. Intensity changes number of electrons, not K_max.</p></section>
+<section class="hero"><div class="eyebrow">PHOTOELECTRIC</div><h1>Photoelectric Effect Laboratory</h1><p class="lead">Photons hit a metal. If hf > φ, electrons are emitted with K_max = hf − φ. Intensity changes number of electrons, not K_max.</p></section>
 <div class="layout">
 <aside>
-<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Wavelength λ <b id="lamV">400 nm</b></label><input type="range" id="lam" min="200" max="700" step="5" value="400">
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Frequency f <b id="fV">8.00×10¹⁴ Hz</b></label><input type="range" id="f" min="3" max="15" step="0.1" value="8">
 <label class="row">Work function φ <b id="phiV">2.50 eV</b></label><input type="range" id="phi" min="1" max="5" step="0.05" value="2.5">
-<label class="row">Intensity (relative) <b id="IV">5</b></label><input type="range" id="I" min="1" max="10" step="1" value="5"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
-<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Below threshold frequency, <b style="color:#fff">no electrons</b> leave — even if intensity is high. Einstein: E = φ + K_max.</div>
-<ul><li>Shorter λ → larger K_max.</li>
-<li>Higher intensity → more electrons per second (if emission happens).</li></ul></div></div>
+<label class="row">Intensity (relative) <b id="IV">4</b></label><input type="range" id="I" min="1" max="10" step="1" value="4"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Below threshold frequency, even a very bright light emits no electrons. Above threshold, brighter light means more electrons per second — same K_max.</div>
+<ul>
+<li>Stopping potential: eV₀ = K_max.</li>
+<li>This is the experiment that supports the photon picture of light.</li>
+</ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
-<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Einstein photoelectric equation</h3>
-<code>hf = φ + K_max</code><br>
-<code>K_max = e V_s</code>
+<div class="panel"><div class="pb"><canvas id="c" width="960" height="430"></canvas></div></div>
+<div class="panel"><div class="ph">Live measurements</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory · problem links</div><div class="pb explain"><h3>Einstein equation</h3>
+<code>K_max = hf − φ</code>
 <h3>Threshold</h3>
-<code>f₀ = φ/h</code> · <code>λ₀ = hc/φ</code>
+<code>f₀ = φ / h</code>
+<h3>Stopping potential</h3>
+<code>e V₀ = K_max</code>
 <h3>Problem tip</h3>
-Convert λ to frequency or use hc ≈ 1240 eV·nm for quick numericals.</div></div>
+Keep energy in eV and use h ≈ 4.14×10⁻¹⁵ eV·s for cleaner numbers.</div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
@@ -62,43 +65,49 @@ Convert λ to frequency or use hc ≈ 1240 eV·nm for quick numericals.</div></d
 
 (function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const lam=document.getElementById('lam'),phi=document.getElementById('phi'),I=document.getElementById('I');
+const fEl=document.getElementById('f'),phi=document.getElementById('phi'),I=document.getElementById('I');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-let playing=true,t=0,electrons=[];
-const h=4.14e-15,c=3e8; // eV·s, m/s
-function sync(){lamV.textContent=lam.value+' nm';phiV.textContent=(+phi.value).toFixed(2)+' eV';IV.textContent=I.value;}
-function phys(){
-  const lambda=+lam.value*1e-9, work=+phi.value;
-  const E=h*c/lambda; // eV approx with h in eV·s
-  const Kmax=E-work; const emits=Kmax>0;
-  const Vs=emits?Kmax:0;
-  return{E,Kmax,emits,Vs,work,lambda};
-}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+let playing=true,t=0;
+function sync(){fV.textContent=(+fEl.value).toFixed(2)+'×10¹⁴ Hz';phiV.textContent=(+phi.value).toFixed(2)+' eV';IV.textContent=I.value;}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||900,H=canvas.clientHeight||430;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();const p=phys();
+  const [W,H]=size();
+  const f=+fEl.value*1e14, work=+phi.value, h=4.14e-15; // eV·s
+  const E=h*f; const Kmax=E-work; const emit=Kmax>0;
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-  // metal surface
-  ctx.fillStyle='#1e293b';ctx.fillRect(0,H*0.55,W,H*0.45);
-  ctx.fillStyle='#64748b';ctx.font='12px system-ui';ctx.fillText('metal (work function φ)',20,H*0.55-8);
-  // light beam
-  const col=p.emits?'#fbbf24':'#64748b';
-  ctx.strokeStyle=col;ctx.lineWidth=3;
-  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(W*0.15+i*8,40);ctx.lineTo(W*0.35+i*8,H*0.55);ctx.stroke();}
+  // metal
+  ctx.fillStyle='#1e293b';ctx.fillRect(W*0.15,H*0.35,W*0.25,H*0.4);
+  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('metal',W*0.22,H*0.33);
+  // incoming photons
+  ctx.strokeStyle='#fbbf24';
+  for(let k=0;k<5;k++){
+    const x=W*0.55+(k*12)+(t*40%20);
+    ctx.beginPath();ctx.moveTo(x,80+k*18);ctx.lineTo(x-40,120+k*18);ctx.stroke();
+  }
   // electrons
-  if(p.emits){
-    if(playing&&Math.random()<0.15*(+I.value)/5) electrons.push({x:W*0.35+Math.random()*40,y:H*0.55,vy:-(1+p.Kmax)*2});
-    electrons=electrons.filter(e=>e.y>20);
-    electrons.forEach(e=>{e.y+=e.vy;ctx.fillStyle='#63e6ff';ctx.beginPath();ctx.arc(e.x,e.y,4,0,6.28);ctx.fill();});
-  } else electrons=[];
-  res.innerHTML='<div class="result"><span>Photon E</span><strong>'+p.E.toFixed(2)+' eV</strong></div>'+
-    '<div class="result"><span>K_max</span><strong>'+(p.emits?p.Kmax.toFixed(2)+' eV':'no emission')+'</strong></div>'+
-    '<div class="result"><span>Stopping V_s</span><strong>'+(p.emits?p.Vs.toFixed(2)+' V':'—')+'</strong></div>'+
-    '<div class="result"><span>Threshold?</span><strong>'+(p.emits?'above':'below')+'</strong></div>';
+  if(emit){
+    ctx.fillStyle='#63e6ff';
+    for(let k=0;k<Math.min(8,+I.value);k++){
+      const x=W*0.4+((t*50+k*30)%120);
+      const y=H*0.45+k*12;
+      ctx.beginPath();ctx.arc(x,y,4,0,6.28);ctx.fill();
+    }
+  }
+  // Kmax bar
+  ctx.fillStyle='#334155';ctx.fillRect(W*0.7,H*0.3,40,H*0.4);
+  const kh=Math.max(0,Math.min(1,Kmax/5))*H*0.4;
+  ctx.fillStyle=emit?'#7cf0bd':'#ff8e9c';
+  ctx.fillRect(W*0.7,H*0.7-kh,40,kh);
+  ctx.fillStyle='#94a3b8';ctx.fillText('K_max',W*0.7,H*0.28);
+  res.innerHTML=
+    '<div class="result"><span>Photon E</span><strong>'+E.toFixed(2)+' eV</strong></div>'+
+    '<div class="result"><span>φ</span><strong>'+work.toFixed(2)+' eV</strong></div>'+
+    '<div class="result"><span>K_max</span><strong>'+(emit?Kmax.toFixed(2)+' eV':'0 (none)')+'</strong></div>'+
+    '<div class="result"><span>emission?</span><strong>'+(emit?'YES':'NO')+'</strong></div>';
 }
-function loop(){if(!playing){draw();return;}t+=0.02;draw();requestAnimationFrame(loop);}
-function reset(){playing=false;electrons=[];playBtn.textContent='Play';sync();draw();}
-lam.oninput=phi.oninput=I.oninput=function(){sync();draw();};
+function loop(){if(!playing){draw();return;}t+=0.04;draw();requestAnimationFrame(loop);}
+function reset(){playing=false;t=0;playBtn.textContent='Play';sync();draw();}
+fEl.oninput=phi.oninput=I.oninput=function(){sync();draw();};
 playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';if(playing)requestAnimationFrame(loop);};
 resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
 })();
