@@ -2,62 +2,80 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Carbocation Stability Lab | Vinit Simulation Hub</title>
+<title>Carbocation Stability — Deep Lab | Vinit Simulation Hub</title>
 <style>
-:root{color-scheme:dark;--bg:#070a12;--panel:rgba(16,24,48,.7);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:rgba(7,10,18,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+:root{color-scheme:dark;--bg:#060912;--panel:rgba(14,22,42,.78);--text:#f3f6ff;--muted:#9aabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 600px at 20% -10%,#1a1030 0%,var(--bg) 55%);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1140px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(6,9,18,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 .nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;gap:8px;align-items:center;font-weight:800}
 .logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(167,139,250,.4);color:#c4b5fd;border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
-h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:75ch;margin:0}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(167,139,250,.45);color:#c4b5fd;border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:80ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:960px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin-bottom:12px;overflow:hidden;backdrop-filter:blur(18px)}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range],select{width:100%;accent-color:var(--violet)}
+select{padding:9px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;width:100%;margin-top:10px}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.92);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.75}.explain h3{color:var(--text);margin:14px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--violet);padding:8px 12px;background:rgba(167,139,250,.08);border-radius:0 10px 10px 0;margin:10px 0}
+.warn{border-left:3px solid var(--amber);padding:8px 12px;background:rgba(251,191,36,.08);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul,.explain ol{padding-left:18px;margin:8px 0}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:12px 0 28px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;backdrop-filter:blur(16px)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
 .card h3{margin:0 0 6px;font-size:16px}.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
 .card .go{display:inline-block;margin-top:12px;color:var(--cyan);font-weight:700;font-size:13px}
-.layout{display:grid;grid-template-columns:minmax(260px,320px) 1fr;gap:14px;padding-bottom:28px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden;backdrop-filter:blur(16px)}
-.ph{padding:10px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
-label.row b{color:var(--text)}input[type=range],select{width:100%;accent-color:var(--violet)}
-select{padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff}
-.actions{display:flex;gap:8px;margin-top:12px}
-.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:10px;font-weight:750;cursor:pointer;flex:1}
-.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-canvas{display:block;width:100%;height:min(380px,50vh);background:#0a1220;border-radius:12px;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
-.result{background:rgba(8,14,28,.9);border:1px solid #2a3a58;border-radius:12px;padding:10px}
-.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
-.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
-.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--violet);padding:8px 12px;background:rgba(167,139,250,.08);border-radius:0 10px 10px 0;margin:10px 0}
+.quiz{display:grid;gap:8px;margin-top:8px}
+.qbtn{text-align:left;border:1px solid #34425e;background:#121a2e;color:var(--text);border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:600}
+.qbtn:hover{border-color:var(--violet)}.qbtn.ok{border-color:var(--green);background:rgba(124,240,189,.1)}.qbtn.bad{border-color:var(--red);background:rgba(255,142,156,.1)}
+.feedback{font-size:13px;color:var(--muted);min-height:1.2em;margin-top:8px}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="organic-home.html"><span class="logo">V</span>ORGANIC</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<header><div class="wrap nav"><a class="brand" href="organic-home.html"><span class="logo">V</span>ORGANIC</a><div style="display:flex;gap:12px;align-items:center"><a href="organic-home.html" style="color:var(--violet);font-weight:700">GOC Home</a><a href="../index.html" style="color:var(--cyan);font-weight:700">Hub</a></div></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">GOC · INTERMEDIATES</div><h1>Carbocation Stability Lab</h1><p class="lead">Standard JEE teaching order for carbocation stability. Delocalization (allylic/benzylic) can outweigh simple alkyl substitution.</p></section>
+<section class="hero"><div class="eyebrow">GOC · INTERMEDIATES</div><h1>Carbocation Stability — Deep Lab</h1><p class="lead">Build the full comparative picture: alkyl substitution order plus allylic/benzylic resonance. Read the factor line under the chart every time you switch type.</p></section>
 <div class="layout">
 <aside>
 <div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Carbocation type</label>
 <select id="kind">
+<option value="methyl">Methyl</option>
 <option value="prim">Primary</option>
 <option value="sec">Secondary</option>
 <option value="tert" selected>Tertiary</option>
 <option value="allyl">Allylic</option>
 <option value="benzyl">Benzylic</option>
-</select><div class="actions"><button class="btn primary" id="playBtn" style="display:none">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
-<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Stability comparisons assume similar conditions and ignore special strain or antiaromatic cases.</div></div></div>
+</select><button class="btn" id="resetBtn">Reset</button></div></div>
+<div class="panel"><div class="ph">Notice while you explore</div><div class="pb explain"><div class="tip">Purple bar = currently selected type. Compare heights before memorising only the inequality chain.</div>
+<ul>
+<li>Alkyl-only: 3° &gt; 2° &gt; 1° &gt; methyl.</li>
+<li>Resonance can place allylic/benzylic above ordinary 1°/2°.</li>
+</ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="900" height="380"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="920" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live readout</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Theory · limits</div><div class="pb explain"><h3>Common order</h3>
-benzyl ≥ allyl &gt; 3° &gt; 2° &gt; 1° &gt; methyl (general teaching sequence)
-<h3>Why</h3>
-Hyperconjugation + inductive donation; resonance for allylic/benzylic.</div></div>
+<div class="panel"><div class="ph">Deep theory · exceptions · JEE traps</div><div class="pb explain"><h3>Stabilising factors</h3>
+<ol>
+<li>+I from alkyl groups</li>
+<li>Hyperconjugation (α-C–H)</li>
+<li>Resonance (allylic, benzylic)</li>
+</ol>
+<h3>Useful order (teaching)</h3>
+benzyl ≥ allyl &gt; 3° &gt; 2° &gt; 1° &gt; methyl — <em>with exceptions</em> (anti-aromatic cations, bridgehead constraints, etc.).
+<div class="warn"><strong>Trap:</strong> Vinyl and phenyl cations (charge on the ring carbon of Ph⁺ in the σ sense) are highly unstable — do not confuse “benzylic” (charge on CH₂ next to ring) with “phenyl cation”.</div>
+<h3>Linked ideas</h3>
+SN1 rates, rearrangement toward more stable cations, product distribution under carbocation mechanisms.</div></div>
+<div class="panel"><div class="ph">Quick check</div><div class="pb"><div class="quiz" id="quiz"></div><div class="feedback" id="fb"></div></div></div>
 </div></div>
 </main>
 <script>
@@ -66,23 +84,42 @@ Hyperconjugation + inductive donation; resonance for allylic/benzylic.</div></di
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
 const kind=document.getElementById('kind');
 const resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-const rank={prim:{label:'1°',s:1},sec:{label:'2°',s:2},tert:{label:'3°',s:3},allyl:{label:'allylic',s:3.2},benzyl:{label:'benzylic',s:3.4}};
+const R={
+  methyl:{lab:'methyl',s:0.4,factors:'No alkyl HC / weak stabilisation'},
+  prim:{lab:'1°',s:1.0,factors:'Inductive + few HC structures'},
+  sec:{lab:'2°',s:1.8,factors:'More HC structures'},
+  tert:{lab:'3°',s:2.6,factors:'Max alkyl HC + +I'},
+  allyl:{lab:'allylic',s:2.9,factors:'Resonance (2 forms)'},
+  benzyl:{lab:'benzylic',s:3.2,factors:'Resonance into ring'}
+};
 function sync(){draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||380;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||900,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();const k=rank[kind.value];
+  const [W,H]=size();const k=R[kind.value];
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(W*0.3,H*0.45,34,0,6.28);ctx.fill();
-  ctx.fillStyle='#0a1220';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText('C+',W*0.3,H*0.48);
-  ctx.fillStyle='#f2f6ff';ctx.font='18px system-ui';ctx.fillText(k.label,W*0.3,H*0.2);
-  ctx.fillStyle='#334155';ctx.fillRect(W*0.55,H*0.25,50,H*0.45);
-  ctx.fillStyle='#7cf0bd';const h=(k.s/3.5)*H*0.45;ctx.fillRect(W*0.55,H*0.7-h,50,h);
-  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.textAlign='left';ctx.fillText('relative stability (teaching)',W*0.55,H*0.22);
-  res.innerHTML='<div class="result"><span>Type</span><strong>'+k.label+'</strong></div>'+
-    '<div class="result"><span>Trend score</span><strong>'+k.s.toFixed(1)+'</strong></div>'+
-    '<div class="result"><span>Order</span><strong>benzyl ≥ allyl &gt; 3° &gt; 2° &gt; 1°</strong></div>';
+  ctx.fillStyle='#94a3b8';ctx.font='13px system-ui';ctx.fillText('Relative stability (teaching scale) · selected: '+k.lab,24,28);
+  // all bars
+  const keys=Object.keys(R); keys.forEach((key,i)=>{
+    const x=40+i*((W-80)/keys.length);
+    const h=R[key].s/3.3*(H*0.5);
+    ctx.fillStyle=key===kind.value?'#a78bfa':'#1e293b';
+    ctx.fillRect(x,H*0.7-h,36,h);
+    ctx.fillStyle='#94a3b8';ctx.font='11px system-ui';ctx.save();ctx.translate(x+18,H*0.72);ctx.rotate(-0.5);ctx.fillText(R[key].lab,0,0);ctx.restore();
+  });
+  ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(W*0.8,H*0.28,26,0,6.28);ctx.fill();
+  ctx.fillStyle='#0a1220';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText('C+',W*0.8,H*0.31);
+  ctx.textAlign='left';ctx.fillStyle='#7cf0bd';ctx.font='13px system-ui';ctx.fillText(k.factors,24,H-20);
+  res.innerHTML='<div class="result"><span>Type</span><strong>'+k.lab+'</strong></div>'+
+    '<div class="result"><span>Score</span><strong>'+k.s.toFixed(1)+'</strong></div>'+
+    '<div class="result"><span>Main factor</span><strong>'+k.factors+'</strong></div>';
 }
-kind.onchange=sync;resetBtn.onclick=function(){kind.value='tert';sync();};sync();
+function quiz(){
+  const box=document.getElementById('quiz'),fb=document.getElementById('fb');
+  const q={t:'Benzyl carbocation is often more stable than a simple 1° alkyl cation mainly because of:',opts:['More mass','Resonance delocalisation into the ring','It has no charge'],a:1,why:'The empty p orbital conjugates with the aromatic π system, spreading the charge.'};
+  box.innerHTML='<div style="font-weight:700;margin-bottom:6px">'+q.t+'</div>';
+  q.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='qbtn';b.textContent=o;b.onclick=()=>{[...box.querySelectorAll('.qbtn')].forEach(x=>x.disabled=true);if(i===q.a){b.classList.add('ok');fb.textContent='Correct — '+q.why;}else{b.classList.add('bad');box.querySelectorAll('.qbtn')[q.a].classList.add('ok');fb.textContent=q.why;}};box.appendChild(b);});
+}
+kind.onchange=sync;resetBtn.onclick=function(){kind.value='tert';sync();};sync();quiz();
 })();
 
 </script>
