@@ -2,40 +2,51 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0a0e1a">
-<title>Velocity-Time Graph | Vinit Simulation Hub</title>
+<title>Velocity–Time Graphs | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
-.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
-.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.3);color:var(--cyan);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
-h1{font-size:clamp(20px,4vw,30px);margin:8px 0 4px}p.lead{color:var(--muted);margin:0 0 8px}
-.layout{display:grid;grid-template-columns:minmax(250px,300px) 1fr;gap:12px;padding-bottom:24px}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(16px);margin-bottom:12px}
-.ph{padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700}.pb{padding:12px}
-label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0 4px}input[type=range]{width:100%;accent-color:var(--cyan)}
-.btn{border:1px solid #34425e;border-radius:11px;background:#141e33;color:var(--text);padding:10px;font-weight:700;cursor:pointer;flex:1}.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
-.actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
-.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
-.formulas{font-size:12px;color:var(--muted);line-height:1.7}code{color:var(--cyan)}
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span><span>KINEMATICS</span></a><a href="../index.html" style="color:var(--cyan)">← Hub</a></div></header>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>KINEMATICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
-<section class="hero"><div class="eyebrow">KINEMATICS</div><h1>Velocity-Time Graph</h1><p class="lead">Area under v–t is displacement.</p></section>
+<section class="hero"><div class="eyebrow">v–t GRAPH</div><h1>Velocity–Time Graphs</h1><p class="lead">Constant acceleration: v–t is a straight line. Area under the curve is displacement.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">u (m/s) <span id="uV">2</span></label><input type="range" id="u" min="0" max="15" step="0.5" value="2">
-<label class="row">a (m/s²) <span id="aV">1.5</span></label><input type="range" id="a" min="-3" max="5" step="0.1" value="1.5">
-<label class="row">t (s) <span id="TV">6</span></label><input type="range" id="T" min="1" max="12" step="0.5" value="6"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">u <b id="uV">2</b></label><input type="range" id="u" min="-10" max="15" step="0.5" value="2">
+<label class="row">a <b id="aV">1.5</b></label><input type="range" id="a" min="-5" max="5" step="0.1" value="1.5">
+<label class="row">t <b id="TV">5 s</b></label><input type="range" id="T" min="1" max="12" step="0.5" value="5"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Slope of v–t = acceleration. Area of v–t = displacement (signed).</div></div></div>
+</aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
-<div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>v = u + at</code> · Δs = area</div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>SUVAT</h3><code>v = u + at</code><br><code>s = ut + ½at²</code></div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
@@ -43,31 +54,32 @@ label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0
 
 (function(){
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const u=document.getElementById('u');
-const a=document.getElementById('a');
-const T=document.getElementById('T');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('uV').textContent=u.value;document.getElementById('aV').textContent=a.value;document.getElementById('TV').textContent=T.value;draw();}
-u.oninput=sync;
-a.oninput=sync;
-T.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+const u=document.getElementById('u'),a=document.getElementById('a'),T=document.getElementById('T');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=false,t=0,last=0;
+function sync(){uV.textContent=u.value;aV.textContent=a.value;TV.textContent=T.value+' s';}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-
-const u0=+u.value,a0=+a.value,Tm=+T.value,v1=u0+a0*Tm,s=u0*Tm+0.5*a0*Tm*Tm;
-ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(40,H-40);ctx.lineTo(W-20,H-40);ctx.stroke();
-ctx.fillStyle='rgba(99,230,255,0.15)';ctx.beginPath();ctx.moveTo(40,H-40);ctx.lineTo(40,H-40-u0*10);ctx.lineTo(W-40,H-40-v1*10);ctx.lineTo(W-40,H-40);ctx.fill();
-ctx.strokeStyle='#a78bfa';ctx.beginPath();ctx.moveTo(40,H-40-u0*10);ctx.lineTo(W-40,H-40-v1*10);ctx.stroke();
-res.innerHTML=`<div class="result"><span>v</span><strong>${v1.toFixed(2)} m/s</strong></div><div class="result"><span>Δs</span><strong>${s.toFixed(2)} m</strong></div>`;
-
+  const [W,H]=size();const uu=+u.value,aa=+a.value,TT=+T.value;const pad=50;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(pad,H-pad);ctx.lineTo(W-pad,H-pad);ctx.moveTo(pad,pad);ctx.lineTo(pad,H-pad);ctx.stroke();
+  const vmax=Math.max(Math.abs(uu),Math.abs(uu+aa*TT),1);
+  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();
+  for(let i=0;i<=50;i++){const tt=i/50*TT;const vv=uu+aa*tt;const X=pad+(tt/TT)*(W-2*pad);const Y=H-pad-((vv+vmax)/(2*vmax))*(H-2*pad);
+    if(i===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y);}
+  ctx.stroke();
+  const s=uu*TT+0.5*aa*TT*TT;
+  res.innerHTML='<div class="result"><span>v final</span><strong>'+(uu+aa*TT).toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>displacement</span><strong>'+s.toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>area under v–t</span><strong>= s</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.033,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=()=>{playing=false;t=0;last=0;u.value=2;a.value=1.5;T.value=6;sync();playBtn.textContent='Play';draw();};
-sync();requestAnimationFrame(loop);
+function loop(ts){if(!playing){draw();return;}draw();requestAnimationFrame(loop);}
+function reset(){playing=false;playBtn.textContent='Play';sync();draw();}
+u.oninput=a.oninput=T.oninput=function(){sync();draw();};
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;reset();
 })();
 
 </script>
-</body></html>
+</body>
+</html>
