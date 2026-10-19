@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bouncing Ball Energy Loss | Vinit Simulation Hub</title>
+<link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FUN</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">RESTITUTION</div><h1>Bouncing Ball Energy Loss</h1><p class="lead">Coefficient of restitution e is the ratio of rebound speed to impact speed. Each bounce loses more energy when e &lt; 1.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">e (restitution) <b id="eV">0.75</b></label><input type="range" id="e" min="0.1" max="0.98" step="0.01" value="0.75">
+<label class="row">Drop height <b id="hV">4 m</b></label><input type="range" id="h" min="1" max="8" step="0.5" value="4"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Rebound height ≈ e² × previous height (ideal vertical bounce).</div>
+<ul><li>e = 1 → elastic, never stops.</li>
+<li>e = 0 → sticks to the floor.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Restitution</h3>
+<code>e = speed after / speed before</code> (normal)
+<h3>Heights</h3>
+<code>h_{n+1} ≈ e² h_n</code></div></div>
+</div></div>
+</main>
+<script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const eEl=document.getElementById('e'),hEl=document.getElementById('h');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=false,y=0,v=0,h0=0,last=0,bounces=0;
+function sync(){eV.textContent=(+eEl.value).toFixed(2);hV.textContent=hEl.value+' m';}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const e=+eEl.value;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#1e293b';ctx.fillRect(0,H-40,W,40);
+  const py=H-40-(y/Math.max(h0,0.1))*(H-80);
+  ctx.fillStyle='#63e6ff';ctx.beginPath();ctx.arc(W/2,py,12,0,6.28);ctx.fill();
+  res.innerHTML='<div class="result"><span>height</span><strong>'+y.toFixed(2)+' m</strong></div>'+
+    '<div class="result"><span>e</span><strong>'+e.toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>bounces</span><strong>'+bounces+'</strong></div>'+
+    '<div class="result"><span>speed</span><strong>'+Math.abs(v).toFixed(2)+' m/s</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.03,(ts-last)/1000);last=ts;
+  const g=9.8,e=+eEl.value;
+  v-=g*dt;y+=v*dt;
+  if(y<=0){y=0;v=-e*v;bounces++;if(Math.abs(v)<0.15){playing=false;playBtn.textContent='Play';}}
+  draw();if(playing)requestAnimationFrame(loop);}
+function reset(){playing=false;h0=+hEl.value;y=h0;v=0;bounces=0;last=0;playBtn.textContent='Play';sync();draw();}
+eEl.oninput=hEl.oninput=function(){sync();};
+playBtn.onclick=function(){if(!playing&&y<=0){h0=+hEl.value;y=h0;v=0;bounces=0;}playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;reset();
+})();
+
+</script>
+</body>
+</html>
