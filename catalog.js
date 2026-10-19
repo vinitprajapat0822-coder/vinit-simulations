@@ -1,5 +1,5 @@
 /* Vinit Simulation Hub — Activity Catalog */
-/* cache-bust v14 - 100+ live labs */
+/* cache-bust v15 - 100+ live labs */
 const CATALOG = [
   // KINEMATICS (14)
   { id: "projectile", title: "Projectile Motion Lab", desc: "Trajectories, range, max height, flight time, target angles & minimum launch speed.", category: "kinematics", tags: "projectile trajectory launch angle gravity range", status: "live", url: "projects/projectile.html", icon: "🚀" },
@@ -124,19 +124,19 @@ const CATALOG = [
 
   // TOOLS (4)
   { id: "graphing-tool", title: "Graphing Calculator", desc: "Plot functions and experimental data points.", category: "tools", tags: "graph plot function data", status: "live", icon: "📊" , url: "projects/graphing-tool.html" },
-  { id: "vector-draw", title: "Vector Diagram Tool", desc: "Draw and resolve vectors interactively.", category: "tools", tags: "vector diagram draw resolve", status: "coming-soon", icon: "✏️" },
-  { id: "ray-draw", title: "Optical Ray Drawer", desc: "Sketch ray diagrams for mirrors and lenses.", category: "tools", tags: "ray diagram drawer optics", status: "coming-soon", icon: "🖊️" },
-  { id: "unit-converter", title: "Physics Unit Converter", desc: "Common physics units conversion helper.", category: "tools", tags: "unit converter physics", status: "coming-soon", icon: "🔄" },
+  { id: "vector-draw", title: "Vector Diagram Tool", desc: "Draw and resolve vectors interactively.", category: "tools", tags: "vector diagram draw resolve", status: "live", url: "projects/vector-draw.html", icon: "✏️" },
+  { id: "ray-draw", title: "Optical Ray Drawer", desc: "Sketch ray diagrams for mirrors and lenses.", category: "tools", tags: "ray diagram drawer optics", status: "live", url: "projects/ray-draw.html", icon: "🖊️" },
+  { id: "unit-converter", title: "Physics Unit Converter", desc: "Common physics units conversion helper.", category: "tools", tags: "unit converter physics", status: "live", url: "projects/unit-converter.html", icon: "🔄" },
 
   // FUN (8)
-  { id: "solar-system", title: "Simple Solar System", desc: "Orbital motion visualization (lightweight).", category: "fun", tags: "solar system orbit planets", status: "coming-soon", icon: "🪐" },
+  { id: "solar-system", title: "Simple Solar System", desc: "Orbital motion visualization (lightweight).", category: "fun", tags: "solar system orbit planets", status: "live", url: "projects/solar-system.html", icon: "🪐" },
   { id: "pendulum-wave", title: "Pendulum Wave", desc: "Multiple pendulums creating wave pattern.", category: "fun", tags: "pendulum wave pattern", status: "live", icon: "🌊" , url: "projects/pendulum.html" },
-  { id: "double-pendulum", title: "Double Pendulum Chaos", desc: "Sensitive dependence on initial conditions.", category: "fun", tags: "double pendulum chaos", status: "coming-soon", icon: "🦋" },
-  { id: "bouncing-ball", title: "Bouncing Ball Energy Loss", desc: "Coefficient of restitution visualization.", category: "fun", tags: "bouncing ball restitution", status: "coming-soon", icon: "⚽" },
-  { id: "gravity-sandbox", title: "Gravity Sandbox", desc: "Place masses and watch gravitational attraction.", category: "fun", tags: "gravity sandbox nbody", status: "coming-soon", icon: "🌌" },
-  { id: "collision-gallery", title: "Collision Gallery", desc: "Fun elastic/inelastic collision demos.", category: "fun", tags: "collision gallery fun", status: "coming-soon", icon: "🎱" },
-  { id: "light-spectrum", title: "Visible Spectrum", desc: "Wavelength to colour interactive map.", category: "fun", tags: "spectrum wavelength colour", status: "coming-soon", icon: "🌈" },
-  { id: "physics-puzzles", title: "Physics Puzzles", desc: "Small interactive physics challenges.", category: "fun", tags: "puzzles challenges physics", status: "coming-soon", icon: "🧩" },
+  { id: "double-pendulum", title: "Double Pendulum Chaos", desc: "Sensitive dependence on initial conditions.", category: "fun", tags: "double pendulum chaos", status: "live", url: "projects/double-pendulum.html", icon: "🦋" },
+  { id: "bouncing-ball", title: "Bouncing Ball Energy Loss", desc: "Coefficient of restitution visualization.", category: "fun", tags: "bouncing ball restitution", status: "live", url: "projects/bouncing-ball.html", icon: "⚽" },
+  { id: "gravity-sandbox", title: "Gravity Sandbox", desc: "Place masses and watch gravitational attraction.", category: "fun", tags: "gravity sandbox nbody", status: "live", url: "projects/gravity-sandbox.html", icon: "🌌" },
+  { id: "collision-gallery", title: "Collision Gallery", desc: "Fun elastic/inelastic collision demos.", category: "fun", tags: "collision gallery fun", status: "live", url: "projects/collision-gallery.html", icon: "🎱" },
+  { id: "light-spectrum", title: "Visible Spectrum", desc: "Wavelength to colour interactive map.", category: "fun", tags: "spectrum wavelength colour", status: "live", url: "projects/light-spectrum.html", icon: "🌈" },
+  { id: "physics-puzzles", title: "Physics Puzzles", desc: "Small interactive physics challenges.", category: "fun", tags: "puzzles challenges physics", status: "live", url: "projects/physics-puzzles.html", icon: "🧩" },
   { id: "magnetic-force", title: "Magnetic Force on a Wire", desc: "F = ILB sinθ on a current-carrying wire with right-hand rule intuition.", category: "em", tags: "magnetic force current wire lorentz", status: "live", url: "projects/magnetic-force.html", icon: "🧲" },
   { id: "rc-charging", title: "RC Charging Circuit", desc: "Capacitor charging through a resistor — time constant τ = RC, Vc and current curves.", category: "em", tags: "rc circuit charging time constant capacitor", status: "live", url: "projects/rc-charging.html", icon: "⏱️" },
   { id: "newtons-law-live", title: "Newton's Second Law", desc: "F = ma interactive", category: "forces", tags: "newtons-law", status: "live", url: "projects/newtons-law.html", icon: "⚖️" },
