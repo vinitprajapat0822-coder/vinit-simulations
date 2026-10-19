@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Acidity Comparison Lab | Vinit Simulation Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#070a12;--panel:rgba(16,24,48,.7);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(7,10,18,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:16px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(167,139,250,.4);color:#c4b5fd;border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:75ch;margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:12px 0 28px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;backdrop-filter:blur(16px)}
+.card h3{margin:0 0 6px;font-size:16px}.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.card .go{display:inline-block;margin-top:12px;color:var(--cyan);font-weight:700;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(260px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden;backdrop-filter:blur(16px)}
+.ph{padding:10px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range],select{width:100%;accent-color:var(--violet)}
+select{padding:8px;border-radius:10px;border:1px solid #34425e;background:#0a1220;color:#f2f6ff}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:10px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(380px,50vh);background:#0a1220;border-radius:12px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.9);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--violet);padding:8px 12px;background:rgba(167,139,250,.08);border-radius:0 10px 10px 0;margin:10px 0}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="organic-home.html"><span class="logo">V</span>ORGANIC</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">GOC · ACIDITY</div><h1>Acidity Comparison Lab</h1><p class="lead">Compare approximate aqueous pKa values. Stronger acid ⇔ more stable conjugate base (resonance, electronegativity, etc.).</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Acid</label>
+<select id="acid">
+<option value="acetic">Acetic acid</option>
+<option value="phenol">Phenol</option>
+<option value="ethanol">Ethanol</option>
+<option value="water">Water</option>
+<option value="HF">HF</option>
+</select><div class="actions"><button class="btn primary" id="playBtn" style="display:none">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">JEE classic: carboxylic acids &gt; phenols &gt; alcohols in acidity (general aqueous teaching order).</div></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="380"></canvas></div></div>
+<div class="panel"><div class="ph">Live readout</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory · limits</div><div class="pb explain"><h3>Rule of thumb</h3>
+More stable A⁻ → stronger HA.
+<h3>Limits</h3>
+pKa depends on solvent and conditions; values here are standard approximate aqueous references for teaching.</div></div>
+</div></div>
+</main>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const acid=document.getElementById('acid');
+const resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+const table={
+  'acetic':{name:'CH3COOH',pKa:4.76,note:'Carboxylic — resonance stabilized conjugate base'},
+  'phenol':{name:'PhOH',pKa:10.0,note:'Phenoxide resonance, weaker than RCOOH'},
+  'ethanol':{name:'EtOH',pKa:15.9,note:'Alkoxide not resonance stabilized like carboxylate'},
+  'water':{name:'H2O',pKa:15.7,note:'Reference scale context'},
+  'HF':{name:'HF',pKa:3.17,note:'Stronger than acetic in water (mineral acid context)'}
+};
+function sync(){draw();}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||380;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();const a=table[acid.value];
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  // pKa bar (lower pKa = stronger acid) scale 0-16
+  const strength=Math.max(0,16-a.pKa)/16;
+  ctx.fillStyle='#334155';ctx.fillRect(W*0.2,H*0.35,W*0.6,28);
+  ctx.fillStyle='#ff8e9c';ctx.fillRect(W*0.2,H*0.35,W*0.6*strength,28);
+  ctx.fillStyle='#f2f6ff';ctx.font='16px system-ui';ctx.fillText(a.name,W*0.2,H*0.25);
+  ctx.fillStyle='#94a3b8';ctx.font='13px system-ui';ctx.fillText('approx pKa (water) = '+a.pKa,W*0.2,H*0.55);
+  ctx.fillText(a.note,W*0.2,H*0.65);
+  res.innerHTML='<div class="result"><span>Acid</span><strong>'+a.name+'</strong></div>'+
+    '<div class="result"><span>pKa (approx)</span><strong>'+a.pKa+'</strong></div>'+
+    '<div class="result"><span>Stronger acid?</span><strong>lower pKa</strong></div>';
+}
+acid.onchange=sync;resetBtn.onclick=function(){acid.value='acetic';sync();};sync();
+})();
+
+</script>
+</body>
+</html>
