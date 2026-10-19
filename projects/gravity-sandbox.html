@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gravity Sandbox | Vinit Simulation Hub</title>
+<link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FUN</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">GRAVITY</div><h1>Gravity Sandbox</h1><p class="lead">Click to place masses. Softened gravity pulls them together. A simple teaching sandbox — not a precision N-body code.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Mass of new body <b id="mV">6</b></label><input type="range" id="m" min="2" max="20" step="1" value="6">
+<p style="color:var(--muted);font-size:12px;margin:8px 0 0">Click on the canvas to add a mass.</p><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Force falls off with distance. Softening prevents singularities when two bodies overlap.</div>
+<ul><li>More mass → stronger pull.</li>
+<li>Reset to clear the sandbox.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Newton gravity</h3>
+<code>F = G m₁ m₂ / r²</code>
+<h3>Problem tip</h3>
+Orbital motion needs sideways velocity — pure radial falls collide.</div></div>
+</div></div>
+</main>
+<script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const mEl=document.getElementById('m');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=true,bodies=[{x:200,y:200,vx:0,vy:0.35,m:12},{x:320,y:200,vx:0,vy:-0.45,m:8}],last=0;
+function sync(){mV.textContent=mEl.value;}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function draw(){
+  const [W,H]=size();
+  ctx.fillStyle='rgba(10,18,32,0.35)';ctx.fillRect(0,0,W,H);
+  bodies.forEach(b=>{ctx.fillStyle='#63e6ff';ctx.beginPath();ctx.arc(b.x,b.y,4+b.m/3,0,6.28);ctx.fill();});
+  res.innerHTML='<div class="result"><span>bodies</span><strong>'+bodies.length+'</strong></div>'+
+    '<div class="result"><span>G (sim)</span><strong>softened</strong></div>';
+}
+function step(dt){
+  const G=80;
+  for(let i=0;i<bodies.length;i++){
+    let ax=0,ay=0;
+    for(let j=0;j<bodies.length;j++)if(i!==j){
+      const dx=bodies[j].x-bodies[i].x,dy=bodies[j].y-bodies[i].y;
+      const r2=dx*dx+dy*dy+25; const f=G*bodies[j].m/r2;
+      const r=Math.sqrt(r2); ax+=f*dx/r; ay+=f*dy/r;
+    }
+    bodies[i].vx+=ax*dt; bodies[i].vy+=ay*dt;
+  }
+  bodies.forEach(b=>{b.x+=b.vx*dt*40;b.y+=b.vy*dt*40;});
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.03,(ts-last)/1000);last=ts;
+  step(dt);draw();requestAnimationFrame(loop);}
+canvas.addEventListener('click',e=>{
+  const r=canvas.getBoundingClientRect();
+  const x=(e.clientX-r.left)*(canvas.clientWidth/r.width);
+  const y=(e.clientY-r.top)*(canvas.clientHeight/r.height);
+  bodies.push({x,y,vx:(Math.random()-0.5)*0.4,vy:(Math.random()-0.5)*0.4,m:+mEl.value});
+});
+function reset(){playing=false;bodies=[{x:200,y:200,vx:0,vy:0.35,m:12},{x:320,y:200,vx:0,vy:-0.45,m:8}];last=0;playBtn.textContent='Play';sync();draw();}
+mEl.oninput=sync;
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
+})();
+
+</script>
+</body>
+</html>
