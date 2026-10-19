@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Collision Gallery | Vinit Simulation Hub</title>
+<link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:8px;align-items:center;font-weight:800}
+.logo{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
+.hero{padding:18px 0 8px}.eyebrow{display:inline-block;border:1px solid rgba(99,230,255,.35);color:var(--cyan);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700}
+h1{font-size:clamp(22px,4vw,30px);margin:10px 0 6px}.lead{color:var(--muted);max-width:72ch;margin:0}
+.layout{display:grid;grid-template-columns:minmax(270px,320px) 1fr;gap:14px;padding-bottom:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(18px);margin-bottom:12px;overflow:hidden}
+.ph{padding:11px 14px;border-bottom:1px solid var(--line);font-weight:750;font-size:13px}.pb{padding:14px}
+label.row{display:flex;justify-content:space-between;font-size:12px;margin:10px 0 4px;color:var(--muted)}
+label.row b{color:var(--text)}input[type=range]{width:100%;accent-color:var(--cyan)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn{border:1px solid #34425e;border-radius:12px;background:#141e33;color:var(--text);padding:11px;font-weight:750;cursor:pointer;flex:1}
+.btn.primary{background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;border:0}
+canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border-radius:14px;border:1px solid #24314b}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.result{background:rgba(8,14,28,.85);border:1px solid #2a3a58;border-radius:12px;padding:10px}
+.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:14px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
+.explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
+.explain ul{padding-left:18px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>FUN</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">COLLISIONS</div><h1>Collision Gallery</h1><p class="lead">1D collisions with adjustable masses and coefficient of restitution e. Elastic e = 1, sticky limit e = 0.</p></section>
+<div class="layout">
+<aside>
+<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">e <b id="eV">1.00</b></label><input type="range" id="e" min="0" max="1" step="0.05" value="1">
+<label class="row">m₁ <b id="m1V">2</b></label><input type="range" id="m1" min="1" max="8" step="0.5" value="2">
+<label class="row">m₂ <b id="m2V">2</b></label><input type="range" id="m2" min="1" max="8" step="0.5" value="2"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Equal masses, e = 1: velocities exchange. Heavy hits light: light flies off fast.</div>
+<ul><li>Momentum conserved if no external impulse.</li>
+<li>Kinetic energy conserved only if e = 1.</li></ul></div></div>
+</aside>
+<div>
+<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
+<div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>1D collision</h3>
+<code>v1 = [u1(m1−e m2)+(1+e)m2 u2]/(m1+m2)</code>
+<h3>Problem tip</h3>
+Always check e definition: separation speed / approach speed.</div></div>
+</div></div>
+</main>
+<script src="../lab-theme.js?v=3"></script>
+<script>
+
+(function(){
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const eEl=document.getElementById('e'),m1=document.getElementById('m1'),m2=document.getElementById('m2');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+let playing=false,x1=80,x2=420,v1=4,v2=-1,last=0;
+function sync(){eV.textContent=(+eEl.value).toFixed(2);m1V.textContent=m1.value;m2V.textContent=m2.value;}
+function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function collide(){
+  const e=+eEl.value,M1=+m1.value,M2=+m2.value;
+  const u1=v1,u2=v2;
+  v1=(u1*(M1-e*M2)+(1+e)*M2*u2)/(M1+M2);
+  v2=(u2*(M2-e*M1)+(1+e)*M1*u1)/(M1+M2);
+}
+function draw(){
+  const [W,H]=size();
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#1e293b';ctx.fillRect(0,H-70,W,70);
+  ctx.fillStyle='#63e6ff';ctx.beginPath();ctx.arc(x1,H-100,18,0,6.28);ctx.fill();
+  ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(x2,H-100,18,0,6.28);ctx.fill();
+  res.innerHTML='<div class="result"><span>v1</span><strong>'+v1.toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>v2</span><strong>'+v2.toFixed(2)+'</strong></div>'+
+    '<div class="result"><span>e</span><strong>'+(+eEl.value).toFixed(2)+'</strong></div>';
+}
+function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.03,(ts-last)/1000);last=ts;
+  x1+=v1*dt*40;x2+=v2*dt*40;
+  if(Math.abs(x2-x1)<36 && (v1-v2)>0) collide();
+  if(x1<20){x1=20;v1*=-1;} if(x2> (canvas.clientWidth||800)-20){x2=(canvas.clientWidth||800)-20;v2*=-1;}
+  draw();requestAnimationFrame(loop);}
+function reset(){playing=false;x1=80;x2=420;v1=4;v2=-1;last=0;playBtn.textContent='Play';sync();draw();}
+eEl.oninput=m1.oninput=m2.oninput=sync;
+playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
+resetBtn.onclick=reset;reset();
+})();
+
+</script>
+</body>
+</html>
