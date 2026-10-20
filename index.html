@@ -1,565 +1,814 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="holographic" data-mode="night">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#080b16">
-<meta name="description" content="Vinit Simulation Hub — Physics, Chemistry & Math as one book. Interactive labs for JEE.">
-<title>Vinit Simulation Hub | Physics · Chemistry · Math</title>
-<link rel="stylesheet" href="hub-home-themes.css?v=20">
-<style>
-:root {
-  color-scheme: dark;
-  --bg: #060912;
-  --text: #f2f6ff;
-  --muted: #9aabc8;
-  --cyan: #63e6ff;
-  --violet: #a78bfa;
-  --green: #7cf0bd;
-  --amber: #fbbf24;
-  --line: rgba(255,255,255,.12);
-  --glass: rgba(16,24,48,.55);
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-height: 100vh;
-  font: 15px/1.55 system-ui, -apple-system, sans-serif;
-  color: var(--text);
-  background:
-    radial-gradient(900px 500px at 15% -10%, rgba(99,70,200,.35), transparent 55%),
-    radial-gradient(700px 400px at 90% 10%, rgba(40,120,180,.25), transparent 50%),
-    var(--bg);
-}
-a { color: inherit; text-decoration: none; }
-.top {
-  position: sticky; top: 0; z-index: 40;
-  backdrop-filter: blur(20px);
-  background: rgba(6,9,18,.85);
-  border-bottom: 1px solid var(--line);
-}
-.top-inner {
-  width: min(1100px, calc(100% - 28px));
-  margin: auto;
-  min-height: 60px;
-  display: flex; align-items: center; gap: 12px; justify-content: space-between; flex-wrap: wrap;
-  padding: 8px 0;
-}
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 850; }
-.logo {
-  width: 36px; height: 36px; border-radius: 12px;
-  display: grid; place-items: center; font-weight: 900;
-  background: linear-gradient(145deg, #67e8f9, #a78bfa);
-  color: #07111b;
-  box-shadow: 0 0 24px rgba(103,232,249,.35);
-  cursor: pointer;
-}
-.theme-row { display: flex; gap: 6px; flex-wrap: wrap; }
-.theme-btn {
-  border: 1px solid var(--line); background: rgba(255,255,255,.06);
-  color: var(--muted); border-radius: 999px; padding: 6px 11px;
-  font-size: 11px; font-weight: 700; cursor: pointer;
-}
-.theme-btn.on {
-  color: #07111b;
-  background: linear-gradient(135deg,#67e8f9,#a78bfa);
-  border-color: transparent;
-}
-.wrap { width: min(1100px, calc(100% - 28px)); margin: auto; }
-.hero { padding: 26px 0 8px; }
-.hero .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .14em; color: var(--cyan); }
-.hero h1 { font-size: clamp(26px, 4.5vw, 36px); margin: 8px 0; letter-spacing: -0.02em; }
-.hero p { margin: 0; color: var(--muted); max-width: 72ch; }
-.search-box { position: relative; margin: 18px 0 10px; }
-.search-box input {
-  width: 100%; padding: 16px 18px 16px 46px;
-  border-radius: 18px; border: 1px solid var(--line);
-  background: rgba(12,18,36,.75); color: var(--text);
-  font-size: 16px; outline: none;
-}
-.search-box input:focus {
-  border-color: rgba(167,139,250,.55);
-  box-shadow: 0 0 0 3px rgba(167,139,250,.15);
-}
-.search-ico {
-  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-  opacity: .55; pointer-events: none;
-}
-.suggest {
-  position: absolute; left: 0; right: 0; top: calc(100% + 6px);
-  background: rgba(10,16,32,.97); border: 1px solid var(--line);
-  border-radius: 16px; overflow: hidden; z-index: 30;
-  box-shadow: 0 20px 50px rgba(0,0,0,.45);
-  display: none; max-height: 320px; overflow-y: auto;
-}
-.suggest.open { display: block; }
-.sug-item {
-  display: block; padding: 12px 14px; cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,.05);
-}
-.sug-item:hover, .sug-item.active { background: rgba(167,139,250,.12); }
-.sug-item .path { font-size: 11px; color: var(--muted); }
-.sug-item .title { font-weight: 750; }
-.sug-empty { padding: 14px; color: var(--muted); font-size: 13px; }
-.parts {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-  margin: 20px 0 16px;
-}
-@media (max-width: 720px) { .parts { grid-template-columns: 1fr; } }
-.part-card {
-  border-radius: 20px; padding: 16px;
-  border: 1px solid var(--line);
-  background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-  backdrop-filter: blur(18px);
-  cursor: pointer; transition: .2s transform, .2s border-color, .2s box-shadow;
-  min-height: 108px;
-}
-.part-card:hover { transform: translateY(-2px); }
-.part-card.on {
-  border-color: rgba(103,232,249,.45);
-  box-shadow: 0 0 0 1px rgba(103,232,249,.2), 0 16px 40px rgba(0,0,0,.25);
-}
-.part-card .num { font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--cyan); }
-.part-card h2 { margin: 8px 0 4px; font-size: 20px; }
-.part-card p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
-.part-card .count { margin-top: 10px; font-size: 11px; font-weight: 700; color: var(--violet); }
-.index-panel {
-  border: 1px solid var(--line); border-radius: 22px;
-  background: var(--glass); backdrop-filter: blur(20px);
-  overflow: hidden; margin-bottom: 28px;
-}
-.index-head {
-  padding: 14px 18px; border-bottom: 1px solid var(--line);
-  display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
-}
-.index-head strong { font-size: 14px; }
-.index-head span { font-size: 12px; color: var(--muted); }
-.chapter { border-bottom: 1px solid rgba(255,255,255,.06); }
-.chapter:last-child { border-bottom: 0; }
-.ch-btn {
-  width: 100%; text-align: left; border: 0; background: transparent;
-  color: var(--text); padding: 14px 18px; cursor: pointer;
-  display: flex; align-items: center; gap: 12px; font: inherit;
-}
-.ch-btn:hover { background: rgba(255,255,255,.03); }
-.ch-code { font-weight: 850; color: var(--cyan); min-width: 52px; font-size: 13px; }
-.ch-title { font-weight: 750; flex: 1; }
-.ch-meta { font-size: 11px; color: var(--muted); }
-.chev { transition: transform .2s; color: var(--muted); }
-.chapter.open .chev { transform: rotate(90deg); }
-.sublist { display: none; padding: 0 12px 12px 18px; }
-.chapter.open .sublist { display: block; }
-.sub {
-  border-left: 2px solid rgba(167,139,250,.25);
-  margin: 0 0 8px 40px; padding-left: 12px;
-}
-.sub-btn {
-  width: 100%; text-align: left; border: 0; background: rgba(255,255,255,.03);
-  border-radius: 12px; color: var(--text); padding: 10px 12px; cursor: pointer;
-  display: flex; gap: 10px; align-items: center; font: inherit;
-}
-.sub-btn:hover { background: rgba(255,255,255,.06); }
-.sub-code { font-size: 12px; font-weight: 800; color: var(--violet); min-width: 64px; }
-.sub-title { flex: 1; font-weight: 650; font-size: 13.5px; }
-.leafs { display: none; margin: 6px 0 4px 20px; gap: 6px; }
-.sub.open .leafs { display: grid; }
-.leaf {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px; border-radius: 11px;
-  background: rgba(8,14,28,.65); border: 1px solid rgba(255,255,255,.06);
-  font-size: 13px;
-}
-.leaf:hover { border-color: rgba(103,232,249,.35); }
-.leaf .lc { color: var(--amber); font-weight: 800; font-size: 11px; min-width: 70px; }
-.leaf .live {
-  margin-left: auto; font-size: 10px; font-weight: 800; color: var(--green);
-  border: 1px solid rgba(124,240,189,.3); padding: 2px 8px; border-radius: 99px;
-}
-.leaf .soon {
-  margin-left: auto; font-size: 10px; font-weight: 800; color: var(--muted);
-  border: 1px solid var(--line); padding: 2px 8px; border-radius: 99px;
-}
-.tools {
-  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 36px;
-}
-.tools a, .tools button {
-  border: 1px solid var(--line); background: rgba(255,255,255,.04);
-  color: var(--text); border-radius: 12px; padding: 10px 14px;
-  font-weight: 700; font-size: 13px; cursor: pointer;
-}
-footer {
-  border-top: 1px solid var(--line); padding: 18px 0 28px;
-  color: var(--muted); font-size: 12px; text-align: center;
-}
-</style>
-</head>
-<body>
-<header class="top">
-  <div class="top-inner">
-    <div class="brand">
-      <div class="logo" id="logoBtn" title="Reload">V</div>
-      <div>
-        <div>Vinit Simulation Hub</div>
-        <div style="font-size:11px;color:var(--muted);font-weight:600">Book Index · Physics · Chemistry · Math</div>
-      </div>
-    </div>
-    <div class="theme-row" id="themes">
-      <button type="button" class="theme-btn on" data-t="holographic">Holographic</button>
-      <button type="button" class="theme-btn" data-t="constellation">Constellation</button>
-      <button type="button" class="theme-btn" data-t="control">Control Room</button>
-      <button type="button" class="theme-btn" data-t="terminal">Terminal</button>
-    </div>
-  </div>
-</header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b16">
+  <meta name="description" content="Vinit Simulation Hub — Interactive Physics & Mathematics simulations for JEE and concept learning. Explore interactive physics labs for JEE — 100+ live simulations.">
+  <title>Vinit Simulation Hub | Explore Science</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b16;
+      --surface: #101629;
+      --surface-2: #151d32;
+      --text: #f2f5ff;
+      --muted: #9ba8c5;
+      --cyan: #62e7ff;
+      --purple: #a78bfa;
+      --green: #7cf0bd;
+      --line: rgba(163, 184, 230, .14);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 10% 0%, #17204a 0, transparent 38%),
+        radial-gradient(ellipse at 95% 28%, #21143e 0, transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible, input:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+    .container { width: min(1140px, calc(100% - 28px)); margin: auto; }
+    .nav-wrap {
+      position: sticky; top: 0; z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(8, 11, 22, .9);
+      backdrop-filter: blur(14px);
+    }
+    .nav {
+      min-height: 64px;
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+    .brand-icon {
+      width: 38px; height: 38px; display: grid; place-items: center;
+      border-radius: 12px; font-size: 20px; color: var(--cyan);
+      background: linear-gradient(135deg, #162d4b, #251a48);
+      border: 1px solid #34486f;
+    }
+    .brand small { display: block; color: var(--muted); font-size: 9px; letter-spacing: 1.8px; }
+    .nav-links { display: flex; align-items: center; gap: 18px; }
+    .nav-links a { color: var(--muted); font-size: 13px; }
+    .nav-links a:hover { color: var(--cyan); }
+    .hero { padding: 48px 0 36px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid rgba(98, 231, 255, .28);
+      background: rgba(98, 231, 255, .07);
+      color: var(--cyan); border-radius: 100px;
+      padding: 5px 12px; font-size: 11px; letter-spacing: 1px; font-weight: 700;
+    }
+    h1 {
+      margin: 14px 0 10px; font-size: clamp(28px, 5.5vw, 48px);
+      line-height: 1.1; letter-spacing: -1.4px;
+    }
+    .gradient-text {
+      background: linear-gradient(100deg, var(--cyan), #a8b3ff 55%, var(--purple));
+      color: transparent; background-clip: text; -webkit-background-clip: text;
+    }
+    .hero p { color: var(--muted); max-width: 560px; margin: 0 0 20px; font-size: 15px; }
+    .stats { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 8px; }
+    .stat {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 16px;
+      min-width: 100px;
+    }
+    .stat strong { display: block; font-size: 22px; color: var(--cyan); }
+    .stat span { font-size: 11px; color: var(--muted); }
+    .section { padding: 28px 0 50px; }
+    .section-head {
+      display: flex; flex-wrap: wrap; align-items: flex-end;
+      justify-content: space-between; gap: 14px; margin-bottom: 18px;
+    }
+    .section h2 { font-size: clamp(22px, 3.5vw, 30px); margin: 0 0 4px; }
+    .section-head p { color: var(--muted); margin: 0; font-size: 14px; }
+    .search {
+      width: min(320px, 100%);
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid #31415f;
+      background: #0a1020;
+      color: var(--text);
+    }
+    
+    .subject-picker { margin-top: 10px; }
+    .subject-picker label { display:block; font-size:11px; font-weight:700; color:var(--muted); margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase; }
+    .subject-seg { display:flex; flex-wrap:wrap; gap:6px; }
+    .subject-seg button {
+      padding: 7px 12px; border-radius: 999px; border: 1px solid #31415f;
+      background: #121a2e; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .subject-seg button[aria-pressed="true"] {
+      color: #07111b; border-color: transparent;
+      background: linear-gradient(135deg,#67e8f9,#a78bfa);
+    }
 
-<main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">TABLE OF CONTENTS</div>
-    <h1>Open the book · pick a subject</h1>
-    <p>Ek kitaab, teen parts. Chapter → topic → lab. Same themes for every subject. Search suggestions as you type.</p>
-    <div class="search-box">
-      <span class="search-ico">⌕</span>
-      <input id="q" type="search" placeholder="Search labs… projectile, inductive, photoelectric, quadratic" autocomplete="off">
-      <div class="suggest" id="suggest"></div>
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; margin: 16px 0 20px; }
+    .filter {
+      padding: 7px 13px;
+      border-radius: 100px;
+      border: 1px solid #31415f;
+      background: #121a2e;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .filter[aria-pressed="true"] {
+      color: var(--cyan);
+      background: #62e7ff14;
+      border-color: #62e7ff66;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: linear-gradient(145deg, #111a2ef2, #0d1324f7);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex; flex-direction: column;
+      transition: transform .18s ease, border-color .18s ease;
+      min-height: 170px;
+    }
+    .card:hover { transform: translateY(-3px); border-color: #62e7ff55; }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .card-icon {
+      width: 42px; height: 42px; display: grid; place-items: center;
+      border-radius: 12px; font-size: 22px;
+      background: #0e1628; border: 1px solid #2a3a58;
+      flex-shrink: 0;
+    }
+    .badge {
+      font-size: 10px; font-weight: 700; letter-spacing: .4px;
+      padding: 3px 8px; border-radius: 100px;
+    }
+    .badge.live { background: #7cf0bd22; color: var(--green); border: 1px solid #7cf0bd55; }
+    .badge.soon { background: #a78bfa18; color: var(--purple); border: 1px solid #a78bfa44; }
+    .card h3 { margin: 12px 0 6px; font-size: 16px; line-height: 1.3; }
+    .card p { margin: 0 0 14px; color: var(--muted); font-size: 13px; flex-grow: 1; }
+    .card-meta {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      font-size: 12px;
+    }
+    .tag { color: var(--muted); }
+    .card-link { color: var(--cyan); font-weight: 700; }
+    .card-link.disabled { color: #6b7690; cursor: default; pointer-events: none; }
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 36px;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+    }
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 22px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .footer-inner {
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    @media (max-width: 600px) {
+      .nav-links .optional { display: none; }
+      .stats { gap: 10px; }
+      .stat { min-width: 80px; padding: 8px 12px; }
+      .stat strong { font-size: 18px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="hub-home-themes.css?v=40">
+  <link rel="stylesheet" href="hub-features.css?v=1">
+  <link rel="stylesheet" href="hub-experiences.css?v=40">
+
+<style id="cat-section-styles">
+.cat-section{margin-bottom:22px;width:100%;grid-column:1/-1}
+.cat-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:4px 0 12px}
+.cat-title{margin:0;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:capitalize}
+.cat-count{font-size:12px;opacity:.65}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.view-more-btn{
+  margin-top:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);
+  color:inherit;border-radius:999px;padding:10px 16px;font-weight:750;font-size:13px;cursor:pointer;
+}
+.view-more-btn:hover{border-color:rgba(125,211,252,.45)}
+#project-grid{display:block}
+body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
+</style>
+
+
+<style id="vinit-monogram">
+.vinit-mark{position:relative;width:42px;height:42px;border-radius:14px;display:grid!important;place-items:center;
+  background:linear-gradient(145deg,rgba(255,255,255,.45),rgba(255,255,255,.06) 42%,rgba(120,80,255,.3)),
+  radial-gradient(circle at 30% 25%,rgba(255,255,255,.55),transparent 46%),
+  linear-gradient(160deg,#67e8f9,#a78bfa 48%,#6366f1)!important;
+  border:1px solid rgba(255,255,255,.38)!important;
+  box-shadow:0 10px 28px rgba(99,102,241,.38),inset 0 1px 0 rgba(255,255,255,.55)!important;
+  overflow:hidden}
+.vinit-mark .vm-stack{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;line-height:1;color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.vinit-mark .vm-v{font-size:13px;font-weight:900;letter-spacing:-.06em}
+.vinit-mark .vm-mid{font-size:7px;font-weight:800;letter-spacing:.14em;opacity:.95;margin-top:1px}
+.vinit-mark .vm-t{font-size:9px;font-weight:900;margin-top:1px;letter-spacing:-.04em}
+.vinit-mark::before{content:"";position:absolute;inset:2px;border-radius:12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 40%);pointer-events:none}
+</style>
+
+</head>
+<body class="catalog-locked catalog-locked" data-theme="holographic" data-appearance="evening" data-ambient="on">
+
+<div id="vsh-splash" class="vsh-splash" role="dialog" aria-modal="true" aria-label="Welcome">
+  <div class="vsh-splash-card">
+    <div class="vsh-splash-logo vinit-mark" aria-hidden="true"><span class="vm-stack"><span class="vm-v">V</span><span class="vm-mid">INI</span><span class="vm-t">T</span></span></div>
+    <h1>Welcome to Vinit Simulation Hub</h1>
+    <p>Interactive physics labs for JEE &amp; curious minds. Explore kinematics, modern physics, waves, optics and more — by experimenting, not memorizing.</p>
+    <p class="vsh-splash-tip">Tip: Use themes (Holographic, Star Map, Control Room, Terminal) and Ambient light for your preferred look.</p>
+    <div class="vsh-splash-bar"><span id="vsh-splash-fill"></span></div>
+    <div class="vsh-splash-count" id="vsh-splash-count">Loading experience…</div>
+  </div>
+</div>
+<style>
+.vsh-splash{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 20%,#1a1040,#070b16 60%);color:#f2f6ff;font-family:system-ui,sans-serif;transition:opacity .45s ease,visibility .45s}
+.vsh-splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.vsh-splash-card{width:min(420px,90vw);padding:28px 24px;border-radius:28px;text-align:center;
+  background:rgba(30,18,55,.45);border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(28px) saturate(170%);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.18)}
+.vsh-splash-logo{width:64px;height:64px;margin:0 auto 16px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(145deg,rgba(255,255,255,.4),rgba(167,139,250,.5) 50%,#6366f1);
+  border:1px solid rgba(255,255,255,.4);box-shadow:0 12px 32px rgba(99,102,241,.4);font-weight:900}
+.vsh-splash-card h1{margin:0 0 10px;font-size:1.35rem;letter-spacing:-.02em}
+.vsh-splash-card p{margin:0 0 10px;color:#b8c4dc;font-size:14px;line-height:1.55}
+.vsh-splash-tip{font-size:12px!important;color:#9db0cc!important}
+.vsh-splash-bar{height:4px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:16px 0 8px}
+.vsh-splash-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#67e8f9,#a78bfa);transition:width .1s linear}
+.vsh-splash-count{font-size:12px;color:#8b9bb8;font-weight:600}
+html.vsh-booting{overflow:hidden}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+<script>
+(function(){
+  document.documentElement.classList.add("vsh-booting");
+  var splash=document.getElementById("vsh-splash");
+  var fill=document.getElementById("vsh-splash-fill");
+  var count=document.getElementById("vsh-splash-count");
+  var total=5500, start=performance.now();
+  function frame(now){
+    var p=Math.min(1,(now-start)/total);
+    if(fill) fill.style.width=(p*100).toFixed(1)+"%";
+    if(count) count.textContent=p<1?("Welcome · "+Math.ceil((1-p)*total/1000)+"s"):"Ready";
+    if(p<1) requestAnimationFrame(frame);
+    else {
+      if(splash) splash.classList.add("hide");
+      document.documentElement.classList.remove("vsh-booting");
+      setTimeout(function(){ if(splash&&splash.parentNode) splash.parentNode.removeChild(splash); },500);
+    }
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+  <header class="nav-wrap">
+    <nav class="container nav" aria-label="Main">
+      <a class="brand" href="#home">
+        <span class="brand-icon vinit-mark" aria-label="VINIT monogram" title="VINIT"><span class="vm-stack" aria-hidden="true"><span class="vm-v">V</span><span class="vm-mid">INI</span><span class="vm-t">T</span></span></span></span>
+        <span>VINIT SIMULATION HUB<small>SCIENCE · VISUALIZED</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false"
+        aria-controls="primary-navigation" aria-label="Open navigation menu">
+        <span class="nav-toggle-icon" aria-hidden="true">☰</span>
+      </button>
+      <div class="nav-tools" id="primary-navigation">
+        <div class="nav-links">
+          <a href="#simulations">Explore</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="theme-picker">
+          <label for="theme-select">Interface theme</label>
+          <select id="theme-select" aria-label="Choose interface theme">
+            <option value="control-room">Control Room Bento</option>
+            <option value="constellation">Constellation Web</option>
+            <option value="holographic" selected>Holographic Core</option>
+            <option value="terminal">Hacker Terminal</option>
+          </select>
+        </div>
+
+        <div class="subject-picker">
+          <label>Subject</label>
+          <div class="subject-seg" id="subject-seg" role="group" aria-label="Choose subject">
+            <button type="button" data-subject="physics" aria-pressed="true">Physics</button>
+            <button type="button" data-subject="chemistry" aria-pressed="false">Chemistry</button>
+            <button type="button" data-subject="math" aria-pressed="false">Math</button>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+
+  <div class="appearance-bar" role="toolbar" aria-label="Appearance controls">
+    <span class="lbl">Look</span>
+    <div class="seg" id="appearance-seg">
+      <button type="button" data-appearance="daylight" aria-pressed="false">Daylight</button>
+      <button type="button" data-appearance="evening" aria-pressed="true">Evening</button>
+      <button type="button" data-appearance="night" aria-pressed="false">Night</button>
+    </div>
+    <label class="amb-toggle">
+      <input type="checkbox" id="ambient-toggle" checked>
+      Ambient light
+    </label>
+  </div>
+
+
+  <main>
+    <section class="hero container" id="home">
+      <div class="eyebrow">Interactive Physics · Mathematics · JEE</div>
+      <h1>Learn science by <span class="gradient-text">experimenting</span></h1>
+      <p>Visual simulations, accurate calculations and concept-focused activities. Built for students who want to understand, not just memorize.</p>
+      <div class="stats">
+        <div class="stat"><strong id="stat-total">139</strong><span>Planned activities</span></div>
+        <div class="stat"><strong id="stat-live">100+</strong><span>Live now</span></div>
+        <div class="stat"><strong>JEE</strong><span>Focused depth</span></div>
+      </div>
+    </section>
+
+    <section class="section container" id="experience-deck" aria-label="Interactive interface experience">
+      <div class="exp-shell">
+        <div id="experience-stage"></div>
+      </div>
+    </section>
+
+    <section class="section container" id="simulations">
+      <div class="section-head">
+        <div>
+          <h2>Activity Catalog <span style="font-weight:500;font-size:12px;opacity:.7">(live only)</span></h2>
+          <p>Search or filter. Only live activities open a working simulator.</p>
+        </div>
+        <input class="search" id="search" type="search" placeholder="Search activities…" aria-label="Search">
+      </div>
+
+      <div class="filters" id="filters" role="group" aria-label="Category filters"></div>
+
+      <div class="grid" id="project-grid"></div>
+      <p class="empty" id="empty" hidden>No matching activities. Try another search or filter.</p>
+    </section>
+
+    <section class="section container" id="about">
+      <h2>About this project</h2>
+      <p style="color:var(--muted);max-width:640px">
+        Vinit Simulation Hub aims to become a comprehensive interactive science platform.
+        We prioritize scientific accuracy, mobile performance and clear explanations.
+        Activities are released only after basic validation — unimplemented tools are clearly marked “Coming soon”.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© 2026 Vinit Simulation Hub</span>
+      <span>Built for learning · GitHub Pages</span>
+    </div>
+  
+  <section class="section container" id="contact" style="padding-bottom:56px">
+    <div class="hero" style="margin:0">
+      <div class="eyebrow">CONTACT</div>
+      <h2 style="margin:10px 0 8px;font-size:clamp(22px,4vw,32px)">Contact Vinit Simulation Hub</h2>
+      <p style="max-width:560px">Lab ideas, feedback, or collaboration. Prefer email for academic / JEE content requests.</p>
+      <div style="display:grid;gap:12px;margin-top:18px;max-width:460px">
+        <a href="mailto:vinitprajapat0822@gmail.com" style="display:block;padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);text-decoration:none">Email · vinitprajapat0822@gmail.com</a>
+        <a href="https://github.com/vinitprajapat0822-coder/vinit-simulations" style="display:block;padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);text-decoration:none">GitHub repository</a>
+        <a href="https://vinit-simulation.is-a.dev/" style="display:block;padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);text-decoration:none">Live hub · vinit-simulation.is-a.dev</a>
+      </div>
     </div>
   </section>
 
-  <div class="parts" id="parts">
-    <div class="part-card on" data-part="physics">
-      <div class="num">PART I</div>
-      <h2>Physics</h2>
-      <p>Mechanics to Modern — interactive concept labs</p>
-      <div class="count" id="c-phy">—</div>
-    </div>
-    <div class="part-card" data-part="chemistry">
-      <div class="num">PART II</div>
-      <h2>Chemistry</h2>
-      <p>GOC first — electronic effects, intermediates, acidity</p>
-      <div class="count" id="c-chem">—</div>
-    </div>
-    <div class="part-card" data-part="math">
-      <div class="num">PART III</div>
-      <h2>Mathematics</h2>
-      <p>Algebra · Calculus · Coordinate — visual intuition</p>
-      <div class="count" id="c-math">—</div>
-    </div>
-  </div>
+  </footer>
 
-  <div class="index-panel">
-    <div class="index-head">
-      <strong id="indexTitle">Part I — Physics · Index</strong>
-      <span>Chapter → Topic → Lab</span>
-    </div>
-    <div id="tree"></div>
-  </div>
+  <script src="catalog.js?v=32"></script>
+  <script>
+    (function () {
+      const grid = document.getElementById("project-grid");
+      const empty = document.getElementById("empty");
+      const search = document.getElementById("search");
+      const filtersEl = document.getElementById("filters");
+      let activeFilter = "all";
 
-  <div class="tools">
-    <button type="button" id="btnFav">★ Favorites</button>
-    <button type="button" id="btnRandom">Random live lab</button>
-    <a href="projects/organic-home.html">Chemistry GOC home</a>
-  </div>
-</main>
-<footer class="wrap">Vinit Simulation Hub · hierarchical book index · themes shared across subjects</footer>
+      CATEGORIES.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "filter";
+        btn.dataset.filter = cat.id;
+        btn.textContent = cat.label;
+        btn.setAttribute("aria-pressed", cat.id === "all" ? "true" : "false");
+        btn.addEventListener("click", () => {
+          activeFilter = cat.id;
+          document.querySelectorAll(".filter").forEach(b => b.setAttribute("aria-pressed", b.dataset.filter === activeFilter));
+          render();
+        });
+        filtersEl.appendChild(btn);
+      });
+
+
+      const expandedCats = new Set();
+
+      function cardEl(item) {
+        const isLive = item.status === "live";
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `
+            <div class="card-top">
+              <div class="card-icon" aria-hidden="true">${item.icon || "●"}</div>
+              <span class="badge ${isLive ? "live" : "soon"}">${isLive ? "Live" : "Coming soon"}</span>
+            </div>
+            <h3>${item.title}</h3>
+            <p>${item.desc}</p>
+            <div class="card-meta">
+              <span class="tag">${item.category}</span>
+              ${isLive
+                ? `<a class="card-link" href="${item.url}">Open ↗</a>`
+                : `<span class="card-link disabled">Soon</span>`}
+            </div>`;
+        return card;
+      }
+
+      function render() {
+        const q = search.value.trim().toLowerCase();
+        const showSoon = !!(window.__vshShowSoon);
+        grid.innerHTML = "";
+        let shown = 0;
+
+        const matched = CATALOG.filter(item => {
+          const isLive = item.status === "live";
+          if (!isLive && !showSoon && activeFilter !== "coming-soon") return false;
+          const matchFilter =
+            activeFilter === "all" ||
+            (activeFilter === "coming-soon" && item.status === "coming-soon") ||
+            item.category === activeFilter;
+          const matchSearch = !q ||
+            (item.title + " " + item.desc + " " + item.tags + " " + item.category)
+              .toLowerCase().includes(q);
+          return matchFilter && matchSearch;
+        });
+
+        // Group by category when viewing "all"
+        if (activeFilter === "all" && !q) {
+          const byCat = {};
+          matched.forEach(item => {
+            const c = item.category || "other";
+            if (!byCat[c]) byCat[c] = [];
+            byCat[c].push(item);
+          });
+          const order = (typeof CATEGORIES !== "undefined" ? CATEGORIES.map(c => c.id) : Object.keys(byCat))
+            .filter(id => id !== "all" && id !== "coming-soon" && byCat[id] && byCat[id].length);
+
+          // also any extra categories
+          Object.keys(byCat).forEach(c => {
+            if (order.indexOf(c) < 0) order.push(c);
+          });
+
+          order.forEach(catId => {
+            const list = byCat[catId] || [];
+            if (!list.length) return;
+            const section = document.createElement("div");
+            section.className = "cat-section";
+            section.dataset.cat = catId;
+            const label = (typeof CATEGORIES !== "undefined" && CATEGORIES.find(c => c.id === catId))
+              ? CATEGORIES.find(c => c.id === catId).label
+              : catId.replace(/[-_]/g, " ");
+            const expanded = expandedCats.has(catId);
+            const limit = 4;
+            const visible = expanded ? list : list.slice(0, limit);
+            const more = list.length - limit;
+
+            section.innerHTML = `<div class="cat-head"><h3 class="cat-title">${label}</h3>
+              <span class="cat-count">${list.length} topics</span></div>
+              <div class="cat-grid"></div>`;
+            const g = section.querySelector(".cat-grid");
+            visible.forEach(item => {
+              g.appendChild(cardEl(item));
+              shown++;
+            });
+            if (more > 0) {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "view-more-btn";
+              btn.textContent = expanded ? "Show less" : ("View more · " + more + " more");
+              btn.addEventListener("click", () => {
+                if (expandedCats.has(catId)) expandedCats.delete(catId);
+                else expandedCats.add(catId);
+                render();
+              });
+              section.appendChild(btn);
+            }
+            grid.appendChild(section);
+          });
+        } else {
+          matched.forEach(item => {
+            grid.appendChild(cardEl(item));
+            shown++;
+          });
+        }
+        empty.hidden = shown > 0;
+      }
+
+      const liveCount = CATALOG.filter(i => i.status === "live").length;
+      document.getElementById("stat-total").textContent = CATALOG.length;
+      document.getElementById("stat-live").textContent = liveCount;
+      search.addEventListener("input", render);
+      render();
+    })();
+  </script>
+
+  <script>
+    (function () {
+      "use strict";
+      var themeKey = "vsh-interface-theme-v2";
+      var appearKey = "vsh-appearance-v1";
+      var ambientKey = "vsh-ambient-v1";
+      var themes = ["control-room", "constellation", "holographic", "terminal"];
+      var select = document.getElementById("theme-select");
+      var appearSeg = document.getElementById("appearance-seg");
+      var ambientToggle = document.getElementById("ambient-toggle");
+      var logo = document.querySelector(".brand-icon");
+
+      function applyTheme(value, persist) {
+        var theme = themes.indexOf(value) >= 0 ? value : "holographic";
+        document.body.setAttribute("data-theme", theme);
+        themes.forEach(function (t) {
+          document.body.classList.remove("theme-" + t);
+        });
+        document.body.classList.add("theme-" + theme);
+        if (select) select.value = theme;
+        if (persist) {
+          try { localStorage.setItem(themeKey, theme); } catch (e) {}
+        }
+        try {
+          document.dispatchEvent(new CustomEvent("vsh-theme-change", { detail: { theme: theme } }));
+        } catch (e) {}
+      }
+
+      function applyAppearance(mode, persist) {
+        var m = mode === "daylight" || mode === "night" ? mode : "evening";
+        document.body.setAttribute("data-appearance", m);
+        if (appearSeg) {
+          appearSeg.querySelectorAll("button").forEach(function (btn) {
+            btn.setAttribute("aria-pressed", btn.getAttribute("data-appearance") === m ? "true" : "false");
+          });
+        }
+        if (persist) {
+          try { localStorage.setItem(appearKey, m); } catch (e) {}
+        }
+      }
+
+      function applyAmbient(on, persist) {
+        document.body.setAttribute("data-ambient", on ? "on" : "off");
+        if (ambientToggle) ambientToggle.checked = !!on;
+        if (persist) {
+          try { localStorage.setItem(ambientKey, on ? "on" : "off"); } catch (e) {}
+        }
+      }
+
+      // restore
+      var savedTheme = "holographic";
+      var savedAppear = "evening";
+      var savedAmbient = "on";
+      try { savedTheme = localStorage.getItem(themeKey) || savedTheme; } catch (e) {}
+      try { savedAppear = localStorage.getItem(appearKey) || savedAppear; } catch (e) {}
+      try { savedAmbient = localStorage.getItem(ambientKey) || savedAmbient; } catch (e) {}
+
+      applyTheme(savedTheme, false);
+      applyAppearance(savedAppear, false);
+      applyAmbient(savedAmbient !== "off", false);
+
+      if (select) {
+        select.addEventListener("change", function () { applyTheme(select.value, true); });
+        select.addEventListener("input", function () { applyTheme(select.value, true); });
+      }
+      if (appearSeg) {
+        appearSeg.addEventListener("click", function (e) {
+          var btn = e.target.closest("button[data-appearance]");
+          if (!btn) return;
+          applyAppearance(btn.getAttribute("data-appearance"), true);
+        });
+      }
+      if (ambientToggle) {
+        ambientToggle.addEventListener("change", function () {
+          applyAmbient(ambientToggle.checked, true);
+        });
+      }
+
+      // Logo spin on click
+      if (logo) {
+        var brand = document.querySelector(".brand");
+        if (brand) {
+          brand.addEventListener("click", function (e) {
+            if (brand.getAttribute("href") === "#home" || brand.getAttribute("href") === "#") {
+              e.preventDefault();
+            }
+            logo.classList.remove("spin");
+            void logo.offsetWidth;
+            logo.classList.add("spin");
+            setTimeout(function () { logo.classList.remove("spin"); }, 700);
+          });
+        }
+      }
+    })();
+    </script>
+  <script src="hub-experiences.js?v=42"></script>
+  <script src="hub-features.js?v=5" defer></script>
+  <script id="vsh-mobile-menu-v2">
+    (function () {
+      "use strict";
+      const toggle = document.querySelector(".nav-toggle");
+      const menu = document.getElementById("primary-navigation");
+      if (!toggle || !menu) return;
+
+      function setOpen(open) {
+        menu.classList.toggle("is-open", open);
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute(
+          "aria-label",
+          open ? "Close navigation menu" : "Open navigation menu"
+        );
+        const icon = toggle.querySelector(".nav-toggle-icon");
+        if (icon) icon.textContent = open ? "×" : "☰";
+      }
+
+      toggle.addEventListener("click", function () {
+        setOpen(toggle.getAttribute("aria-expanded") !== "true");
+      });
+      menu.querySelectorAll('a[href^="#"]').forEach(function (link) {
+        link.addEventListener("click", function () { setOpen(false); });
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          setOpen(false);
+          toggle.focus();
+        }
+      });
+      document.addEventListener("click", function (event) {
+        if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+          setOpen(false);
+        }
+      });
+      window.addEventListener("resize", function () {
+        if (window.innerWidth > 760) setOpen(false);
+      });
+    })();
+  </script>
 
 <script>
-const BOOK = {
-  physics: {
-    title: "Part I — Physics · Index",
-    chapters: [
-      { code: "P1", title: "Kinematics", topics: [
-        { code: "P1.1", title: "Motion in One Dimension", leaves: [
-          { code: "P1.1.1", title: "Position–Time Graphs", status: "live", url: "projects/position-time.html" },
-          { code: "P1.1.2", title: "Velocity–Time Graphs", status: "live", url: "projects/velocity-time.html" },
-          { code: "P1.1.3", title: "Free Fall", status: "live", url: "projects/free-fall.html" }
-        ]},
-        { code: "P1.2", title: "Motion in Two Dimensions", leaves: [
-          { code: "P1.2.1", title: "Projectile Motion", status: "live", url: "projects/projectile.html" }
-        ]}
-      ]},
-      { code: "P2", title: "Laws of Motion & Forces", topics: [
-        { code: "P2.1", title: "Applications", leaves: [
-          { code: "P2.1.1", title: "Inclined Plane + Force", status: "live", url: "projects/inclined-plane-force.html" }
-        ]},
-        { code: "P2.2", title: "Friction", leaves: [
-          { code: "P2.2.1", title: "Friction Lab", status: "live", url: "projects/friction.html" }
-        ]}
-      ]},
-      { code: "P3", title: "Work, Energy & Momentum", topics: [
-        { code: "P3.1", title: "Collisions & Momentum", leaves: [
-          { code: "P3.1.1", title: "Momentum & Collisions", status: "live", url: "projects/momentum.html" },
-          { code: "P3.1.2", title: "Collision Gallery", status: "live", url: "projects/collision-gallery.html" }
-        ]}
-      ]},
-      { code: "P4", title: "Waves & SHM", topics: [
-        { code: "P4.1", title: "SHM", leaves: [
-          { code: "P4.1.1", title: "Spring–Mass SHM", status: "live", url: "projects/shm.html" }
-        ]},
-        { code: "P4.2", title: "Sound & Waves", leaves: [
-          { code: "P4.2.1", title: "Progressive Wave", status: "live", url: "projects/progressive-wave.html" },
-          { code: "P4.2.2", title: "Sound Waves", status: "live", url: "projects/sound-waves.html" },
-          { code: "P4.2.3", title: "Resonance Tube", status: "live", url: "projects/sound-resonance.html" }
-        ]}
-      ]},
-      { code: "P5", title: "Optics", topics: [
-        { code: "P5.1", title: "Ray Optics", leaves: [
-          { code: "P5.1.1", title: "Snell’s Law", status: "live", url: "projects/snell.html" },
-          { code: "P5.1.2", title: "Lens Formula", status: "live", url: "projects/lens-formula.html" },
-          { code: "P5.1.3", title: "Mirror Formula", status: "live", url: "projects/mirror-formula.html" },
-          { code: "P5.1.4", title: "Total Internal Reflection", status: "live", url: "projects/total-internal.html" },
-          { code: "P5.1.5", title: "Dispersion", status: "live", url: "projects/dispersion.html" }
-        ]},
-        { code: "P5.2", title: "Wave Optics", leaves: [
-          { code: "P5.2.1", title: "Young’s Double Slit", status: "live", url: "projects/interference-young.html" }
-        ]}
-      ]},
-      { code: "P6", title: "Electricity & Magnetism", topics: [
-        { code: "P6.1", title: "Current Electricity", leaves: [
-          { code: "P6.1.1", title: "Series & Parallel", status: "live", url: "projects/current-electricity.html" }
-        ]}
-      ]},
-      { code: "P7", title: "Modern Physics", topics: [
-        { code: "P7.1", title: "Quantum & Atoms", leaves: [
-          { code: "P7.1.1", title: "Photoelectric Effect", status: "live", url: "projects/photoelectric.html" },
-          { code: "P7.1.2", title: "Bohr Model", status: "live", url: "projects/bohr-model.html" },
-          { code: "P7.1.3", title: "Radioactivity", status: "live", url: "projects/radioactivity.html" }
-        ]}
-      ]}
-    ]
-  },
-  chemistry: {
-    title: "Part II — Chemistry · Index",
-    chapters: [
-      { code: "C1", title: "General Organic Chemistry (GOC)", topics: [
-        { code: "C1.1", title: "Electronic Effects", leaves: [
-          { code: "C1.1.1", title: "Inductive Effect", status: "live", url: "projects/organic-inductive.html" },
-          { code: "C1.1.2", title: "Resonance & Electron Flow", status: "live", url: "projects/organic-resonance.html" },
-          { code: "C1.1.3", title: "Hyperconjugation", status: "live", url: "projects/organic-hyperconjugation.html" }
-        ]},
-        { code: "C1.2", title: "Intermediates", leaves: [
-          { code: "C1.2.1", title: "Carbocation Stability", status: "live", url: "projects/organic-carbocation.html" }
-        ]},
-        { code: "C1.3", title: "Acidity & Basicity", leaves: [
-          { code: "C1.3.1", title: "Acidity Comparison", status: "live", url: "projects/organic-acidity.html" }
-        ]},
-        { code: "C1.4", title: "GOC Pack Home", leaves: [
-          { code: "C1.4.1", title: "Organic Chemistry Lab Home", status: "live", url: "projects/organic-home.html" }
-        ]}
-      ]},
-      { code: "C2", title: "Hydrocarbons", topics: [
-        { code: "C2.1", title: "Alkanes · Alkenes · Alkynes", leaves: [
-          { code: "C2.1.1", title: "Addition Reactions", status: "soon" },
-          { code: "C2.1.2", title: "Aromaticity", status: "soon" }
-        ]}
-      ]},
-      { code: "C3", title: "Physical Chemistry", topics: [
-        { code: "C3.1", title: "Equilibrium & Mole", leaves: [
-          { code: "C3.1.1", title: "Chemical Equilibrium", status: "soon" }
-        ]}
-      ]}
-    ]
-  },
-  math: {
-    title: "Part III — Mathematics · Index",
-    chapters: [
-      { code: "M1", title: "Algebra", topics: [
-        { code: "M1.1", title: "Equations", leaves: [
-          { code: "M1.1.1", title: "Quadratic Explorer", status: "soon" },
-          { code: "M1.1.2", title: "Complex Numbers (Argand)", status: "soon" }
-        ]},
-        { code: "M1.2", title: "Sequences & Series", leaves: [
-          { code: "M1.2.1", title: "AP / GP Visual", status: "soon" }
-        ]}
-      ]},
-      { code: "M2", title: "Calculus", topics: [
-        { code: "M2.1", title: "Derivatives", leaves: [
-          { code: "M2.1.1", title: "Derivative as Slope", status: "soon" },
-          { code: "M2.1.2", title: "Maxima–Minima", status: "soon" }
-        ]},
-        { code: "M2.2", title: "Integrals", leaves: [
-          { code: "M2.2.1", title: "Area under Curve", status: "soon" }
-        ]}
-      ]},
-      { code: "M3", title: "Coordinate Geometry", topics: [
-        { code: "M3.1", title: "Lines & Circles", leaves: [
-          { code: "M3.1.1", title: "Line Family Explorer", status: "soon" }
-        ]}
-      ]}
-    ]
-  }
-};
-
-const THEME_BG = {
-  holographic: "radial-gradient(900px 500px at 15% -10%, rgba(99,70,200,.35), transparent 55%), radial-gradient(700px 400px at 90% 10%, rgba(40,120,180,.25), transparent 50%), #060912",
-  constellation: "radial-gradient(1000px 600px at 50% -20%, rgba(30,60,120,.4), transparent 55%), #030712",
-  control: "radial-gradient(800px 500px at 20% 0%, rgba(20,80,90,.35), transparent 50%), #070b10",
-  terminal: "radial-gradient(800px 500px at 50% 0%, rgba(0,80,40,.25), transparent 50%), #020805"
-};
-
-let part = "physics";
-const FAV_KEY = "vsh-favorites-v1";
-
-function countLeaves(chaps) {
-  let n = 0, live = 0;
-  chaps.forEach(c => c.topics.forEach(t => t.leaves.forEach(l => { n++; if (l.status === "live") live++; })));
-  return { n, live };
-}
-function refreshCounts() {
-  const p = countLeaves(BOOK.physics.chapters);
-  const c = countLeaves(BOOK.chemistry.chapters);
-  const m = countLeaves(BOOK.math.chapters);
-  document.getElementById("c-phy").textContent = BOOK.physics.chapters.length + " chapters · " + p.live + "/" + p.n + " live";
-  document.getElementById("c-chem").textContent = BOOK.chemistry.chapters.length + " chapters · " + c.live + "/" + c.n + " live";
-  document.getElementById("c-math").textContent = BOOK.math.chapters.length + " chapters · " + m.live + "/" + m.n + " live";
-}
-
-function renderTree() {
-  const data = BOOK[part];
-  document.getElementById("indexTitle").textContent = data.title;
-  const root = document.getElementById("tree");
-  root.innerHTML = "";
-  data.chapters.forEach((ch, ci) => {
-    const el = document.createElement("div");
-    el.className = "chapter" + (ci === 0 ? " open" : "");
-    el.innerHTML =
-      '<button type="button" class="ch-btn">' +
-        '<span class="ch-code">' + ch.code + '</span>' +
-        '<span class="ch-title">' + ch.title + '</span>' +
-        '<span class="ch-meta">' + ch.topics.length + ' topics</span>' +
-        '<span class="chev">›</span></button><div class="sublist"></div>';
-    const sublist = el.querySelector(".sublist");
-    ch.topics.forEach((tp, ti) => {
-      const s = document.createElement("div");
-      s.className = "sub" + (ci === 0 && ti === 0 ? " open" : "");
-      s.innerHTML =
-        '<button type="button" class="sub-btn">' +
-          '<span class="sub-code">' + tp.code + '</span>' +
-          '<span class="sub-title">' + tp.title + '</span>' +
-          '<span class="ch-meta">' + tp.leaves.length + '</span></button><div class="leafs"></div>';
-      const leafs = s.querySelector(".leafs");
-      tp.leaves.forEach(lf => {
-        const row = document.createElement(lf.url ? "a" : "div");
-        row.className = "leaf";
-        if (lf.url) row.href = lf.url;
-        row.innerHTML =
-          '<span class="lc">' + lf.code + '</span><span>' + lf.title + '</span>' +
-          (lf.status === "live" ? '<span class="live">LIVE</span>' : '<span class="soon">SOON</span>');
-        leafs.appendChild(row);
-      });
-      s.querySelector(".sub-btn").onclick = () => s.classList.toggle("open");
-      sublist.appendChild(s);
-    });
-    el.querySelector(".ch-btn").onclick = () => el.classList.toggle("open");
-    root.appendChild(el);
-  });
-}
-
-document.querySelectorAll(".part-card").forEach(card => {
-  card.onclick = () => {
-    document.querySelectorAll(".part-card").forEach(c => c.classList.remove("on"));
-    card.classList.add("on");
-    part = card.dataset.part;
-    renderTree();
-  };
-});
-
-function flatIndex() {
-  const out = [];
-  Object.keys(BOOK).forEach(pk => {
-    const partName = pk[0].toUpperCase() + pk.slice(1);
-    BOOK[pk].chapters.forEach(ch => {
-      ch.topics.forEach(tp => {
-        tp.leaves.forEach(lf => {
-          out.push({
-            part: partName, partKey: pk,
-            path: ch.code + " → " + tp.code + " → " + lf.code,
-            title: lf.title, code: lf.code, status: lf.status, url: lf.url || ""
+      (function(){
+        var t = document.getElementById("show-soon-toggle");
+        if (!t) {
+          var filters = document.getElementById("filters");
+          if (filters && filters.parentNode) {
+            var lab = document.createElement("label");
+            lab.className = "show-soon-toggle";
+            lab.style.cssText = "display:inline-flex;align-items:center;gap:8px;font-size:12px;margin:8px 0;cursor:pointer;color:inherit";
+            lab.innerHTML = '<input type="checkbox" id="show-soon-toggle"> Show coming soon';
+            filters.parentNode.insertBefore(lab, filters.nextSibling);
+            t = lab.querySelector("input");
+          }
+        }
+        if (t) {
+          t.addEventListener("change", function(){
+            window.__vshShowSoon = t.checked;
+            try { document.querySelector("#search").dispatchEvent(new Event("input")); } catch(e) {}
+            var btn = document.querySelector(".filter[aria-pressed=\"true\"]");
+            if (btn) btn.click();
           });
-        });
-      });
-    });
-  });
-  return out;
-}
-const INDEX = flatIndex();
-const q = document.getElementById("q");
-const sug = document.getElementById("suggest");
-
-function showSuggest(list) {
-  if (!list.length) {
-    sug.innerHTML = '<div class="sug-empty">No matching lab / topic</div>';
-    sug.classList.add("open");
-    return;
-  }
-  sug.innerHTML = list.slice(0, 10).map((x, i) =>
-    '<div class="sug-item' + (i === 0 ? ' active' : '') + '" data-url="' + (x.url || "") + '" data-part="' + x.partKey + '">' +
-      '<div class="title">' + x.title + (x.status === "live" ? " · LIVE" : " · soon") + '</div>' +
-      '<div class="path">' + x.part + " · " + x.path + '</div></div>'
-  ).join("");
-  sug.classList.add("open");
-  sug.querySelectorAll(".sug-item").forEach(item => {
-    item.onclick = () => {
-      const url = item.getAttribute("data-url");
-      if (url) { location.href = url; return; }
-      part = item.dataset.part;
-      document.querySelectorAll(".part-card").forEach(c => c.classList.toggle("on", c.dataset.part === part));
-      renderTree();
-      sug.classList.remove("open");
-    };
-  });
-}
-q.addEventListener("input", () => {
-  const v = q.value.trim().toLowerCase();
-  if (!v) { sug.classList.remove("open"); return; }
-  showSuggest(INDEX.filter(x =>
-    x.title.toLowerCase().includes(v) || x.code.toLowerCase().includes(v) ||
-    x.path.toLowerCase().includes(v) || x.part.toLowerCase().includes(v)
-  ));
-});
-q.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    const first = sug.querySelector(".sug-item");
-    if (first) first.click();
-  }
-});
-q.addEventListener("blur", () => setTimeout(() => sug.classList.remove("open"), 180));
-
-document.getElementById("themes").addEventListener("click", e => {
-  const b = e.target.closest(".theme-btn");
-  if (!b) return;
-  document.querySelectorAll(".theme-btn").forEach(x => x.classList.remove("on"));
-  b.classList.add("on");
-  const t = b.dataset.t;
-  document.documentElement.setAttribute("data-theme", t);
-  document.body.style.background = THEME_BG[t] || THEME_BG.holographic;
-  try { localStorage.setItem("vsh-theme", t); } catch (err) {}
-});
-try {
-  const saved = localStorage.getItem("vsh-theme");
-  if (saved && THEME_BG[saved]) {
-    document.querySelectorAll(".theme-btn").forEach(x => x.classList.toggle("on", x.dataset.t === saved));
-    document.documentElement.setAttribute("data-theme", saved);
-    document.body.style.background = THEME_BG[saved];
-  }
-} catch (err) {}
-
-document.getElementById("logoBtn").onclick = () => location.reload();
-
-document.getElementById("btnRandom").onclick = () => {
-  const live = INDEX.filter(x => x.status === "live" && x.url);
-  if (!live.length) return;
-  location.href = live[Math.floor(Math.random() * live.length)].url;
-};
-document.getElementById("btnFav").onclick = () => {
-  let favs = [];
-  try { favs = JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); } catch (e) {}
-  if (!favs.length) { alert("No favorites yet. Open any lab and tap ★ Favorite."); return; }
-  const hits = INDEX.filter(x => favs.indexOf((x.url || "").split("/").pop().replace(/\.html$/, "")) >= 0 || favs.indexOf(x.code) >= 0);
-  if (hits.length && hits[0].url) location.href = hits[0].url;
-  else alert("Favorites: " + favs.join(", "));
-};
-
-refreshCounts();
-renderTree();
+        }
+      })();
 </script>
+
+
+
+
+<script>
+(function(){
+  var KEY="vsh-mini-auth-v1";
+  function unlock(){
+    try{ localStorage.setItem(KEY,"1"); }catch(e){}
+    document.body.classList.remove("catalog-locked");
+    var auth=document.getElementById("mini-auth");
+    if(auth){ auth.hidden=true; auth.style.display="none"; }
+    renderBento();
+    try{
+      var s=document.getElementById("search");
+      if(s) s.dispatchEvent(new Event("input"));
+      var btn=document.querySelector('.filter[aria-pressed="true"]');
+      if(btn) btn.click();
+    }catch(e){}
+  }
+  function renderBento(){
+    var bento=document.getElementById("bento-live");
+    if(!bento || typeof CATALOG==="undefined") return;
+    var live=CATALOG.filter(function(x){return x.status==="live" && x.url;});
+    bento.hidden=false;
+    bento.style.display="";
+    bento.innerHTML=live.map(function(x,i){
+      var wide=i%5===0?" wide":"";
+      var tall=i%4===1?" tall":"";
+      return '<a class="bento-card'+wide+tall+'" href="'+x.url+'"><div class="b-kicker">LIVE · '+(x.category||"")+'</div><h3>'+(x.icon?x.icon+" ":"")+(x.title||"")+'</h3><p>'+(x.desc||"")+'</p></a>';
+    }).join("");
+  }
+  function wire(){
+    var unlocked=false;
+    try{ unlocked=localStorage.getItem(KEY)==="1"; }catch(e){}
+    if(unlocked){ unlock(); return; }
+    var u=document.getElementById("auth-unlock");
+    var s=document.getElementById("auth-skip");
+    if(u) u.onclick=function(e){ e.preventDefault(); unlock(); };
+    if(s) s.onclick=function(e){ e.preventDefault(); unlock(); };
+    // event delegation fallback
+    document.addEventListener("click", function(e){
+      var t=e.target;
+      if(!t) return;
+      if(t.id==="auth-unlock"||t.id==="auth-skip"||(t.closest&&(t.closest("#auth-unlock")||t.closest("#auth-skip")))){
+        e.preventDefault();
+        unlock();
+      }
+    });
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", wire);
+  else wire();
+  setTimeout(wire, 100);
+  setTimeout(function(){ if(typeof CATALOG!=="undefined"){ try{ if(localStorage.getItem(KEY)==="1") unlock(); }catch(e){} } }, 400);
+})();
+</script>
+
+
+<script>
+(function(){
+  var brand = document.querySelector(".brand");
+  var icon = document.querySelector(".brand-icon");
+  if (!brand || !icon) return;
+  brand.addEventListener("click", function(e){
+    e.preventDefault();
+    icon.classList.remove("spin");
+    void icon.offsetWidth;
+    icon.classList.add("spin");
+    // mini reload: soft refresh of catalog + scroll top
+    try {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      var s = document.getElementById("search");
+      if (s) { s.value = ""; s.dispatchEvent(new Event("input")); }
+      var allBtn = document.querySelector('.filter[data-filter="all"]');
+      if (allBtn) allBtn.click();
+    } catch (err) {}
+    setTimeout(function(){ icon.classList.remove("spin"); }, 700);
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  var KEY="vsh-subject";
+  var seg=document.getElementById("subject-seg");
+  if(!seg) return;
+  function setSubject(s){
+    try{ localStorage.setItem(KEY,s); }catch(e){}
+    window.VSH_SUBJECT=s;
+    seg.querySelectorAll("button").forEach(function(b){
+      b.setAttribute("aria-pressed", b.getAttribute("data-subject")===s ? "true":"false");
+    });
+    document.dispatchEvent(new CustomEvent("vsh-subject-change",{detail:{subject:s}}));
+  }
+  var saved="physics";
+  try{ saved=localStorage.getItem(KEY)||"physics"; }catch(e){}
+  if(["physics","chemistry","math"].indexOf(saved)<0) saved="physics";
+  setSubject(saved);
+  seg.addEventListener("click", function(e){
+    var b=e.target.closest("button[data-subject]");
+    if(!b) return;
+    setSubject(b.getAttribute("data-subject"));
+  });
+})();
+</script>
+
 </body>
 </html>
