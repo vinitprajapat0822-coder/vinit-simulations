@@ -50,9 +50,20 @@
     refreshChrome();
   }
 
+  function subjectOf(item) {
+    var c = (item && item.category) || "";
+    if (c === "chemistry" || c === "organic") return "chemistry";
+    if (c === "math" || c === "mathematics") return "math";
+    return "physics";
+  }
+  function currentSubject() {
+    try { return window.VSH_SUBJECT || localStorage.getItem("vsh-subject") || "physics"; }
+    catch (e) { return "physics"; }
+  }
   function liveLabs() {
+    var sub = currentSubject();
     return CATALOG.filter(function (x) {
-      return x.status === "live" && x.url;
+      return x.status === "live" && x.url && subjectOf(x) === sub;
     });
   }
 
