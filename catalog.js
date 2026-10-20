@@ -1,5 +1,5 @@
 /* Vinit Simulation Hub — Activity Catalog */
-/* cache-bust v17 - 100+ live labs */
+/* cache-bust v18 - 100+ live labs */
 const CATALOG = [
   // KINEMATICS (14)
   { id: "projectile", title: "Projectile Motion Lab", desc: "Trajectories, range, max height, flight time, target angles & minimum launch speed.", category: "kinematics", tags: "projectile trajectory launch angle gravity range", status: "live", url: "projects/projectile.html", icon: "🚀" },
@@ -150,12 +150,12 @@ const CATALOG = [
   { id: "lens-live", title: "Thin Lens Equation", desc: "Lens formula", category: "optics", tags: "lens", status: "live", url: "projects/lens.html", icon: "🔦" },
 
   // ORGANIC CHEMISTRY MVP (GOC)
-  { id: "organic-home", title: "Organic Chemistry Lab (MVP)", desc: "Mini GOC pack — inductive effect, resonance, hyperconjugation, acidity, carbocation stability.", category: "organic", tags: "organic chemistry GOC jee", status: "live", url: "projects/organic-home.html", icon: "🧪" },
-  { id: "organic-inductive", title: "Inductive Effect", desc: "+I / −I groups and distance dependence on a carbon chain (teaching model).", category: "organic", tags: "inductive effect GOC electronic", status: "live", url: "projects/organic-inductive.html", icon: "⬇️" },
-  { id: "organic-resonance", title: "Resonance & Electron Flow", desc: "Valid resonance forms and electron-pair movement (carboxylate-like schematic).", category: "organic", tags: "resonance electron flow GOC", status: "live", url: "projects/organic-resonance.html", icon: "🔁" },
-  { id: "organic-hyperconjugation", title: "Hyperconjugation", desc: "α-H count model for carbocation stabilization trends.", category: "organic", tags: "hyperconjugation carbocation GOC", status: "live", url: "projects/organic-hyperconjugation.html", icon: "🔗" },
-  { id: "organic-acidity", title: "Acidity Comparison", desc: "Approximate pKa trends — carboxylic acids, phenol, alcohols.", category: "organic", tags: "acidity pKa phenol carboxylic GOC", status: "live", url: "projects/organic-acidity.html", icon: "🧫" },
-  { id: "organic-carbocation", title: "Carbocation Stability", desc: "1° / 2° / 3° / allylic / benzylic stability teaching order.", category: "organic", tags: "carbocation stability intermediate GOC", status: "live", url: "projects/organic-carbocation.html", icon: "➕" },
+  { id: "organic-home", title: "Organic Chemistry Lab (MVP)", desc: "Mini GOC pack — inductive effect, resonance, hyperconjugation, acidity, carbocation stability.", category: "chemistry", tags: "organic chemistry GOC jee", status: "live", url: "projects/organic-home.html", icon: "🧪" },
+  { id: "organic-inductive", title: "Inductive Effect", desc: "+I / −I groups and distance dependence on a carbon chain (teaching model).", category: "chemistry", tags: "inductive effect GOC electronic", status: "live", url: "projects/organic-inductive.html", icon: "⬇️" },
+  { id: "organic-resonance", title: "Resonance & Electron Flow", desc: "Valid resonance forms and electron-pair movement (carboxylate-like schematic).", category: "chemistry", tags: "resonance electron flow GOC", status: "live", url: "projects/organic-resonance.html", icon: "🔁" },
+  { id: "organic-hyperconjugation", title: "Hyperconjugation", desc: "α-H count model for carbocation stabilization trends.", category: "chemistry", tags: "hyperconjugation carbocation GOC", status: "live", url: "projects/organic-hyperconjugation.html", icon: "🔗" },
+  { id: "organic-acidity", title: "Acidity Comparison", desc: "Approximate pKa trends — carboxylic acids, phenol, alcohols.", category: "chemistry", tags: "acidity pKa phenol carboxylic GOC", status: "live", url: "projects/organic-acidity.html", icon: "🧫" },
+  { id: "organic-carbocation", title: "Carbocation Stability", desc: "1° / 2° / 3° / allylic / benzylic stability teaching order.", category: "chemistry", tags: "carbocation stability intermediate GOC", status: "live", url: "projects/organic-carbocation.html", icon: "➕" },
 ];
 
 const CATEGORIES = [
@@ -169,7 +169,8 @@ const CATEGORIES = [
   { id: "rotation", label: "Rotation" },
   { id: "fluids", label: "Fluids" },
   { id: "modern", label: "Modern" },
-  { id: "organic", label: "Organic" },
-  { id: "tools", label: "Tools" },
+  { id: "chemistry", label: "Chemistry" },
+  { id: "math", label: "Math" },
+    { id: "tools", label: "Tools" },
   { id: "fun", label: "Fun" }
 ];
