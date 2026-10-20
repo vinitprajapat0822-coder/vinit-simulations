@@ -13,6 +13,32 @@
       .replace(/"/g, "&quot;");
   }
 
+  function subjectOf(item) {
+    var c = (item && item.category) || "";
+    if (c === "chemistry" || c === "organic") return "chemistry";
+    if (c === "math" || c === "mathematics") return "math";
+    return "physics";
+  }
+  function currentSubject() {
+    try {
+      if (window.VSH_SUBJECT) return window.VSH_SUBJECT;
+      return localStorage.getItem("vsh-subject") || "physics";
+    } catch (e) { return "physics"; }
+  }
+  function rebuildPool() {
+    var sub = currentSubject();
+    all = CATALOG.filter(function (x) { return subjectOf(x) === sub; });
+    live = all.filter(function (x) { return x.status === "live"; });
+    cats = [];
+    all.forEach(function (x) {
+      if (cats.indexOf(x.category) === -1) cats.push(x.category);
+    });
+    if (cats.indexOf(selected) < 0) {
+      selected = cats[0] || "";
+    }
+    stackItems = live.slice();
+    stackIndex = 0;
+  }
   var all = CATALOG;
   var live = all.filter(function (x) { return x.status === "live"; });
   var cats = [];
@@ -395,5 +421,10 @@ function holographic() {
     stackIndex = 0;
     render();
   });
+  document.addEventListener("vsh-subject-change", function () {
+    rebuildPool();
+    render();
+  });
+  rebuildPool();
   render();
 })();
