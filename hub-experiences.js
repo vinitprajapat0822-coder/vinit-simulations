@@ -15,7 +15,7 @@
 
   function subjectOf(item) {
     var c = (item && item.category) || "";
-    if (c === "chemistry" || c === "organic") return "chemistry";
+    if (c === "chemistry" || c === "organic" || c === "general-organic") return "chemistry";
     if (c === "math" || c === "mathematics") return "math";
     return "physics";
   }
