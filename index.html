@@ -104,14 +104,17 @@
     }
     
     .subject-picker { margin-top: 10px; }
-    .subject-picker label { display:block; font-size:11px; font-weight:700; color:var(--muted); margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase; }
+    .subject-picker > span {
+      display:block; font-size:11px; font-weight:700; color:var(--muted);
+      margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase;
+    }
     .subject-seg { display:flex; flex-wrap:wrap; gap:6px; }
     .subject-seg button {
       padding: 7px 12px; border-radius: 999px; border: 1px solid #31415f;
       background: #121a2e; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer;
     }
     .subject-seg button[aria-pressed="true"] {
-      color: #07111b; border-color: transparent;
+      color: #07111b; border: 0;
       background: linear-gradient(135deg,#67e8f9,#a78bfa);
     }
 
@@ -199,9 +202,9 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="hub-home-themes.css?v=40">
+  <link rel="stylesheet" href="hub-home-themes.css?v=22">
   <link rel="stylesheet" href="hub-features.css?v=1">
-  <link rel="stylesheet" href="hub-experiences.css?v=40">
+  <link rel="stylesheet" href="hub-experiences.css?v=22">
 
 <style id="cat-section-styles">
 .cat-section{margin-bottom:22px;width:100%;grid-column:1/-1}
@@ -315,16 +318,6 @@ html{scroll-behavior:smooth}
             <option value="terminal">Hacker Terminal</option>
           </select>
         </div>
-
-        <div class="subject-picker">
-          <label>Subject</label>
-          <div class="subject-seg" id="subject-seg" role="group" aria-label="Choose subject">
-            <button type="button" data-subject="physics" aria-pressed="true">Physics</button>
-            <button type="button" data-subject="chemistry" aria-pressed="false">Chemistry</button>
-            <button type="button" data-subject="math" aria-pressed="false">Math</button>
-          </div>
-        </div>
-
       </div>
     </nav>
   </header>
@@ -407,7 +400,7 @@ html{scroll-behavior:smooth}
 
   </footer>
 
-  <script src="catalog.js?v=32"></script>
+  <script src="catalog.js?v=34"></script>
   <script>
     (function () {
       const grid = document.getElementById("project-grid");
@@ -636,8 +629,8 @@ html{scroll-behavior:smooth}
       }
     })();
     </script>
-  <script src="hub-experiences.js?v=42"></script>
-  <script src="hub-features.js?v=5" defer></script>
+  <script src="hub-experiences.js?v=44"></script>
+  <script src="hub-features.js?v=7" defer></script>
   <script id="vsh-mobile-menu-v2">
     (function () {
       "use strict";
@@ -790,22 +783,21 @@ html{scroll-behavior:smooth}
   var KEY="vsh-subject";
   var seg=document.getElementById("subject-seg");
   if(!seg) return;
-  function setSubject(s){
-    try{ localStorage.setItem(KEY,s); }catch(e){}
+  function apply(s){
     window.VSH_SUBJECT=s;
+    try{ localStorage.setItem(KEY,s); }catch(e){}
     seg.querySelectorAll("button").forEach(function(b){
       b.setAttribute("aria-pressed", b.getAttribute("data-subject")===s ? "true":"false");
     });
     document.dispatchEvent(new CustomEvent("vsh-subject-change",{detail:{subject:s}}));
   }
-  var saved="physics";
-  try{ saved=localStorage.getItem(KEY)||"physics"; }catch(e){}
-  if(["physics","chemistry","math"].indexOf(saved)<0) saved="physics";
-  setSubject(saved);
+  var s="physics";
+  try{ s=localStorage.getItem(KEY)||"physics"; }catch(e){}
+  if(["physics","chemistry","math"].indexOf(s)<0) s="physics";
+  apply(s);
   seg.addEventListener("click", function(e){
     var b=e.target.closest("button[data-subject]");
-    if(!b) return;
-    setSubject(b.getAttribute("data-subject"));
+    if(b) apply(b.getAttribute("data-subject"));
   });
 })();
 </script>
