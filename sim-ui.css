@@ -402,12 +402,6 @@ body.vsh-fluid-active {
     radial-gradient(ellipse 52% 46% at 85% 72%, rgba(167,139,250,.13), transparent 72%),
     radial-gradient(ellipse 38% 30% at 52% 8%, rgba(98,231,255,.06), transparent 75%) !important;
 }
-body.vsh-fluid-active > header,
-body.vsh-fluid-active > main,
-body.vsh-fluid-active > .sim-smart-insight,
-body.vsh-fluid-active > #vsh-control-dock {
-  position: relative;
-}
 
 /* Shared glass surfaces. No canvas drawing surface is styled by this block. */
 .panel,
@@ -438,6 +432,8 @@ body.vsh-fluid-active > #vsh-control-dock {
 .vsh-preset-row::before {
   content: "";
   position: absolute;
+  display: block;
+  z-index: 1;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
