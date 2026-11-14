@@ -9,24 +9,32 @@
 
   // Add Google Analytics placeholder to every simulation page using this shared helper.
   function ensureAnalytics() {
-    if (!document.head || document.getElementById("vsh-google-gtag")) return;
-    var measurementId = "G-XXXXXXXXXX";
-    document.head.insertBefore(
-      document.createComment(" Replace G-XXXXXXXXXX with your actual Google Analytics Measurement ID "),
-      document.head.firstChild
-    );
-    var loader = document.createElement("script");
-    loader.id = "vsh-google-gtag";
-    loader.async = true;
-    loader.src = "https://www.googletagmanager.com/gtag/js?id=" + measurementId;
-    document.head.appendChild(loader);
-    var bootstrap = document.createElement("script");
-    bootstrap.textContent =
-      "window.dataLayer = window.dataLayer || [];" +
-      "window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};" +
-      "window.gtag('js', new Date());" +
-      "window.gtag('config', '" + measurementId + "');";
-    document.head.appendChild(bootstrap);
+    var measurementId = "G-J8SS9B47QV";
+    if (!document.head) return;
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () {
+      window.dataLayer.push(arguments);
+    };
+
+    if (!document.getElementById("vsh-google-gtag")) {
+      window.gtag("js", new Date());
+      window.gtag("config", measurementId, { send_page_view: true });
+
+      var loader = document.createElement("script");
+      loader.id = "vsh-google-gtag";
+      loader.async = true;
+      loader.src = "https://www.googletagmanager.com/gtag/js?id=" + measurementId;
+      document.head.appendChild(loader);
+    }
+
+    if (!document.getElementById("vsh-analytics-events")) {
+      var eventsScript = document.createElement("script");
+      eventsScript.id = "vsh-analytics-events";
+      eventsScript.src = "/analytics-events.js";
+      eventsScript.async = true;
+      document.head.appendChild(eventsScript);
+    }
   }
 
   // Inject page-specific Open Graph metadata for every simulation route.
