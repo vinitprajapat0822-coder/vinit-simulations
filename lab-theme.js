@@ -58,7 +58,7 @@
 
 
   function ensureFeedbackButton() {
-    if (!/^\\/projects\\/.+\\.html$/i.test(window.location.pathname)) return;
+    if (!/^\/projects\/.+\.html$/i.test(window.location.pathname)) return;
     if (document.getElementById("vsh-feedback-trigger")) return;
 
     var style = document.createElement("style");
@@ -112,8 +112,7 @@
 
     function updateMailto() {
       var subject = "Bug Report: " + window.location.href;
-      var body = "Page: " + window.location.href + "\\n\\nFeedback:\\n" +
-        (textarea.value || "(No additional details provided)");
+      var body = ["Page: " + window.location.href, "", "Feedback:", textarea.value || "(No additional details provided)"].join("\n");
       email.href = "mailto:vinitprajapat0822@gmail.com?subject=" +
         encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
     }
