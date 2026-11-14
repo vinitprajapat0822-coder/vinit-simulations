@@ -7,6 +7,77 @@
     if (t) document.documentElement.setAttribute("data-theme", t);
   } catch (e) {}
 
+  // Add Google Analytics placeholder to every simulation page using this shared helper.
+  function ensureAnalytics() {
+    if (!document.head || document.getElementById("vsh-google-gtag")) return;
+    var measurementId = "G-XXXXXXXXXX";
+    document.head.insertBefore(
+      document.createComment(" Replace G-XXXXXXXXXX with your actual Google Analytics Measurement ID "),
+      document.head.firstChild
+    );
+    var loader = document.createElement("script");
+    loader.id = "vsh-google-gtag";
+    loader.async = true;
+    loader.src = "https://www.googletagmanager.com/gtag/js?id=" + measurementId;
+    document.head.appendChild(loader);
+    var bootstrap = document.createElement("script");
+    bootstrap.textContent =
+      "window.dataLayer = window.dataLayer || [];" +
+      "window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};" +
+      "window.gtag('js', new Date());" +
+      "window.gtag('config', '" + measurementId + "');";
+    document.head.appendChild(bootstrap);
+  }
+
+  // Inject page-specific Open Graph metadata for every simulation route.
+  function ensureOpenGraph() {
+    var path = window.location.pathname || "";
+    if (!document.head || path.indexOf("/projects/") !== 0 || !/\.html$/i.test(path)) return;
+
+    var titleElement = document.querySelector("title");
+    var heading = document.querySelector("main h1") || document.querySelector("h1");
+    var pageTitle = (titleElement && titleElement.textContent ? titleElement.textContent : (heading ? heading.textContent : "Interactive Simulation"))
+      .replace(/\s+/g, " ").trim();
+    var simulationName = pageTitle.replace(/\s*\|\s*Vinit Simulation Hub.*$/i, "").trim() || pageTitle;
+    var ogTitle = simulationName + " | Vinit Simulation Hub";
+
+    var descriptionMeta = document.querySelector('meta[name="description"]');
+    var intro = document.querySelector("main .lead, main .intro, .lead, main p");
+    var description = descriptionMeta && descriptionMeta.content ? descriptionMeta.content.trim() : "";
+    if (!description && intro) description = (intro.textContent || "").replace(/\s+/g, " ").trim();
+    if (!description) {
+      description = simulationName + " interactive simulation in Vinit Simulation Hub. Adjust the controls and explore the live model.";
+    }
+    description = description.replace(/\s+/g, " ").trim().slice(0, 200);
+
+    if (!descriptionMeta) {
+      descriptionMeta = document.createElement("meta");
+      descriptionMeta.name = "description";
+      document.head.appendChild(descriptionMeta);
+    }
+    if (!descriptionMeta.content) descriptionMeta.content = description;
+
+    function setProperty(property, content) {
+      var selector = 'meta[property="' + property + '"]';
+      var meta = document.querySelector(selector);
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute("property", property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", content);
+    }
+
+    setProperty("og:title", ogTitle);
+    setProperty("og:description", description);
+    setProperty("og:url", window.location.origin + window.location.pathname);
+    setProperty("og:image", window.location.origin + "/og-image.png");
+    setProperty("og:type", "website");
+  }
+
+  ensureAnalytics();
+  ensureOpenGraph();
+
   // ---- Favorites (same store as hub-features.js) ----
   var FAV_KEY = "vsh-favorites-v1";
   function loadFavs() {
@@ -52,6 +123,7 @@
   function initializeLabTools() {
     ensureFavButton();
     ensureFeedbackButton();
+    ensureShareButton();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeLabTools);
   else initializeLabTools();
@@ -237,5 +309,114 @@
   } else {
     enhanceCanvasAccessibility();
   }
+
+  // Add a Share button beside the existing bug-report action on every simulation page.
+  function ensureShareButton() {
+    var path = window.location.pathname || "";
+    if (path.indexOf("/projects/") !== 0 || !/\.html$/i.test(path)) return;
+    if (document.getElementById("vsh-share-trigger")) return;
+
+    var reportButton = document.getElementById("vsh-feedback-trigger");
+    if (!reportButton) return;
+
+    reportButton.textContent = "🐞 Report Bug";
+    reportButton.title = "Report a bug on this simulation";
+
+    var group = document.createElement("div");
+    group.id = "vsh-lab-actions";
+    group.setAttribute("role", "group");
+    group.setAttribute("aria-label", "Simulation page actions");
+    group.style.cssText = "position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom, 0px));z-index:9998;display:flex;align-items:center;gap:8px;max-width:calc(100vw - 28px);";
+
+    reportButton.style.position = "static";
+    reportButton.style.right = "auto";
+    reportButton.style.bottom = "auto";
+    reportButton.style.margin = "0";
+    reportButton.style.maxWidth = "calc(50vw - 20px)";
+    reportButton.style.whiteSpace = "nowrap";
+    group.appendChild(reportButton);
+
+    var shareButton = document.createElement("button");
+    shareButton.id = "vsh-share-trigger";
+    shareButton.type = "button";
+    shareButton.textContent = "↗ Share";
+    shareButton.title = "Share this simulation";
+    shareButton.setAttribute("aria-label", "Share this simulation");
+    shareButton.style.cssText = "position:static;display:inline-flex;align-items:center;justify-content:center;min-height:40px;max-width:calc(50vw - 20px);margin:0;padding:11px 15px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;font:800 13px/1.2 system-ui,sans-serif;white-space:nowrap;box-shadow:0 8px 26px rgba(0,0,0,.35);cursor:pointer;";
+
+    var style = document.createElement("style");
+    style.textContent = "@media(max-width:380px){#vsh-feedback-trigger,#vsh-share-trigger{min-height:38px;padding:9px 10px;font-size:11px}}#vsh-feedback-trigger:focus-visible,#vsh-share-trigger:focus-visible{outline:3px solid #fff;outline-offset:3px}";
+    document.head.appendChild(style);
+
+    var status = document.createElement("span");
+    status.style.cssText = "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    status.setAttribute("aria-atomic", "true");
+
+    function announce(message) {
+      status.textContent = message;
+    }
+
+    function legacyCopy(url) {
+      var field = document.createElement("textarea");
+      field.value = url;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.left = "-9999px";
+      field.style.top = "0";
+      document.body.appendChild(field);
+      field.select();
+      field.setSelectionRange(0, field.value.length);
+      var copied = false;
+      try { copied = document.execCommand("copy"); } catch (error) {}
+      if (field.parentNode) field.parentNode.removeChild(field);
+      if (copied) {
+        announce("Simulation link copied to clipboard.");
+      } else {
+        announce("Clipboard copy was unavailable. A copy prompt has been opened.");
+        if (typeof window.prompt === "function") window.prompt("Copy this simulation link:", url);
+      }
+    }
+
+    function copyLink(url) {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(url).then(function () {
+          announce("Simulation link copied to clipboard.");
+        }, function () {
+          legacyCopy(url);
+        });
+      } else {
+        legacyCopy(url);
+      }
+    }
+
+    shareButton.addEventListener("click", function () {
+      var shareData = {
+        title: document.title || "Vinit Simulation Hub",
+        url: window.location.href
+      };
+      if (typeof navigator.share === "function") {
+        try {
+          var result = navigator.share(shareData);
+          if (result && typeof result.then === "function") {
+            result.then(function () {}, function (error) {
+              if (error && error.name === "AbortError") return;
+              copyLink(shareData.url);
+            });
+          }
+          return;
+        } catch (error) {
+          if (error && error.name === "AbortError") return;
+        }
+      }
+      copyLink(shareData.url);
+    });
+
+    group.appendChild(shareButton);
+    group.appendChild(status);
+    document.body.appendChild(group);
+  }
+
 
 })();
