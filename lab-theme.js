@@ -251,7 +251,15 @@
     message.textContent = "Change a parameter to see what it means for the physics.";
     panel.appendChild(eyebrow);
     panel.appendChild(message);
-    document.body.appendChild(panel);
+    var hero = document.querySelector("main .hero, main .hero-section");
+    var main = document.querySelector("main");
+    if (hero && hero.parentNode) {
+      hero.parentNode.insertBefore(panel, hero.nextSibling);
+    } else if (main) {
+      main.insertBefore(panel, main.firstChild);
+    } else {
+      document.body.appendChild(panel);
+    }
 
     function controlLabel(control) {
       if (!control) return "Parameter";

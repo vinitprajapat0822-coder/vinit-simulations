@@ -1,6 +1,6 @@
 /* Vinit Simulation Hub — responsive learning UI */
 :root{--sim-bg:var(--bg,#080b16);--sim-cyan:var(--cyan,#62e7ff);--sim-purple:var(--purple,#a78bfa);--sim-muted:var(--muted,#9ba8c5);--sim-glass:rgba(13,20,40,.84);--sim-border:rgba(255,255,255,.16)}
-.sim-smart-insight{position:fixed;z-index:700;top:86px;right:16px;width:min(320px,calc(100vw - 32px));padding:13px 16px 14px;border:1px solid var(--sim-border);border-radius:18px;color:#eef7ff;background:var(--sim-glass);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);box-shadow:0 14px 38px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.13);pointer-events:none}
+.sim-smart-insight{position:sticky;z-index:700;top:calc(74px + env(safe-area-inset-top,0px));margin:10px 16px 14px auto;width:min(320px,calc(100vw - 32px));padding:13px 16px 14px;border:1px solid var(--sim-border);border-radius:18px;color:#eef7ff;background:var(--sim-glass);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);box-shadow:0 14px 38px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.13);pointer-events:none}
 .sim-smart-insight__eyebrow{margin-bottom:5px;color:var(--sim-purple);font:800 10px/1.2 system-ui,sans-serif;letter-spacing:.14em}
 .sim-smart-insight p{margin:0;color:var(--sim-cyan);font:650 13px/1.5 system-ui,sans-serif;text-shadow:0 0 16px rgba(98,231,255,.18)}
 .result,.results .result,.metric-card,.stat-card,.readout-card,.measurement-card{min-width:0;min-height:72px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:12px 13px!important;border:1px solid rgba(167,139,250,.22)!important;border-radius:14px!important;background:linear-gradient(145deg,rgba(19,25,50,.82),rgba(7,14,30,.82))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 9px 24px rgba(0,0,0,.16)}
@@ -32,7 +32,7 @@ canvas.sim-touch-interactive,canvas[data-touch-interactive=true]{touch-action:no
  .sim-control-dock .actions{display:flex;flex-wrap:wrap;gap:8px}
  .sim-control-dock .actions>button,.sim-control-dock .actions>.btn{flex:1 1 112px}
  .sim-control-dock label{touch-action:pan-y}
- .sim-smart-insight{top:calc(66px + env(safe-area-inset-top,0px));left:12px;right:12px;width:auto;max-width:440px;margin-inline:auto;padding:10px 13px 11px;border-radius:15px}
+ .sim-smart-insight{position:sticky;top:calc(64px + env(safe-area-inset-top,0px));left:auto;right:auto;width:auto;max-width:440px;margin:10px auto 14px;padding:10px 13px 11px;border-radius:15px}
  .sim-smart-insight__eyebrow{font-size:9px}
  .sim-smart-insight p{font-size:12px;line-height:1.4}
  .result,.results .result,.metric-card,.stat-card,.readout-card,.measurement-card{min-height:66px;padding:10px!important}
