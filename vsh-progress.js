@@ -22,15 +22,16 @@
     }
   });
 
-  function readStore(store) {
+  function readStore(storeName) {
     try {
+      var store = window[storeName];
       var parsed = JSON.parse(store.getItem(STORAGE_KEY) || "[]");
       return Array.isArray(parsed) ? parsed : [];
     } catch (error) { return []; }
   }
 
   function getCompleted() {
-    var values = readStore(window.localStorage).concat(readStore(window.sessionStorage));
+    var values = readStore("localStorage").concat(readStore("sessionStorage"));
     var completed = new Set();
     values.forEach(function (value) {
       var path = normalizePath(value);
