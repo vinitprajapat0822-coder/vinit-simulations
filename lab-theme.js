@@ -187,16 +187,21 @@
     window.__vshSoftFeedbackBound = true;
     var audioContext = null;
     var lastSoundAt = 0;
+    var lastHapticAt = 0;
 
     function playSoftDrop(frequency) {
       var AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (!AudioContextClass) return;
       var now = Date.now();
-      if (now - lastSoundAt < 55) return;
+      if (now - lastSoundAt < 100) return;
       lastSoundAt = now;
       try {
+        // One lazily-created context is reused for every interaction on this page.
         if (!audioContext) audioContext = new AudioContextClass();
-        if (audioContext.state === "suspended" && audioContext.resume) audioContext.resume();
+        if (audioContext.state === "suspended" && audioContext.resume) {
+          var resumeResult = audioContext.resume();
+          if (resumeResult && typeof resumeResult.catch === "function") resumeResult.catch(function () {});
+        }
         var oscillator = audioContext.createOscillator();
         var gain = audioContext.createGain();
         var start = audioContext.currentTime;
@@ -217,9 +222,13 @@
     }
 
     function hapticAndSound(frequency) {
-      try {
-        if (navigator.vibrate) navigator.vibrate(10);
-      } catch (error) {}
+      var now = Date.now();
+      if (now - lastHapticAt >= 100) {
+        lastHapticAt = now;
+        try {
+          if (navigator.vibrate) navigator.vibrate(10);
+        } catch (error) {}
+      }
       playSoftDrop(frequency);
     }
 
@@ -236,6 +245,66 @@
       if (!control || control.type !== "range" || event.isTrusted === false) return;
       hapticAndSound(440);
     }, true);
+  }
+
+  function ensureTransientWillChange() {
+    if (window.__vshTransientWillChangeBound) return;
+    window.__vshTransientWillChangeBound = true;
+    var selector = "button,.btn,input[type='button'],input[type='submit'],input[type='range'],select,.vsh-preset-button,.vsh-complete-button,.vsh-fact-trigger";
+    var activeElement = null;
+    var releaseTimer = 0;
+
+    function findControl(target) {
+      return target && target.closest ? target.closest(selector) : null;
+    }
+    function promote(target) {
+      var control = findControl(target);
+      if (!control || control.disabled) return;
+      if (releaseTimer) window.clearTimeout(releaseTimer);
+      activeElement = control;
+      control.classList.add("vsh-will-change-active");
+    }
+    function release(target, delay) {
+      var control = activeElement || findControl(target);
+      if (!control) return;
+      if (releaseTimer) window.clearTimeout(releaseTimer);
+      releaseTimer = window.setTimeout(function () {
+        control.classList.remove("vsh-will-change-active");
+        if (activeElement === control) activeElement = null;
+        releaseTimer = 0;
+      }, delay == null ? 480 : delay);
+    }
+
+    document.addEventListener("pointerdown", function (event) {
+      if (event.isTrusted === false) return;
+      promote(event.target);
+    }, { capture: true, passive: true });
+    document.addEventListener("pointerup", function (event) {
+      release(event.target, 480);
+    }, { capture: true, passive: true });
+    document.addEventListener("pointercancel", function (event) {
+      release(event.target, 80);
+    }, { capture: true, passive: true });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" || event.key === " ") promote(event.target);
+    }, true);
+    document.addEventListener("keyup", function (event) {
+      if (event.key === "Enter" || event.key === " ") release(event.target, 480);
+    }, true);
+    document.addEventListener("transitionend", function (event) {
+      if (event.propertyName === "transform" && event.target &&
+          event.target.classList && event.target.classList.contains("vsh-will-change-active")) {
+        release(event.target, 80);
+      }
+    }, true);
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden && activeElement) {
+        activeElement.classList.remove("vsh-will-change-active");
+        activeElement = null;
+        if (releaseTimer) window.clearTimeout(releaseTimer);
+        releaseTimer = 0;
+      }
+    });
   }
 
   function ensureFluidBackground() {
@@ -377,7 +446,10 @@
     trigger.id = "vsh-fact-trigger";
     trigger.className = "vsh-fact-trigger";
     trigger.textContent = "?";
-    trigger.setAttribute("aria-label", "Open a physics fact");
+    var factHeading = document.querySelector("main h1") || document.querySelector("h1");
+    var factTopic = factHeading ? factHeading.textContent.replace(/\\s+/g, " ").trim() : "this simulation";
+    trigger.setAttribute("aria-label", "Did You Know: open a physics fact about " + factTopic);
+    trigger.title = "Did You Know — " + factTopic;
     trigger.setAttribute("aria-expanded", "false");
     trigger.setAttribute("aria-controls", "vsh-fact-popover");
 
@@ -499,6 +571,7 @@
         button.type = "button";
         button.className = "vsh-preset-button";
         button.textContent = preset.label;
+        button.setAttribute("aria-label", "Set gravity preset to " + preset.value + " metres per second squared");
         button.addEventListener("click", function () {
           var startValue = Number(gravity.value);
           var targetValue = preset.value;
@@ -534,13 +607,17 @@
     var formulaPanel = document.createElement("section");
     formulaPanel.id = "vsh-live-formula";
     formulaPanel.className = "vsh-learning-panel vsh-formula-panel";
-    formulaPanel.setAttribute("aria-label", "Live formula and simulation progress");
+    formulaPanel.setAttribute("role", "region");
+    formulaPanel.setAttribute("aria-label", "Formula panel: " + formula);
+    formulaPanel.tabIndex = 0;
 
     var eyebrow = document.createElement("div");
     eyebrow.className = "vsh-learning-eyebrow";
     eyebrow.textContent = "LIVE FORMULA";
     var formulaText = document.createElement("div");
     formulaText.className = "vsh-formula-text";
+    formulaText.setAttribute("role", "math");
+    formulaText.setAttribute("aria-label", "Mathematical formula: " + formula);
     formulaText.textContent = formula;
     var values = document.createElement("div");
     values.className = "vsh-formula-values";
@@ -559,6 +636,7 @@
     function paintCompletion() {
       var done = readCompleted().indexOf(pagePath) >= 0;
       completion.textContent = done ? "✓ Lab completed" : "Mark this lab complete";
+      completion.setAttribute("aria-label", done ? "This simulation is marked complete" : "Mark this simulation complete");
       completion.setAttribute("aria-pressed", done ? "true" : "false");
       completion.classList.toggle("is-complete", done);
     }
@@ -628,6 +706,7 @@
     vshRecordDailyVisit();
     ensureLiquidRangeInputs();
     ensureSoftInteractionFeedback();
+    ensureTransientWillChange();
     ensureFluidBackground();
     ensureDidYouKnow();
     ensureLiveFormulaAndPresets();
@@ -728,7 +807,7 @@
     var link = document.createElement("link");
     link.id = "vsh-sim-ui-styles";
     link.rel = "stylesheet";
-    link.href = "/sim-ui.css?v=2";
+    link.href = "/sim-ui.css?v=3";
     document.head.appendChild(link);
   }
 
