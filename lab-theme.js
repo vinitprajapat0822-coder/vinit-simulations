@@ -49,8 +49,101 @@
     document.body.appendChild(btn);
     paint();
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ensureFavButton);
-  else ensureFavButton();
+  function initializeLabTools() {
+    ensureFavButton();
+    ensureFeedbackButton();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeLabTools);
+  else initializeLabTools();
+
+
+  function ensureFeedbackButton() {
+    if (!/^\\/projects\\/.+\\.html$/i.test(window.location.pathname)) return;
+    if (document.getElementById("vsh-feedback-trigger")) return;
+
+    var style = document.createElement("style");
+    style.textContent =
+      "#vsh-feedback-trigger{position:fixed;right:14px;bottom:72px;z-index:9998;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:11px 15px;background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b;font:800 13px/1.2 system-ui,sans-serif;box-shadow:0 8px 26px rgba(0,0,0,.35);cursor:pointer}" +
+      "#vsh-feedback-trigger:active{transform:scale(.97)}" +
+      ".vsh-feedback-modal{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:16px;background:rgba(2,6,18,.78);backdrop-filter:blur(12px)}" +
+      ".vsh-feedback-modal[hidden]{display:none}" +
+      ".vsh-feedback-panel{width:min(440px,100%);padding:20px;border:1px solid rgba(255,255,255,.18);border-radius:20px;background:#101a30;color:#f2f6ff;box-shadow:0 22px 70px rgba(0,0,0,.5)}" +
+      ".vsh-feedback-panel h2{margin:0 0 8px;font:800 20px/1.25 system-ui,sans-serif}" +
+      ".vsh-feedback-panel p{margin:0 0 12px;color:#aebbd3;font:13px/1.5 system-ui,sans-serif}" +
+      ".vsh-feedback-panel textarea{width:100%;min-height:110px;resize:vertical;padding:10px;border:1px solid #344766;border-radius:12px;background:#080f20;color:#f2f6ff;font:14px/1.5 system-ui,sans-serif}" +
+      ".vsh-feedback-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}" +
+      ".vsh-feedback-actions button,.vsh-feedback-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 13px;border:1px solid #40506d;border-radius:11px;background:#17243c;color:#f2f6ff;text-decoration:none;font:750 13px system-ui,sans-serif;cursor:pointer}" +
+      ".vsh-feedback-actions a{border:0;background:linear-gradient(135deg,#67e8f9,#a78bfa);color:#07111b}";
+    document.head.appendChild(style);
+
+    var trigger = document.createElement("button");
+    trigger.id = "vsh-feedback-trigger";
+    trigger.type = "button";
+    trigger.textContent = "✉ Feedback";
+    trigger.setAttribute("aria-haspopup", "dialog");
+    trigger.setAttribute("aria-controls", "vsh-feedback-modal");
+
+    var modal = document.createElement("div");
+    modal.id = "vsh-feedback-modal";
+    modal.className = "vsh-feedback-modal";
+    modal.hidden = true;
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-labelledby", "vsh-feedback-title");
+
+    var panel = document.createElement("div");
+    panel.className = "vsh-feedback-panel";
+    var title = document.createElement("h2");
+    title.id = "vsh-feedback-title";
+    title.textContent = "Report a bug or share feedback";
+    var intro = document.createElement("p");
+    intro.textContent = "Describe what happened. Your email app will open with the current page URL attached.";
+    var textarea = document.createElement("textarea");
+    textarea.setAttribute("aria-label", "Bug report or feedback details");
+    textarea.placeholder = "What did you expect, and what happened?";
+    var actions = document.createElement("div");
+    actions.className = "vsh-feedback-actions";
+    var close = document.createElement("button");
+    close.type = "button";
+    close.textContent = "Close";
+    var email = document.createElement("a");
+    email.textContent = "Open email app";
+    email.href = "mailto:vinitprajapat0822@gmail.com";
+
+    function updateMailto() {
+      var subject = "Bug Report: " + window.location.href;
+      var body = "Page: " + window.location.href + "\\n\\nFeedback:\\n" +
+        (textarea.value || "(No additional details provided)");
+      email.href = "mailto:vinitprajapat0822@gmail.com?subject=" +
+        encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    }
+    function closeModal() {
+      modal.hidden = true;
+      trigger.focus();
+    }
+    trigger.addEventListener("click", function () {
+      modal.hidden = false;
+      updateMailto();
+      textarea.focus();
+    });
+    close.addEventListener("click", closeModal);
+    email.addEventListener("click", updateMailto);
+    modal.addEventListener("click", function (event) {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !modal.hidden) closeModal();
+    });
+    actions.appendChild(close);
+    actions.appendChild(email);
+    panel.appendChild(title);
+    panel.appendChild(intro);
+    panel.appendChild(textarea);
+    panel.appendChild(actions);
+    modal.appendChild(panel);
+    document.body.appendChild(trigger);
+    document.body.appendChild(modal);
+  }
 
   // Treat each canvas as a visual presentation. Controls and measurements stay
   // in the DOM and preserve their natural left-to-right keyboard order.
