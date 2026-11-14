@@ -132,6 +132,7 @@
     ensureFavButton();
     ensureFeedbackButton();
     ensureShareButton();
+    ensureLearningUI();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeLabTools);
   else initializeLabTools();
@@ -222,6 +223,289 @@
     modal.appendChild(panel);
     document.body.appendChild(trigger);
     document.body.appendChild(modal);
+  }
+
+  function ensureLearningUIStyles() {
+    if (document.getElementById("vsh-sim-ui-styles")) return;
+    var link = document.createElement("link");
+    link.id = "vsh-sim-ui-styles";
+    link.rel = "stylesheet";
+    link.href = "/sim-ui.css?v=1";
+    document.head.appendChild(link);
+  }
+
+  function ensureSmartInsight() {
+    if (document.getElementById("vsh-smart-insight")) return;
+    var panel = document.createElement("section");
+    panel.id = "vsh-smart-insight";
+    panel.className = "sim-smart-insight";
+    panel.setAttribute("role", "status");
+    panel.setAttribute("aria-live", "polite");
+    panel.setAttribute("aria-atomic", "true");
+
+    var eyebrow = document.createElement("div");
+    eyebrow.className = "sim-smart-insight__eyebrow";
+    eyebrow.textContent = "SMART INSIGHT";
+    var message = document.createElement("p");
+    message.id = "vsh-smart-insight-text";
+    message.textContent = "Change a parameter to see what it means for the physics.";
+    panel.appendChild(eyebrow);
+    panel.appendChild(message);
+    document.body.appendChild(panel);
+
+    function controlLabel(control) {
+      if (!control) return "Parameter";
+      var aria = control.getAttribute("aria-label");
+      if (aria) return aria.trim();
+      if (control.labels && control.labels.length) {
+        var labelText = Array.prototype.map.call(control.labels, function (label) {
+          return (label.textContent || "").replace(/\s+/g, " ").trim();
+        }).join(" ");
+        if (labelText) return labelText;
+      }
+      var previous = control.previousElementSibling;
+      if (previous && /^(LABEL|DIV|SPAN)$/.test(previous.tagName)) {
+        var clone = previous.cloneNode(true);
+        Array.prototype.forEach.call(clone.querySelectorAll("b,strong,output"), function (node) {
+          if (node.parentNode) node.parentNode.removeChild(node);
+        });
+        var text = (clone.textContent || "").replace(/\s+/g, " ").trim();
+        if (text) return text;
+      }
+      return (control.id || control.name || "Parameter").replace(/[-_]/g, " ").trim();
+    }
+
+    function explainControl(control) {
+      var label = controlLabel(control);
+      var normalized = label.toLowerCase();
+      var value = control && typeof control.value !== "undefined" ? String(control.value) : "";
+      var slug = (window.location.pathname.split("/").pop() || "").replace(/\.html$/i, "").toLowerCase();
+      var numeric = Number(value);
+      var hasNumeric = value !== "" && Number.isFinite(numeric);
+
+      if (slug.indexOf("projectile") !== -1) {
+        if (/(angle|theta|θ)/i.test(label) && hasNumeric) {
+          if (numeric >= 89) return "At 90°, the projectile travels straight up and its horizontal range is zero.";
+          if (numeric >= 44 && numeric <= 46) return "45° gives the maximum range on level ground when air resistance is ignored.";
+          if (numeric > 45) return "Above 45°, more launch speed points upward. The path gets higher, but the range decreases.";
+          return "Below 45°, raising the launch angle increases the range on level ground.";
+        }
+        if (/(speed|velocity|initial u|launch u)/i.test(label)) return "More launch speed increases flight time and horizontal range when angle and gravity stay fixed.";
+        if (/(gravity|(^|\s)g($|\s))/i.test(label)) return "Stronger gravity pulls the projectile down faster, reducing flight time, height and range.";
+      }
+
+      if (slug === "shm" || slug.indexOf("damped-shm") !== -1) {
+        if (/mass/i.test(label)) return "A larger mass oscillates more slowly when spring stiffness stays the same.";
+        if (/spring|stiffness|(^|\s)k($|\s)/i.test(label)) return "A stiffer spring produces faster oscillation and a shorter period.";
+        if (/amplitude/i.test(label)) return "Amplitude changes maximum displacement. In ideal SHM, it does not change the period.";
+      }
+      if (slug.indexOf("atwood") !== -1 && /mass/i.test(label)) return "The mass difference drives the system. Equal masses balance; a larger difference gives greater acceleration.";
+      if ((slug.indexOf("ohm") !== -1 || slug.indexOf("current-electricity") !== -1) && /voltage/i.test(label)) return "With resistance fixed, increasing voltage increases current in direct proportion: I = V/R.";
+      if ((slug.indexOf("ohm") !== -1 || slug.indexOf("current-electricity") !== -1) && /resistance/i.test(label)) return "With voltage fixed, increasing resistance reduces current: I = V/R.";
+
+      if (/mass/i.test(normalized)) return "Mass measures inertia. For the same net force, a larger mass has a smaller acceleration.";
+      if (/velocity|speed/i.test(normalized)) return "Velocity changes the motion state. Compare displacement, time and energy in the live readouts.";
+      if (/angle|theta|θ/i.test(normalized)) return "The angle changes how the quantity is split into horizontal and vertical components.";
+      if (/time/i.test(normalized)) return "Time tells you how the system evolves. Watch the live position and velocity values.";
+      if (/resistance/i.test(normalized)) return "Resistance opposes current. Compare current and power as it changes.";
+      if (/voltage/i.test(normalized)) return "Voltage is energy supplied per unit charge. Watch how current responds.";
+      if (/gravity/i.test(normalized)) return "Gravity changes the rate of vertical acceleration and therefore the motion.";
+      if (hasNumeric) return label + " is now " + value + ". Watch the live measurements to see how the model responds.";
+      return "Change another parameter and compare the live measurements with the model.";
+    }
+
+    function update(target) {
+      message.textContent = explainControl(target);
+    }
+    document.addEventListener("input", function (event) {
+      if (event.target && /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName)) update(event.target);
+    }, true);
+    document.addEventListener("change", function (event) {
+      if (event.target && /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName)) update(event.target);
+    }, true);
+
+    var initial = null;
+    if (window.location.pathname.indexOf("projectile") !== -1) {
+      initial = document.getElementById("th") || document.querySelector('input[type="range"]');
+    } else {
+      initial = document.querySelector('input[type="range"],select,input[type="number"]');
+    }
+    if (initial) update(initial);
+  }
+
+  function ensureMobileControlDock() {
+    var media = window.matchMedia ? window.matchMedia("(max-width: 768px)") : null;
+    var mobile = media ? media.matches : window.innerWidth <= 768;
+    var dock = document.getElementById("vsh-control-dock");
+    var records = window.__vshDockRecords || (window.__vshDockRecords = {
+      panels: [], actions: null, favorite: null, moved: false
+    });
+
+    if (!dock) {
+      dock = document.createElement("section");
+      dock.id = "vsh-control-dock";
+      dock.className = "sim-control-dock";
+      dock.setAttribute("aria-label", "Simulation controls");
+      var header = document.createElement("div");
+      header.className = "sim-control-dock__header";
+      var toggle = document.createElement("button");
+      toggle.id = "vsh-control-dock-toggle";
+      toggle.type = "button";
+      toggle.className = "sim-control-dock__toggle";
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-controls", "vsh-control-dock-content");
+      toggle.textContent = "⌃ Controls";
+      var tools = document.createElement("div");
+      tools.className = "sim-control-dock__tools";
+      header.appendChild(toggle);
+      header.appendChild(tools);
+      var content = document.createElement("div");
+      content.id = "vsh-control-dock-content";
+      content.className = "sim-control-dock__content";
+      dock.appendChild(header);
+      dock.appendChild(content);
+      document.body.appendChild(dock);
+
+      toggle.addEventListener("click", function () {
+        var open = !dock.classList.contains("is-open");
+        dock.classList.toggle("is-open", open);
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.textContent = open ? "⌄ Hide controls" : "⌃ Controls";
+        document.body.classList.toggle("vsh-dock-open", open);
+      });
+    }
+
+    var toolsHost = dock.querySelector(".sim-control-dock__tools");
+    var contentHost = dock.querySelector(".sim-control-dock__content");
+
+    function moveNode(node, host, panelPlaceholder) {
+      if (!node || !node.parentNode) return null;
+      var placeholder = document.createElement(panelPlaceholder ? "div" : "span");
+      placeholder.className = panelPlaceholder ? "sim-dock-placeholder" : "sim-dock-anchor";
+      if (panelPlaceholder) placeholder.textContent = "Controls are available in the bottom dock.";
+      node.parentNode.insertBefore(placeholder, node);
+      var savedStyle = node.getAttribute("style");
+      host.appendChild(node);
+      return {node:node,placeholder:placeholder,savedStyle:savedStyle};
+    }
+    function restoreNode(record) {
+      if (!record || !record.node || !record.placeholder || !record.placeholder.parentNode) return;
+      record.placeholder.parentNode.insertBefore(record.node, record.placeholder);
+      record.placeholder.parentNode.removeChild(record.placeholder);
+      if (record.savedStyle === null) record.node.removeAttribute("style");
+      else record.node.setAttribute("style", record.savedStyle);
+    }
+
+    if (mobile && !records.moved) {
+      var headingNodes = document.querySelectorAll(".ph,.panel-head,h2,h3,legend,[data-section-title]");
+      var candidates = [];
+      Array.prototype.forEach.call(headingNodes, function (heading) {
+        var headingText = (heading.textContent || "").replace(/\s+/g, " ").trim();
+        if (!/(^|\b)(controls?|parameters?|adjustments?|experiment settings|inputs?)(\b|$)/i.test(headingText)) return;
+        var container = heading.closest(".panel,aside,fieldset,.card,section,[class*='control']");
+        if (!container || container.id === "vsh-control-dock" || container.closest("#vsh-control-dock")) return;
+        if (!container.querySelector('input:not([type="hidden"]),select,textarea,button')) return;
+        if (candidates.indexOf(container) === -1) candidates.push(container);
+      });
+      if (!candidates.length) {
+        var fallback = document.querySelectorAll("aside,.control-panel,.controls,fieldset,.panel,.card");
+        var best = null, bestScore = 0;
+        Array.prototype.forEach.call(fallback, function (container) {
+          var count = container.querySelectorAll('input:not([type="hidden"]),select,textarea,button').length;
+          if (count < 2) return;
+          var score = count + (/control|parameter|setting/i.test(container.className || "") ? 8 : 0);
+          if (score > bestScore) { best = container; bestScore = score; }
+        });
+        if (best) candidates.push(best);
+      }
+      // If a broad wrapper and a more specific control panel both match, keep the inner panel.
+      candidates = candidates.filter(function (candidate) {
+        return !candidates.some(function (other) {
+          return other !== candidate && candidate.contains(other);
+        });
+      });
+
+      candidates.forEach(function (panel) {
+        var record = moveNode(panel, contentHost, true);
+        if (record) records.panels.push(record);
+      });
+
+      var actions = document.getElementById("vsh-lab-actions");
+      if (actions && !records.actions) {
+        records.actions = moveNode(actions, toolsHost, false);
+        if (records.actions) {
+          actions.style.position = "static";
+          actions.style.right = "auto";
+          actions.style.bottom = "auto";
+          actions.style.left = "auto";
+          actions.style.maxWidth = "100%";
+          actions.style.margin = "0";
+          actions.style.zIndex = "auto";
+        }
+      }
+
+      var favorite = document.getElementById("vsh-lab-fav");
+      if (favorite && !records.favorite) {
+        records.favorite = moveNode(favorite, contentHost, false);
+        favorite.classList.add("sim-dock-favorite");
+      }
+
+      if (records.panels.length) {
+        records.moved = true;
+        document.body.classList.add("vsh-has-dock");
+      }
+    } else if (!mobile && records.moved) {
+      records.panels.forEach(restoreNode);
+      records.panels = [];
+      restoreNode(records.actions);
+      records.actions = null;
+      restoreNode(records.favorite);
+      if (records.favorite && records.favorite.node) records.favorite.node.classList.remove("sim-dock-favorite");
+      records.favorite = null;
+      records.moved = false;
+      dock.classList.remove("is-open");
+      var toggleButton = document.getElementById("vsh-control-dock-toggle");
+      if (toggleButton) {
+        toggleButton.setAttribute("aria-expanded", "false");
+        toggleButton.textContent = "⌃ Controls";
+      }
+      document.body.classList.remove("vsh-has-dock","vsh-dock-open");
+    }
+    dock.hidden = !mobile || !records.moved;
+  }
+
+  function markTouchInteractiveCanvases() {
+    var scriptText = "";
+    Array.prototype.forEach.call(document.scripts || [], function (script) {
+      if (!script.src) scriptText += "\n" + (script.textContent || "");
+    });
+    var hasCanvasGestures = /(?:pointerdown|touchstart|mousedown)/i.test(scriptText) &&
+      /getContext\s*\(\s*["']2d["']\s*\)/i.test(scriptText);
+    if (hasCanvasGestures) {
+      Array.prototype.forEach.call(document.querySelectorAll("canvas"), function (canvas) {
+        canvas.classList.add("sim-touch-interactive");
+      });
+    }
+  }
+
+  function ensureLearningUI() {
+    ensureLearningUIStyles();
+    ensureSmartInsight();
+    ensureMobileControlDock();
+    markTouchInteractiveCanvases();
+    if (!window.__vshLearningUIResizeBound) {
+      window.__vshLearningUIResizeBound = true;
+      var resizeTimer = 0;
+      window.addEventListener("resize", function () {
+        if (resizeTimer) window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(ensureMobileControlDock, 120);
+      }, {passive:true});
+      if (window.matchMedia) {
+        var query = window.matchMedia("(max-width: 768px)");
+        if (query.addEventListener) query.addEventListener("change", ensureMobileControlDock);
+        else if (query.addListener) query.addListener(ensureMobileControlDock);
+      }
+    }
   }
 
   // Treat each canvas as a visual presentation. Controls and measurements stay
