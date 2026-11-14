@@ -482,6 +482,7 @@
     var gravity = slug.indexOf("projectile") === 0 ? controlPanel.querySelector("#g") : null;
     if (gravity && gravity.type === "range") {
       if (Number(gravity.max) < 24.8) gravity.max = "24.8";
+      vshUpdateRangeFill(gravity);
       presetRow = document.createElement("div");
       presetRow.className = "vsh-preset-row";
       var presetTitle = document.createElement("span");
