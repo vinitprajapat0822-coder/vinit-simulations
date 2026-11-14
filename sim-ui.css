@@ -1,41 +1,355 @@
-/* Vinit Simulation Hub — responsive learning UI */
-:root{--sim-bg:var(--bg,#080b16);--sim-cyan:var(--cyan,#62e7ff);--sim-purple:var(--purple,#a78bfa);--sim-muted:var(--muted,#9ba8c5);--sim-glass:rgba(13,20,40,.84);--sim-border:rgba(255,255,255,.16)}
-.sim-smart-insight{position:sticky;z-index:700;top:calc(74px + env(safe-area-inset-top,0px));margin:10px 16px 14px auto;width:min(320px,calc(100vw - 32px));padding:13px 16px 14px;border:1px solid var(--sim-border);border-radius:18px;color:#eef7ff;background:var(--sim-glass);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);box-shadow:0 14px 38px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.13);pointer-events:none}
-.sim-smart-insight__eyebrow{margin-bottom:5px;color:var(--sim-purple);font:800 10px/1.2 system-ui,sans-serif;letter-spacing:.14em}
-.sim-smart-insight p{margin:0;color:var(--sim-cyan);font:650 13px/1.5 system-ui,sans-serif;text-shadow:0 0 16px rgba(98,231,255,.18)}
-.result,.results .result,.metric-card,.stat-card,.readout-card,.measurement-card{min-width:0;min-height:72px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:12px 13px!important;border:1px solid rgba(167,139,250,.22)!important;border-radius:14px!important;background:linear-gradient(145deg,rgba(19,25,50,.82),rgba(7,14,30,.82))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 9px 24px rgba(0,0,0,.16)}
-.result>span,.result .label,.metric-card .label,.stat-card .label,.readout-card .label,.measurement-card .label{color:var(--sim-purple)!important;font:750 10px/1.35 system-ui,sans-serif!important;letter-spacing:.055em;text-transform:uppercase}
-.result>strong,.result .value,.metric-card .value,.stat-card .value,.readout-card .value,.measurement-card .value{color:var(--sim-cyan)!important;font:800 clamp(17px,2.5vw,22px)/1.15 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;font-variant-numeric:tabular-nums;text-shadow:0 0 16px rgba(98,231,255,.22)}
-.sim-control-dock{display:none}
-.sim-dock-placeholder{display:flex;align-items:center;min-height:46px;margin:0 0 12px;padding:10px 12px;border:1px dashed rgba(98,231,255,.24);border-radius:13px;color:var(--sim-muted);background:rgba(8,14,28,.32);font:600 12px/1.4 system-ui,sans-serif}
-.sim-dock-anchor{display:none}
-.sim-dock-favorite{position:static!important;inset:auto!important;width:100%;min-height:48px!important;margin:0 0 8px;box-shadow:none!important}
-.sim-control-dock button,.sim-control-dock input:not([type=range]),.sim-control-dock select,.sim-control-dock textarea{min-height:48px}
-.sim-control-dock input[type=range]{min-height:48px;padding-block:8px;accent-color:var(--sim-cyan);touch-action:pan-y}
-.sim-control-dock button,.sim-control-dock .btn{min-height:48px!important}
-canvas{touch-action:pan-y}
-canvas.sim-touch-interactive,canvas[data-touch-interactive=true]{touch-action:none}
-@media(max-width:768px){
- body.vsh-has-dock{padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))!important}
- body.vsh-has-dock.vsh-dock-open{padding-bottom:calc(52vh + 32px + env(safe-area-inset-bottom,0px))!important}
- .sim-control-dock{position:fixed;z-index:9200;left:10px;right:10px;bottom:env(safe-area-inset-bottom,0px);display:flex;flex-direction:column;max-height:min(48vh,390px);overflow:hidden;border:1px solid rgba(255,255,255,.18);border-bottom:0;border-radius:23px 23px 0 0;color:#f1f6ff;background:rgba(8,14,30,.94);-webkit-backdrop-filter:blur(24px) saturate(175%);backdrop-filter:blur(24px) saturate(175%);box-shadow:0 -16px 46px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.15);transform:translateZ(0)}
- .sim-control-dock[hidden]{display:none!important}
- .sim-control-dock__header{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-height:62px;padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.1)}
- .sim-control-dock__toggle{flex:1 1 auto;min-width:82px;min-height:48px!important;padding:10px 11px;border:1px solid rgba(98,231,255,.25);border-radius:14px;color:var(--sim-cyan);background:linear-gradient(135deg,rgba(98,231,255,.13),rgba(167,139,250,.14));text-align:left;font:850 12px/1.2 system-ui,sans-serif;cursor:pointer}
- .sim-control-dock__tools{flex:0 1 auto;min-width:0;display:flex;align-items:center;gap:5px}
- .sim-control-dock__tools #vsh-lab-actions{position:static!important;inset:auto!important;display:flex;align-items:center;gap:5px;max-width:100%;margin:0}
- .sim-control-dock__tools #vsh-feedback-trigger{position:static!important;inset:auto!important;min-height:48px!important;max-width:none!important;padding:9px 9px!important;font-size:10px!important}.sim-control-dock__tools #vsh-share-trigger{position:static!important;inset:auto!important;min-height:48px!important;max-width:none!important;padding:9px 9px!important;font-size:10px!important}
- .sim-control-dock__content{display:none;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:10px 10px calc(14px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch}
- .sim-control-dock.is-open .sim-control-dock__content{display:block}
- .sim-control-dock .panel,.sim-control-dock aside,.sim-control-dock fieldset,.sim-control-dock .card{width:100%!important;max-width:none!important;margin:0 0 10px!important;border-radius:15px!important;overflow:visible!important;background:rgba(16,24,48,.72)!important}
- .sim-control-dock .pb,.sim-control-dock .panel-body{padding:10px 12px!important}
- .sim-control-dock .actions{display:flex;flex-wrap:wrap;gap:8px}
- .sim-control-dock .actions>button,.sim-control-dock .actions>.btn{flex:1 1 112px}
- .sim-control-dock label{touch-action:pan-y}
- .sim-smart-insight{position:sticky;top:calc(64px + env(safe-area-inset-top,0px));left:auto;right:auto;width:auto;max-width:440px;margin:10px auto 14px;padding:10px 13px 11px;border-radius:15px}
- .sim-smart-insight__eyebrow{font-size:9px}
- .sim-smart-insight p{font-size:12px;line-height:1.4}
- .result,.results .result,.metric-card,.stat-card,.readout-card,.measurement-card{min-height:66px;padding:10px!important}
- .result>strong,.result .value,.metric-card .value,.stat-card .value,.readout-card .value,.measurement-card .value{font-size:clamp(16px,4.5vw,20px)!important}
+/* Vinit Simulation Hub — unified Holographic HUD and mobile controls */
+:root {
+  --bg: #080b16;
+  --surface: #101629;
+  --cyan: #62e7ff;
+  --purple: #a78bfa;
+  --text: #f2f5ff;
+  --green: #7cf0bd;
+  --line: rgba(163, 184, 230, .14);
 }
-@media(prefers-reduced-motion:no-preference){.sim-control-dock,.sim-smart-insight,.result{transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}}
+
+/* Smart Insight: sticky-floating, below the hero to avoid covering page content. */
+.sim-smart-insight {
+  position: sticky;
+  z-index: 700;
+  top: calc(72px + env(safe-area-inset-top, 0px));
+  width: min(340px, calc(100vw - 32px));
+  margin: 10px 16px 14px auto;
+  padding: 13px 16px 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--text);
+  background: rgba(16, 22, 41, 0.7);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 14px 38px rgba(0,0,0,.28), inset 0 1px 0 rgba(242,245,255,.08);
+  pointer-events: none;
+}
+.sim-smart-insight__eyebrow {
+  margin: 0 0 5px;
+  color: var(--purple);
+  font: 800 10px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: .14em;
+}
+.sim-smart-insight p {
+  margin: 0;
+  color: var(--text);
+  font: 600 13px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.sim-smart-insight__label { font-weight: 850; }
+.sim-smart-insight__label--cyan { color: var(--cyan); }
+.sim-smart-insight__label--purple { color: var(--purple); }
+.sim-smart-insight__label--green { color: var(--green); }
+
+/* Premium HUD data cards. */
+.result,
+.results .result,
+.metric-card,
+.stat-card,
+.readout-card,
+.measurement-card {
+  min-width: 0;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 13px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+  color: var(--text);
+  background: rgba(16, 22, 41, .78) !important;
+  box-shadow: inset 0 1px 0 rgba(242,245,255,.06), 0 9px 24px rgba(0,0,0,.16);
+}
+.result > span,
+.result .label,
+.metric-card .label,
+.stat-card .label,
+.readout-card .label,
+.measurement-card .label {
+  color: var(--purple) !important;
+  font: 750 10px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+.result > strong,
+.result .value,
+.metric-card .value,
+.stat-card .value,
+.readout-card .value,
+.measurement-card .value {
+  color: var(--cyan) !important;
+  font-family: monospace, "Courier New" !important;
+  font-size: clamp(17px, 2.5vw, 22px) !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 8px rgba(98, 231, 255, 0.4);
+}
+
+/* Consistent cyan interaction feedback across simulation themes. */
+button,
+.btn,
+input[type="button"],
+input[type="submit"],
+select {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+button:hover,
+.btn:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+select:hover,
+button:focus-visible,
+.btn:focus-visible {
+  outline-color: var(--cyan);
+  box-shadow: 0 0 15px rgba(98, 231, 255, 0.3);
+}
+button:active,
+.btn:active,
+input[type="button"]:active,
+input[type="submit"]:active {
+  box-shadow: 0 0 15px rgba(98, 231, 255, 0.3);
+}
+
+/* Canvas surfaces inherit the same dark base on every lab. */
+canvas {
+  background-color: var(--bg) !important;
+}
+canvas.sim-touch-interactive,
+canvas[data-touch-interactive="true"] {
+  touch-action: none;
+}
+canvas:not(.sim-touch-interactive):not([data-touch-interactive="true"]) {
+  touch-action: pan-y;
+}
+
+/* Bottom sheet is hidden on desktop and enabled only on compact viewports. */
+.sim-control-dock { display: none; }
+.sim-dock-placeholder {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 13px;
+  color: var(--purple);
+  background: rgba(16, 22, 41, .36);
+  font: 600 12px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.sim-dock-anchor { display: none; }
+.sim-dock-favorite {
+  position: static !important;
+  inset: auto !important;
+  width: 100%;
+  min-height: 48px !important;
+  margin: 0 0 8px;
+  box-shadow: none !important;
+}
+.sim-control-dock button,
+.sim-control-dock input,
+.sim-control-dock select,
+.sim-control-dock textarea {
+  min-height: 48px;
+}
+.sim-control-dock input[type="range"] {
+  min-height: 48px;
+  padding-block: 8px;
+  accent-color: var(--cyan);
+  touch-action: none;
+}
+.sim-control-dock button,
+.sim-control-dock .btn {
+  min-height: 48px !important;
+}
+
+@media (max-width: 768px) {
+  body.vsh-has-dock {
+    padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.vsh-has-dock.vsh-dock-open {
+    padding-bottom: calc(52vh + 32px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .sim-control-dock {
+    position: fixed;
+    z-index: 9200;
+    left: 10px;
+    right: 10px;
+    bottom: env(safe-area-inset-bottom, 0px);
+    display: flex;
+    flex-direction: column;
+    max-height: min(48vh, 390px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 23px 23px 0 0;
+    color: var(--text);
+    background: rgba(16, 22, 41, 0.9);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -16px 46px rgba(0,0,0,.38), inset 0 1px 0 rgba(242,245,255,.1);
+    transform: translateZ(0);
+  }
+  .sim-control-dock[hidden] { display: none !important; }
+  .sim-control-dock__header {
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 64px;
+    padding: 8px 9px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sim-control-dock__toggle {
+    position: relative;
+    flex: 0 0 84px;
+    min-width: 84px;
+    min-height: 48px !important;
+    padding: 10px 8px 8px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    color: var(--cyan);
+    background: rgba(16, 22, 41, .78);
+    text-align: center;
+    font: 800 12px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+    cursor: pointer;
+  }
+  .sim-control-dock__toggle::before {
+    display: block;
+    width: 30px;
+    height: 4px;
+    margin: 0 auto 5px;
+    border-radius: 99px;
+    background: var(--purple);
+    content: "";
+  }
+  .sim-control-dock__tools {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+  }
+  .sim-control-dock__tools #vsh-lab-actions {
+    position: static !important;
+    inset: auto !important;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    margin: 0;
+  }
+  .sim-control-dock__tools #vsh-feedback-trigger,
+  .sim-control-dock__tools #vsh-share-trigger {
+    position: static !important;
+    inset: auto !important;
+    min-width: 0;
+    min-height: 48px !important;
+    max-width: none !important;
+    margin: 0;
+    padding: 9px 9px !important;
+    border-color: var(--line);
+    border-radius: 12px;
+    color: var(--text);
+    background: rgba(16, 22, 41, .88);
+    font-size: 10px !important;
+    white-space: nowrap;
+  }
+  .sim-control-dock__content {
+    display: none;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 10px 10px calc(14px + env(safe-area-inset-bottom, 0px));
+    -webkit-overflow-scrolling: touch;
+  }
+  .sim-control-dock.is-open .sim-control-dock__content { display: block; }
+  .sim-control-dock .panel,
+  .sim-control-dock aside,
+  .sim-control-dock fieldset,
+  .sim-control-dock .card {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 10px !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 15px !important;
+    overflow: visible !important;
+    color: var(--text);
+    background: rgba(16, 22, 41, .7) !important;
+  }
+  .sim-control-dock .pb,
+  .sim-control-dock .panel-body {
+    padding: 10px 12px !important;
+  }
+  .sim-control-dock .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sim-control-dock .actions > button,
+  .sim-control-dock .actions > .btn {
+    flex: 1 1 112px;
+  }
+  .sim-control-dock label { touch-action: none; }
+
+  /* Center the insight at the top; it occupies normal flow above the dock. */
+  .sim-smart-insight {
+    position: sticky;
+    top: calc(64px + env(safe-area-inset-top, 0px));
+    left: auto;
+    right: auto;
+    width: calc(100% - 24px);
+    max-width: 440px;
+    margin: 10px auto 14px;
+    padding: 11px 13px;
+    border-radius: 18px;
+    text-align: left;
+  }
+  .sim-smart-insight__eyebrow { font-size: 9px; }
+  .sim-smart-insight p { font-size: 12px; line-height: 1.45; }
+
+  .result,
+  .results .result,
+  .metric-card,
+  .stat-card,
+  .readout-card,
+  .measurement-card {
+    min-height: 66px;
+    padding: 10px !important;
+  }
+  .result > strong,
+  .result .value,
+  .metric-card .value,
+  .stat-card .value,
+  .readout-card .value,
+  .measurement-card .value {
+    font-size: clamp(16px, 4.5vw, 20px) !important;
+  }
+}
+
+/* The same specified palette stays legible in the Holographic and Terminal modes. */
+html[data-theme="holographic"] .sim-smart-insight,
+html[data-theme="terminal"] .sim-smart-insight,
+html[data-theme="holographic"] .sim-control-dock,
+html[data-theme="terminal"] .sim-control-dock {
+  border-color: var(--line);
+  color: var(--text);
+}
+html[data-theme="holographic"] .sim-control-dock,
+html[data-theme="terminal"] .sim-control-dock {
+  background: rgba(16, 22, 41, 0.9);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sim-control-dock,
+  .sim-smart-insight,
+  .result,
+  button,
+  .btn {
+    transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
+  }
+}

@@ -236,6 +236,7 @@
 
   function ensureSmartInsight() {
     if (document.getElementById("vsh-smart-insight")) return;
+
     var panel = document.createElement("section");
     panel.id = "vsh-smart-insight";
     panel.className = "sim-smart-insight";
@@ -248,29 +249,31 @@
     eyebrow.textContent = "SMART INSIGHT";
     var message = document.createElement("p");
     message.id = "vsh-smart-insight-text";
-    message.textContent = "Change a parameter to see what it means for the physics.";
     panel.appendChild(eyebrow);
     panel.appendChild(message);
+
+    // Keep the insight in document flow below the page introduction. It
+    // becomes sticky while scrolling, so it never covers the title or canvas.
     var hero = document.querySelector("main .hero, main .hero-section");
     var main = document.querySelector("main");
-    if (hero && hero.parentNode) {
-      hero.parentNode.insertBefore(panel, hero.nextSibling);
-    } else if (main) {
-      main.insertBefore(panel, main.firstChild);
-    } else {
-      document.body.appendChild(panel);
-    }
+    if (hero && hero.parentNode) hero.parentNode.insertBefore(panel, hero.nextSibling);
+    else if (main) main.insertBefore(panel, main.firstChild);
+    else document.body.appendChild(panel);
+
+    var previousValues = Object.create(null);
 
     function controlLabel(control) {
       if (!control) return "Parameter";
       var aria = control.getAttribute("aria-label");
       if (aria) return aria.trim();
+
       if (control.labels && control.labels.length) {
-        var labelText = Array.prototype.map.call(control.labels, function (label) {
+        var labels = Array.prototype.map.call(control.labels, function (label) {
           return (label.textContent || "").replace(/\s+/g, " ").trim();
         }).join(" ");
-        if (labelText) return labelText;
+        if (labels) return labels;
       }
+
       var previous = control.previousElementSibling;
       if (previous && /^(LABEL|DIV|SPAN)$/.test(previous.tagName)) {
         var clone = previous.cloneNode(true);
@@ -280,56 +283,122 @@
         var text = (clone.textContent || "").replace(/\s+/g, " ").trim();
         if (text) return text;
       }
+
       return (control.id || control.name || "Parameter").replace(/[-_]/g, " ").trim();
     }
 
-    function explainControl(control) {
+    function insight(heading, detail, tone) {
+      return { heading: heading, detail: detail, tone: tone || "cyan" };
+    }
+
+    function explainControl(control, previous, current, hasPrevious) {
       var label = controlLabel(control);
       var normalized = label.toLowerCase();
-      var value = control && typeof control.value !== "undefined" ? String(control.value) : "";
-      var slug = (window.location.pathname.split("/").pop() || "").replace(/\.html$/i, "").toLowerCase();
-      var numeric = Number(value);
-      var hasNumeric = value !== "" && Number.isFinite(numeric);
+      var path = (window.location.pathname.split("/").pop() || "").replace(/\.html$/i, "").toLowerCase();
+      var numeric = Number(current);
+      var validNumber = current !== "" && Number.isFinite(numeric);
+      var changedUp = hasPrevious && Number.isFinite(Number(previous)) && validNumber && numeric > Number(previous);
+      var changedDown = hasPrevious && Number.isFinite(Number(previous)) && validNumber && numeric < Number(previous);
 
-      if (slug.indexOf("projectile") !== -1) {
-        if (/(angle|theta|θ)/i.test(label) && hasNumeric) {
-          if (numeric >= 89) return "At 90°, the projectile travels straight up and its horizontal range is zero.";
-          if (numeric >= 44 && numeric <= 46) return "45° gives the maximum range on level ground when air resistance is ignored.";
-          if (numeric > 45) return "Above 45°, more launch speed points upward. The path gets higher, but the range decreases.";
-          return "Below 45°, raising the launch angle increases the range on level ground.";
-        }
-        if (/(speed|velocity|initial u|launch u)/i.test(label)) return "More launch speed increases flight time and horizontal range when angle and gravity stay fixed.";
-        if (/(gravity|(^|\s)g($|\s))/i.test(label)) return "Stronger gravity pulls the projectile down faster, reducing flight time, height and range.";
+      if (path.indexOf("projectile") !== -1 && /(angle|theta|θ)/i.test(label) && validNumber) {
+        if (numeric >= 89.5) return insight("Vertical Launch.", "At 90°, horizontal velocity is zero, so horizontal range is zero.", "cyan");
+        if (Math.abs(numeric - 45) <= 0.5) return insight("Optimal Angle!", "45° gives maximum range on level ground when air resistance is ignored.", "cyan");
+        if (numeric > 45) return insight("Higher Launch Angle.", "More velocity points upward, increasing height while reducing range from its 45° maximum.", "purple");
+        return insight("Lower Launch Angle.", "On level ground, increasing the angle toward 45° increases the range.", "purple");
       }
 
-      if (slug === "shm" || slug.indexOf("damped-shm") !== -1) {
-        if (/mass/i.test(label)) return "A larger mass oscillates more slowly when spring stiffness stays the same.";
-        if (/spring|stiffness|(^|\s)k($|\s)/i.test(label)) return "A stiffer spring produces faster oscillation and a shorter period.";
-        if (/amplitude/i.test(label)) return "Amplitude changes maximum displacement. In ideal SHM, it does not change the period.";
+      if (/(velocity|speed|launch speed)/i.test(label) && changedUp) {
+        return insight("Velocity Increased.", "The object covers more distance in the same time; its path may reach higher too.", "purple");
       }
-      if (slug.indexOf("atwood") !== -1 && /mass/i.test(label)) return "The mass difference drives the system. Equal masses balance; a larger difference gives greater acceleration.";
-      if ((slug.indexOf("ohm") !== -1 || slug.indexOf("current-electricity") !== -1) && /voltage/i.test(label)) return "With resistance fixed, increasing voltage increases current in direct proportion: I = V/R.";
-      if ((slug.indexOf("ohm") !== -1 || slug.indexOf("current-electricity") !== -1) && /resistance/i.test(label)) return "With voltage fixed, increasing resistance reduces current: I = V/R.";
+      if (/(velocity|speed|launch speed)/i.test(label) && changedDown) {
+        return insight("Velocity Reduced.", "The object covers less distance in the same time when other conditions stay fixed.", "purple");
+      }
 
-      if (/mass/i.test(normalized)) return "Mass measures inertia. For the same net force, a larger mass has a smaller acceleration.";
-      if (/velocity|speed/i.test(normalized)) return "Velocity changes the motion state. Compare displacement, time and energy in the live readouts.";
-      if (/angle|theta|θ/i.test(normalized)) return "The angle changes how the quantity is split into horizontal and vertical components.";
-      if (/time/i.test(normalized)) return "Time tells you how the system evolves. Watch the live position and velocity values.";
-      if (/resistance/i.test(normalized)) return "Resistance opposes current. Compare current and power as it changes.";
-      if (/voltage/i.test(normalized)) return "Voltage is energy supplied per unit charge. Watch how current responds.";
-      if (/gravity/i.test(normalized)) return "Gravity changes the rate of vertical acceleration and therefore the motion.";
-      if (hasNumeric) return label + " is now " + value + ". Watch the live measurements to see how the model responds.";
-      return "Change another parameter and compare the live measurements with the model.";
+      if (path.indexOf("projectile") !== -1 && /(gravity|(^|\s)g($|\s))/i.test(label)) {
+        return insight("Gravity Changed.", "Stronger gravity shortens flight time, maximum height and range for the same launch.", "purple");
+      }
+      if ((path === "shm" || path.indexOf("damped-shm") !== -1) && /mass/i.test(label)) {
+        return insight("Mass Changed.", "A heavier oscillator moves more slowly when spring stiffness stays constant.", "purple");
+      }
+      if ((path === "shm" || path.indexOf("damped-shm") !== -1) && /(spring|stiffness|(^|\s)k($|\s))/i.test(label)) {
+        return insight("Spring Stiffness Changed.", "A stiffer spring increases angular frequency and reduces the period.", "purple");
+      }
+      if (path.indexOf("atwood") !== -1 && /mass/i.test(label)) {
+        return insight("Mass Balance Changed.", "The difference between the two masses sets the system's acceleration and direction.", "purple");
+      }
+      if ((path.indexOf("ohm") !== -1 || path.indexOf("current-electricity") !== -1) && /voltage/i.test(label)) {
+        return insight("Voltage Changed.", "With resistance fixed, current changes in direct proportion to voltage: I = V/R.", "purple");
+      }
+      if ((path.indexOf("ohm") !== -1 || path.indexOf("current-electricity") !== -1) && /resistance/i.test(label)) {
+        return insight("Resistance Changed.", "With voltage fixed, greater resistance means lower current: I = V/R.", "purple");
+      }
+
+      if (/mass/i.test(normalized)) {
+        return insight("Mass Updated.", "For the same net force, a larger mass produces a smaller acceleration.", "purple");
+      }
+      if (/angle|theta|θ/i.test(normalized)) {
+        return insight("Angle Updated.", "The angle changes how the motion is split into horizontal and vertical components.", "purple");
+      }
+      if (/gravity/i.test(normalized)) {
+        return insight("Gravity Updated.", "Gravity changes the rate of vertical acceleration and the system's motion.", "purple");
+      }
+      if (/resistance/i.test(normalized)) {
+        return insight("Resistance Updated.", "Resistance opposes current; compare the current and power readouts.", "purple");
+      }
+      if (/voltage/i.test(normalized)) {
+        return insight("Voltage Updated.", "Voltage is energy supplied per unit charge. Watch how current responds.", "purple");
+      }
+      if (/time/i.test(normalized)) {
+        return insight("Time Updated.", "Follow the live position, velocity and energy readouts as the system evolves.", "purple");
+      }
+      if (/amplitude/i.test(normalized)) {
+        return insight("Amplitude Updated.", "Amplitude changes the maximum displacement. In ideal SHM, it does not change the period.", "purple");
+      }
+      if (/energy/i.test(normalized)) {
+        return insight("Energy Updated.", "Compare kinetic and potential energy to see how energy is transferred in the system.", "purple");
+      }
+      if (validNumber) {
+        return insight("Parameter Updated.", label + " is now " + current + ". Compare the live readouts to see its effect.", "cyan");
+      }
+      return insight("Parameter Updated.", "Change another control and compare the new measurements with the model.", "cyan");
     }
 
-    function update(target) {
-      message.textContent = explainControl(target);
+    function render(result) {
+      message.textContent = "";
+      var heading = document.createElement("span");
+      heading.className = "sim-smart-insight__label sim-smart-insight__label--" + result.tone;
+      heading.textContent = result.heading + " ";
+      message.appendChild(heading);
+      message.appendChild(document.createTextNode(result.detail));
     }
+
+    function update(control) {
+      if (!control) return;
+      var key = control.id || control.name || controlLabel(control);
+      var current = String(control.value == null ? "" : control.value);
+      var hasPrevious = Object.prototype.hasOwnProperty.call(previousValues, key);
+      var previous = hasPrevious ? previousValues[key] : current;
+      render(explainControl(control, previous, current, hasPrevious));
+      previousValues[key] = current;
+    }
+
+    // Save every initial control value so increases/decreases are identified
+    // from the first user gesture, not only after an earlier interaction.
+    Array.prototype.forEach.call(
+      document.querySelectorAll('input:not([type="hidden"]),select,textarea'),
+      function (control) {
+        var key = control.id || control.name || controlLabel(control);
+        previousValues[key] = String(control.value == null ? "" : control.value);
+      }
+    );
+
     document.addEventListener("input", function (event) {
-      if (event.target && /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName)) update(event.target);
+      var target = event.target;
+      if (target && /^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) update(target);
     }, true);
     document.addEventListener("change", function (event) {
-      if (event.target && /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName)) update(event.target);
+      var target = event.target;
+      if (target && /^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) update(target);
     }, true);
 
     var initial = null;
@@ -338,7 +407,7 @@
     } else {
       initial = document.querySelector('input[type="range"],select,input[type="number"]');
     }
-    if (initial) update(initial);
+    if (initial) render(explainControl(initial, initial.value, initial.value, false));
   }
 
   function ensureMobileControlDock() {
