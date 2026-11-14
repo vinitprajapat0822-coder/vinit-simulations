@@ -4,6 +4,7 @@
 
   var COMPLETED_KEY = "vsh-mastery-completed-v1";
   var STREAK_KEY = "vsh-daily-streak-v1";
+  var BADGES_KEY = "vsh-mastery-badges-v1";
   var grid = document.getElementById("project-grid");
   var progressStat = document.getElementById("stat-progress");
 
@@ -153,6 +154,9 @@
       { at: 100, label: "Hub Legend" }
     ];
     var earned = milestones.filter(function (milestone) { return count >= milestone.at; }).slice(-3);
+    try {
+      window.localStorage.setItem(BADGES_KEY, JSON.stringify(earned.map(function (milestone) { return milestone.label; })));
+    } catch (error) {}
     if (!earned.length) earned = [{ at: 1, label: "First Lab" }];
     earned.forEach(function (milestone) {
       var badge = document.createElement("span");
