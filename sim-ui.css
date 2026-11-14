@@ -804,3 +804,54 @@ input[type="range"]:focus-visible { outline-offset: 5px; }
     transition: none !important;
   }
 }
+
+
+/* ── Production performance and accessible math layer ───────────────── */
+.vsh-will-change-active {
+  will-change: transform;
+}
+input[type="range"].vsh-will-change-active::-webkit-slider-thumb {
+  will-change: transform, box-shadow;
+}
+input[type="range"].vsh-will-change-active::-moz-range-thumb {
+  will-change: transform, box-shadow;
+}
+.vsh-formula-text {
+  font-family: "Cambria Math", "STIX Two Math", "Noto Sans Math",
+    "DejaVu Sans", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.vsh-formula-panel:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 7px rgba(98,231,255,.10), 0 0 26px rgba(98,231,255,.22);
+}
+.vsh-preset-button:focus-visible,
+.vsh-complete-button:focus-visible,
+.vsh-fact-trigger:focus-visible,
+.vsh-fact-popover__close:focus-visible,
+.vsh-mastery-badge[tabindex="0"]:focus-visible {
+  outline: 3px solid var(--cyan) !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(98,231,255,.11), 0 0 22px rgba(98,231,255,.2);
+}
+
+/* Reduce GPU compositing cost on touch devices while preserving glass depth. */
+@media (max-width: 768px) {
+  .panel,
+  .sim-control-dock,
+  .sim-smart-insight,
+  .vsh-learning-panel,
+  .vsh-fact-popover,
+  .vsh-preset-row,
+  .vsh-mastery-card,
+  .nav-wrap,
+  .hub-features-bar,
+  .vsh-splash-card {
+    -webkit-backdrop-filter: blur(12px) saturate(155%) !important;
+    backdrop-filter: blur(12px) saturate(155%) !important;
+  }
+}
