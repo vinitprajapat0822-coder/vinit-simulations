@@ -252,13 +252,13 @@
     panel.appendChild(eyebrow);
     panel.appendChild(message);
 
-    // Keep the insight in document flow below the page introduction. It
-    // becomes sticky while scrolling, so it never covers the title or canvas.
-    var hero = document.querySelector("main .hero, main .hero-section");
+    // Place the insight directly below the page header in normal document
+    // flow. It stays top-aligned without covering the hero, canvas or controls.
+    var header = document.querySelector("body > header, header");
     var main = document.querySelector("main");
-    if (hero && hero.parentNode) hero.parentNode.insertBefore(panel, hero.nextSibling);
-    else if (main) main.insertBefore(panel, main.firstChild);
-    else document.body.appendChild(panel);
+    if (header && header.parentNode) header.parentNode.insertBefore(panel, header.nextSibling);
+    else if (main && main.parentNode) main.parentNode.insertBefore(panel, main);
+    else document.body.insertBefore(panel, document.body.firstChild);
 
     var previousValues = Object.create(null);
 
