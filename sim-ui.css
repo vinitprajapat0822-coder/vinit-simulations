@@ -334,13 +334,25 @@ canvas:not(.sim-touch-interactive):not([data-touch-interactive="true"]) {
 /* The same specified palette stays legible in the Holographic and Terminal modes. */
 html[data-theme="holographic"] .sim-smart-insight,
 html[data-theme="terminal"] .sim-smart-insight,
+body[data-theme="holographic"] .sim-smart-insight,
+body[data-theme="terminal"] .sim-smart-insight,
+body.lab-theme-holographic .sim-smart-insight,
+body.lab-theme-terminal .sim-smart-insight,
 html[data-theme="holographic"] .sim-control-dock,
-html[data-theme="terminal"] .sim-control-dock {
+html[data-theme="terminal"] .sim-control-dock,
+body[data-theme="holographic"] .sim-control-dock,
+body[data-theme="terminal"] .sim-control-dock,
+body.lab-theme-holographic .sim-control-dock,
+body.lab-theme-terminal .sim-control-dock {
   border-color: var(--line);
   color: var(--text);
 }
 html[data-theme="holographic"] .sim-control-dock,
-html[data-theme="terminal"] .sim-control-dock {
+html[data-theme="terminal"] .sim-control-dock,
+body[data-theme="holographic"] .sim-control-dock,
+body[data-theme="terminal"] .sim-control-dock,
+body.lab-theme-holographic .sim-control-dock,
+body.lab-theme-terminal .sim-control-dock {
   background: rgba(16, 22, 41, 0.9);
 }
 
