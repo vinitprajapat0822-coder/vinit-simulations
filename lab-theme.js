@@ -245,6 +245,17 @@
       if (!control || control.type !== "range" || event.isTrusted === false) return;
       hapticAndSound(440);
     }, true);
+
+    // Release the single page-scoped audio context when this document is left.
+    window.addEventListener("pagehide", function () {
+      if (!audioContext || audioContext.state === "closed") return;
+      var contextToClose = audioContext;
+      audioContext = null;
+      try {
+        var closeResult = contextToClose.close();
+        if (closeResult && typeof closeResult.catch === "function") closeResult.catch(function () {});
+      } catch (error) {}
+    }, { once: true });
   }
 
   function ensureTransientWillChange() {
@@ -447,7 +458,7 @@
     trigger.className = "vsh-fact-trigger";
     trigger.textContent = "?";
     var factHeading = document.querySelector("main h1") || document.querySelector("h1");
-    var factTopic = factHeading ? factHeading.textContent.replace(/\\s+/g, " ").trim() : "this simulation";
+    var factTopic = factHeading ? factHeading.textContent.replace(/\s+/g, " ").trim() : "this simulation";
     trigger.setAttribute("aria-label", "Did You Know: open a physics fact about " + factTopic);
     trigger.title = "Did You Know — " + factTopic;
     trigger.setAttribute("aria-expanded", "false");
