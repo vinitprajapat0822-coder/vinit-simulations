@@ -11,7 +11,7 @@
 .sim-dock-anchor{display:none}
 .sim-dock-favorite{position:static!important;inset:auto!important;width:100%;min-height:48px!important;margin:0 0 8px;box-shadow:none!important}
 .sim-control-dock button,.sim-control-dock input:not([type=range]),.sim-control-dock select,.sim-control-dock textarea{min-height:48px}
-.sim-control-dock input[type=range]{min-height:44px;padding-block:8px;accent-color:var(--sim-cyan);touch-action:pan-y}
+.sim-control-dock input[type=range]{min-height:48px;padding-block:8px;accent-color:var(--sim-cyan);touch-action:pan-y}
 .sim-control-dock button,.sim-control-dock .btn{min-height:48px!important}
 canvas{touch-action:pan-y}
 canvas.sim-touch-interactive,canvas[data-touch-interactive=true]{touch-action:none}
