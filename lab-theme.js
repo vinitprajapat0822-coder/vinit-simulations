@@ -128,11 +128,508 @@
     document.body.appendChild(btn);
     paint();
   }
+
+  // ---- Liquid learning layer: DOM/CSS only; simulation engines stay untouched. ----
+  function vshLabSlug() {
+    return (window.location.pathname.split("/").pop() || "").replace(/\.html$/i, "").toLowerCase();
+  }
+
+  function vshRecordDailyVisit() {
+    var key = "vsh-daily-streak-v1";
+    var now = new Date();
+    var today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+    var data = { lastVisit: "", streak: 0, totalDays: 0 };
+    try {
+      var saved = JSON.parse(localStorage.getItem(key) || "{}");
+      if (saved && typeof saved === "object") data = Object.assign(data, saved);
+    } catch (error) {}
+    if (data.lastVisit !== today) {
+      var yesterdayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      var yesterday = [yesterdayDate.getFullYear(), String(yesterdayDate.getMonth() + 1).padStart(2, "0"), String(yesterdayDate.getDate()).padStart(2, "0")].join("-");
+      data.streak = data.lastVisit === yesterday ? Math.max(1, Number(data.streak) || 0) + 1 : 1;
+      data.totalDays = Math.max(0, Number(data.totalDays) || 0) + 1;
+      data.lastVisit = today;
+      try { localStorage.setItem(key, JSON.stringify(data)); } catch (error) {}
+    }
+    return data;
+  }
+
+  function vshUpdateRangeFill(range) {
+    if (!range || range.type !== "range") return;
+    var min = Number(range.min || 0);
+    var max = Number(range.max || 100);
+    var value = Number(range.value || 0);
+    var percent = max > min ? Math.max(0, Math.min(100, (value - min) / (max - min) * 100)) : 0;
+    range.style.setProperty("--vsh-range-progress", percent.toFixed(2) + "%");
+  }
+
+  function ensureLiquidRangeInputs() {
+    if (!window.__vshLiquidRangesBound) {
+      window.__vshLiquidRangesBound = true;
+      document.addEventListener("input", function (event) {
+        if (event.target && event.target.type === "range") {
+          vshUpdateRangeFill(event.target);
+          if (window.__vshFormulaRefresh) window.__vshFormulaRefresh();
+        }
+      }, true);
+      document.addEventListener("change", function (event) {
+        if (event.target && event.target.type === "range") {
+          vshUpdateRangeFill(event.target);
+          if (window.__vshFormulaRefresh) window.__vshFormulaRefresh();
+        }
+      }, true);
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('input[type="range"]'), vshUpdateRangeFill);
+  }
+
+  function ensureSoftInteractionFeedback() {
+    if (window.__vshSoftFeedbackBound) return;
+    window.__vshSoftFeedbackBound = true;
+    var audioContext = null;
+    var lastSoundAt = 0;
+
+    function playSoftDrop(frequency) {
+      var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      var now = Date.now();
+      if (now - lastSoundAt < 55) return;
+      lastSoundAt = now;
+      try {
+        if (!audioContext) audioContext = new AudioContextClass();
+        if (audioContext.state === "suspended" && audioContext.resume) audioContext.resume();
+        var oscillator = audioContext.createOscillator();
+        var gain = audioContext.createGain();
+        var start = audioContext.currentTime;
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency || 620, start);
+        oscillator.frequency.exponentialRampToValueAtTime(Math.max(180, (frequency || 620) * 0.58), start + 0.075);
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.018, start + 0.009);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.09);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(start);
+        oscillator.stop(start + 0.095);
+        oscillator.onended = function () {
+          try { oscillator.disconnect(); gain.disconnect(); } catch (error) {}
+        };
+      } catch (error) {}
+    }
+
+    function hapticAndSound(frequency) {
+      try {
+        if (navigator.vibrate) navigator.vibrate(10);
+      } catch (error) {}
+      playSoftDrop(frequency);
+    }
+
+    document.addEventListener("click", function (event) {
+      if (event.isTrusted === false) return;
+      var target = event.target;
+      var button = target && target.closest ? target.closest("button,.btn,[role='button'],input[type='button'],input[type='submit']") : null;
+      if (!button || button.disabled) return;
+      hapticAndSound(button.classList && button.classList.contains("primary") ? 680 : 520);
+    }, true);
+
+    document.addEventListener("change", function (event) {
+      var control = event.target;
+      if (!control || control.type !== "range" || event.isTrusted === false) return;
+      hapticAndSound(440);
+    }, true);
+  }
+
+  function ensureFluidBackground() {
+    if (!/^\/projects\/.+\.html$/i.test(window.location.pathname)) return;
+    if (document.getElementById("vsh-fluid-background") || !document.body) return;
+
+    var canvas = document.createElement("canvas");
+    canvas.id = "vsh-fluid-background";
+    canvas.className = "vsh-fluid-canvas";
+    canvas.setAttribute("aria-hidden", "true");
+    canvas.setAttribute("role", "presentation");
+    document.body.insertBefore(canvas, document.body.firstChild);
+    document.body.classList.add("vsh-fluid-active");
+
+    var cores = Number(navigator.hardwareConcurrency || 4);
+    var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var context = null;
+    try { context = canvas.getContext("2d", { alpha: true }); } catch (error) {}
+    if (!context || cores < 4 || reducedMotion) {
+      canvas.classList.add("is-static");
+      return;
+    }
+
+    var width = 0, height = 0, ratio = 1, frameId = 0;
+    var pointer = { x: -1000, y: -1000, at: 0 };
+    var startedAt = 0;
+    function resize() {
+      ratio = Math.min(window.devicePixelRatio || 1, 1.25);
+      width = Math.max(1, window.innerWidth);
+      height = Math.max(1, window.innerHeight);
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+    function blob(x, y, rx, ry, rgb, opacity) {
+      var gradient = context.createRadialGradient(x, y, 0, x, y, Math.max(rx, ry));
+      gradient.addColorStop(0, "rgba(" + rgb + "," + opacity + ")");
+      gradient.addColorStop(0.42, "rgba(" + rgb + "," + (opacity * 0.58) + ")");
+      gradient.addColorStop(1, "rgba(" + rgb + ",0)");
+      context.fillStyle = gradient;
+      context.beginPath();
+      context.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+      context.fill();
+    }
+    function draw(now) {
+      if (document.hidden) { frameId = 0; return; }
+      if (!startedAt) startedAt = now;
+      var t = (now - startedAt) / 1000;
+      context.clearRect(0, 0, width, height);
+      var px = pointer.x, py = pointer.y;
+      var influence = Math.max(0, 1 - (now - pointer.at) / 1500);
+      var dx = px * influence, dy = py * influence;
+      var size = Math.min(width, height);
+      blob(width * (0.18 + 0.055 * Math.sin(t * 0.17)) + dx * 0.035,
+        height * (0.28 + 0.065 * Math.cos(t * 0.13)) + dy * 0.035,
+        size * 0.42, size * 0.30, "98,231,255", 0.13);
+      blob(width * (0.82 + 0.06 * Math.cos(t * 0.14)) - dx * 0.025,
+        height * (0.66 + 0.07 * Math.sin(t * 0.16)) - dy * 0.025,
+        size * 0.40, size * 0.34, "167,139,250", 0.12);
+      blob(width * (0.52 + 0.045 * Math.sin(t * 0.11)),
+        height * (0.12 + 0.05 * Math.cos(t * 0.19)),
+        size * 0.24, size * 0.20, "98,231,255", 0.055);
+
+      if (influence > 0.01) {
+        var ripple = (1 - influence) * 88 + 14;
+        context.beginPath();
+        context.arc(px, py, ripple, 0, Math.PI * 2);
+        context.strokeStyle = "rgba(98,231,255," + (0.10 * influence).toFixed(3) + ")";
+        context.lineWidth = 1;
+        context.stroke();
+      }
+      frameId = window.requestAnimationFrame(draw);
+    }
+    function onPointerMove(event) {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      pointer.at = performance.now();
+    }
+    function onVisibilityChange() {
+      if (document.hidden) {
+        if (frameId) window.cancelAnimationFrame(frameId);
+        frameId = 0;
+      } else if (!frameId) {
+        frameId = window.requestAnimationFrame(draw);
+      }
+    }
+
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    frameId = window.requestAnimationFrame(draw);
+  }
+
+  function ensureDidYouKnow() {
+    if (!/^\/projects\/.+\.html$/i.test(window.location.pathname)) return;
+    if (document.getElementById("vsh-fact-trigger")) return;
+
+    var slug = vshLabSlug();
+    var facts = {
+      "projectile": "On level ground with no air resistance, 45° maximizes range because sin(2θ) reaches its maximum.",
+      "projectile-air": "Air resistance breaks the complementary-angle symmetry, so the best launch angle is usually below 45°.",
+      "projectile-3d": "In ideal projectile motion, horizontal velocity stays constant while vertical velocity changes linearly with time.",
+      "min-speed-target": "The minimum-speed target problem can have two launch angles for one target point; the limiting case has one.",
+      "atwood": "For an ideal Atwood machine, the acceleration depends on the mass difference divided by the total mass.",
+      "kinematics-1d": "The slope of an x–t graph is velocity; the slope of a v–t graph is acceleration.",
+      "free-fall": "In vacuum, objects with different masses have the same gravitational acceleration at the same location.",
+      "shm": "For an ideal spring–mass oscillator, the period does not depend on amplitude.",
+      "damped-shm": "Damping removes mechanical energy from an oscillator, reducing its amplitude over time.",
+      "pendulum": "For small oscillations, a simple pendulum's period depends on length and gravity, not bob mass.",
+      "ohm": "An ohmic resistor has a linear V–I relationship when its physical conditions, especially temperature, stay constant.",
+      "momentum": "Total momentum is conserved in an isolated system, even when kinetic energy is not.",
+      "momentum-2d": "Momentum conservation applies independently to the horizontal and vertical components.",
+      "vectors-2d": "A vector's components depend on the chosen axes, but its magnitude does not.",
+      "work-energy": "The net work done on an object equals its change in kinetic energy.",
+      "circular-motion": "An object moving in a circle can have constant speed while its velocity continually changes direction.",
+      "spring-force": "Hooke's law is a linear approximation that works while a spring stays within its elastic range.",
+      "coulomb": "For point charges in a uniform medium, Coulomb force falls with the square of the separation.",
+      "capacitor": "For a linear capacitor, stored charge is proportional to potential difference: Q = CV.",
+      "wave-on-string": "For a wave on a stretched string, wave speed depends on tension and linear mass density.",
+      "doppler": "The Doppler effect changes observed frequency through relative motion, not because the source changes its emitted frequency."
+    };
+    var fact = facts[slug];
+    if (!fact) {
+      var heading = document.querySelector("main h1") || document.querySelector("h1");
+      var title = heading ? heading.textContent.replace(/\s+/g, " ").trim() : "this model";
+      var lower = (slug + " " + title).toLowerCase();
+      if (/lens|mirror|optic|refraction|snell/.test(lower)) fact = "In geometrical optics, ray diagrams work because light travels in straight lines through a uniform medium.";
+      else if (/electric|magnetic|circuit|current|ohm|capacitor|charge/.test(lower)) fact = "In a circuit, charge is conserved: current entering a junction equals current leaving it.";
+      else if (/fluid|bernoulli|buoy|pressure|viscosity/.test(lower)) fact = "Fluid pressure at a point in a static fluid increases with depth.";
+      else if (/wave|sound|resonance|beats|interference/.test(lower)) fact = "Superposition means overlapping waves add their instantaneous displacements.";
+      else fact = "Change one control at a time and compare the readouts; this makes the model's cause-and-effect relationships easier to identify.";
+    }
+
+    var trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.id = "vsh-fact-trigger";
+    trigger.className = "vsh-fact-trigger";
+    trigger.textContent = "?";
+    trigger.setAttribute("aria-label", "Open a physics fact");
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("aria-controls", "vsh-fact-popover");
+
+    var popover = document.createElement("section");
+    popover.id = "vsh-fact-popover";
+    popover.className = "vsh-fact-popover";
+    popover.hidden = true;
+    popover.setAttribute("role", "dialog");
+    popover.setAttribute("aria-modal", "false");
+    popover.setAttribute("aria-labelledby", "vsh-fact-title");
+
+    var top = document.createElement("div");
+    top.className = "vsh-fact-popover__top";
+    var titleEl = document.createElement("strong");
+    titleEl.id = "vsh-fact-title";
+    titleEl.textContent = "DID YOU KNOW?";
+    var close = document.createElement("button");
+    close.type = "button";
+    close.className = "vsh-fact-popover__close";
+    close.textContent = "×";
+    close.setAttribute("aria-label", "Close physics fact");
+    var content = document.createElement("p");
+    content.textContent = fact;
+    top.appendChild(titleEl);
+    top.appendChild(close);
+    popover.appendChild(top);
+    popover.appendChild(content);
+    document.body.appendChild(trigger);
+    document.body.appendChild(popover);
+
+    function setOpen(open) {
+      popover.hidden = !open;
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) close.focus();
+      else trigger.focus();
+    }
+    trigger.addEventListener("click", function () {
+      setOpen(popover.hidden);
+    });
+    close.addEventListener("click", function () { setOpen(false); });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !popover.hidden) setOpen(false);
+    });
+  }
+
+  function ensureLiveFormulaAndPresets() {
+    if (!/^\/projects\/.+\.html$/i.test(window.location.pathname)) return;
+    if (document.getElementById("vsh-live-formula")) return;
+
+    var slug = vshLabSlug();
+    var controlCandidates = Array.prototype.slice.call(document.querySelectorAll(".panel,aside,fieldset,.control-panel,.controls"));
+    var controlPanel = controlCandidates.find(function (candidate) {
+      var inputs = candidate.querySelectorAll('input[type="range"],input[type="number"],select');
+      var heading = candidate.querySelector(".ph,.panel-head,h2,h3,legend");
+      return inputs.length > 0 && (!heading || /control|parameter|setting|adjust/i.test(heading.textContent));
+    });
+    if (!controlPanel) {
+      controlPanel = controlCandidates.find(function (candidate) {
+        return candidate.querySelector('input[type="range"],input[type="number"],select');
+      });
+    }
+    if (!controlPanel) return;
+
+    var controlBody = controlPanel.querySelector(".pb,.panel-body") || controlPanel;
+    var formulas = {
+      "projectile": "R = u² · sin(2θ) / g",
+      "projectile-air": "x(t), y(t) with drag force",
+      "projectile-3d": "R = u² · sin(2θ) / g",
+      "min-speed-target": "y = x tanθ − gx² / (2u² cos²θ)",
+      "atwood": "a = (m₂ − m₁)g / (m₁ + m₂)",
+      "kinematics-1d": "x = x₀ + ut + ½at²",
+      "uniform-accel": "v = u + at",
+      "free-fall": "v² = u² + 2as",
+      "shm": "T = 2π√(m/k)",
+      "damped-shm": "m x¨ + c x˙ + kx = 0",
+      "pendulum": "T ≈ 2π√(L/g)  (small angle)",
+      "ohm": "I = V / R",
+      "current-electricity": "V = IR",
+      "momentum": "p = mv  ·  Σp_before = Σp_after",
+      "momentum-2d": "Σpₓ,before = Σpₓ,after;  Σpᵧ,before = Σpᵧ,after",
+      "work-energy": "W_net = ΔK",
+      "vectors-2d": "R = √(Rₓ² + Rᵧ²)",
+      "circular-motion": "a_c = v²/r = ω²r",
+      "circular-motion-intro": "a_c = v²/r = ω²r",
+      "spring-force": "F = −kx",
+      "coulomb": "F = k|q₁q₂| / r²",
+      "capacitor": "Q = CV",
+      "capacitors": "C_eq(series)⁻¹ = Σ(1/Cᵢ)",
+      "lens-formula": "1/f = 1/v − 1/u",
+      "mirror-formula": "1/f = 1/v + 1/u",
+      "wave-on-string": "v = fλ = √(T/μ)",
+      "sound-waves": "v = fλ"
+    };
+    var formula = formulas[slug] || "";
+    if (!formula) {
+      var code = document.querySelector("main .formulas code,main .explain code,main .explain,main code,.explain code");
+      if (code) formula = (code.textContent || "").replace(/\s+/g, " ").trim().slice(0, 110);
+    }
+    if (!formula) formula = "Adjust one variable and observe the live model.";
+
+    var presetRow = null;
+    var gravity = slug.indexOf("projectile") === 0 ? controlPanel.querySelector("#g") : null;
+    if (gravity && gravity.type === "range") {
+      if (Number(gravity.max) < 24.8) gravity.max = "24.8";
+      presetRow = document.createElement("div");
+      presetRow.className = "vsh-preset-row";
+      var presetTitle = document.createElement("span");
+      presetTitle.className = "vsh-learning-eyebrow";
+      presetTitle.textContent = "GRAVITY PRESETS";
+      var presetButtons = document.createElement("div");
+      presetButtons.className = "vsh-preset-buttons";
+      [
+        { label: "Earth · 9.8", value: 9.8 },
+        { label: "Moon · 1.6", value: 1.6 },
+        { label: "Jupiter · 24.8", value: 24.8 }
+      ].forEach(function (preset) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "vsh-preset-button";
+        button.textContent = preset.label;
+        button.addEventListener("click", function () {
+          var startValue = Number(gravity.value);
+          var targetValue = preset.value;
+          var started = 0;
+          var duration = 260;
+          var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (reduce) duration = 0;
+          function animate(timestamp) {
+            if (!started) started = timestamp;
+            var progress = duration ? Math.min(1, (timestamp - started) / duration) : 1;
+            var eased = 1 - Math.pow(1 - progress, 3);
+            gravity.value = (startValue + (targetValue - startValue) * eased).toFixed(1);
+            vshUpdateRangeFill(gravity);
+            if (window.__vshFormulaRefresh) window.__vshFormulaRefresh();
+            if (progress < 1) {
+              window.requestAnimationFrame(animate);
+            } else {
+              gravity.value = String(targetValue);
+              vshUpdateRangeFill(gravity);
+              // One native event lets the page's existing control handler refresh its own model.
+              gravity.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+          }
+          window.requestAnimationFrame(animate);
+        });
+        presetButtons.appendChild(button);
+      });
+      presetRow.appendChild(presetTitle);
+      presetRow.appendChild(presetButtons);
+      controlBody.appendChild(presetRow);
+    }
+
+    var formulaPanel = document.createElement("section");
+    formulaPanel.id = "vsh-live-formula";
+    formulaPanel.className = "vsh-learning-panel vsh-formula-panel";
+    formulaPanel.setAttribute("aria-label", "Live formula and simulation progress");
+
+    var eyebrow = document.createElement("div");
+    eyebrow.className = "vsh-learning-eyebrow";
+    eyebrow.textContent = "LIVE FORMULA";
+    var formulaText = document.createElement("div");
+    formulaText.className = "vsh-formula-text";
+    formulaText.textContent = formula;
+    var values = document.createElement("div");
+    values.className = "vsh-formula-values";
+    var completion = document.createElement("button");
+    completion.type = "button";
+    completion.className = "vsh-complete-button";
+
+    var completedKey = "vsh-mastery-completed-v1";
+    var pagePath = window.location.pathname.replace(/\/+$/, "") || "/";
+    function readCompleted() {
+      try {
+        var data = JSON.parse(localStorage.getItem(completedKey) || "[]");
+        return Array.isArray(data) ? data : [];
+      } catch (error) { return []; }
+    }
+    function paintCompletion() {
+      var done = readCompleted().indexOf(pagePath) >= 0;
+      completion.textContent = done ? "✓ Lab completed" : "Mark this lab complete";
+      completion.setAttribute("aria-pressed", done ? "true" : "false");
+      completion.classList.toggle("is-complete", done);
+    }
+    completion.addEventListener("click", function () {
+      var done = readCompleted();
+      if (done.indexOf(pagePath) < 0) {
+        done.push(pagePath);
+        try { localStorage.setItem(completedKey, JSON.stringify(done)); } catch (error) {}
+      }
+      paintCompletion();
+    });
+
+    function labelFor(control) {
+      if (control.getAttribute("aria-label")) return control.getAttribute("aria-label").replace(/\s+/g, " ").trim();
+      if (control.labels && control.labels.length) return (control.labels[0].textContent || "").replace(/\s+/g, " ").trim();
+      var previous = control.previousElementSibling;
+      if (previous) {
+        var clone = previous.cloneNode(true);
+        Array.prototype.forEach.call(clone.querySelectorAll("b,strong,output"), function (node) { node.remove(); });
+        var text = (clone.textContent || "").replace(/\s+/g, " ").trim();
+        if (text) return text.slice(0, 24);
+      }
+      return (control.id || control.name || "Value").replace(/[-_]/g, " ");
+    }
+    function valueFor(control) {
+      var value = String(control.value == null ? "" : control.value);
+      var id = (control.id || "").toLowerCase();
+      if (id === "u" || id === "u0") return value + " m/s";
+      if (id === "th" || id === "theta" || id === "angle") return value + "°";
+      if (id === "g" || id === "gravity") return value + " m/s²";
+      if (id === "m" || id.indexOf("mass") >= 0) return value + " kg";
+      if (id === "v" || id === "voltage") return value + " V";
+      if (id === "r" || id === "resistance") return value + " Ω";
+      return value;
+    }
+
+    var liveControls = Array.prototype.slice.call(controlBody.querySelectorAll('input[type="range"],input[type="number"],select')).slice(0, 4);
+    function refreshValues() {
+      values.textContent = "";
+      liveControls.forEach(function (control) {
+        var chip = document.createElement("span");
+        chip.className = "vsh-formula-chip";
+        var label = labelFor(control);
+        chip.textContent = label + ": " + valueFor(control);
+        values.appendChild(chip);
+      });
+    }
+    window.__vshFormulaRefresh = refreshValues;
+    formulaPanel.appendChild(eyebrow);
+    formulaPanel.appendChild(formulaText);
+    formulaPanel.appendChild(values);
+    formulaPanel.appendChild(completion);
+    controlBody.appendChild(formulaPanel);
+    refreshValues();
+    paintCompletion();
+
+    document.addEventListener("storage", function () {
+      paintCompletion();
+    });
+  }
+
   function initializeLabTools() {
     ensureFavButton();
     ensureFeedbackButton();
     ensureShareButton();
     ensureLearningUI();
+    vshRecordDailyVisit();
+    ensureLiquidRangeInputs();
+    ensureSoftInteractionFeedback();
+    ensureFluidBackground();
+    ensureDidYouKnow();
+    ensureLiveFormulaAndPresets();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeLabTools);
   else initializeLabTools();
@@ -230,7 +727,7 @@
     var link = document.createElement("link");
     link.id = "vsh-sim-ui-styles";
     link.rel = "stylesheet";
-    link.href = "/sim-ui.css?v=1";
+    link.href = "/sim-ui.css?v=2";
     document.head.appendChild(link);
   }
 
