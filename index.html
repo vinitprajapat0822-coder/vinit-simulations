@@ -2079,7 +2079,7 @@ html{scroll-behavior:smooth}
   }
 
   function normalizeToken(value) {
-    return String(value || "").trim().toLowerCase().replace(/\\/+/g, "/").replace(/\\/$/, "");
+    return String(value || "").trim().toLowerCase().replace(/\\/g, "/").replace(/\/$/, "");
   }
 
   function itemTokens(item) {
@@ -2106,7 +2106,7 @@ html{scroll-behavior:smooth}
       });
     }
     if (typeof value === "number" && isFinite(value)) return value;
-    if (typeof value === "string" && /^\\d+$/.test(value)) return Number(value);
+    if (typeof value === "string" && /^\d+$/.test(value)) return Number(value);
     return [];
   }
 
@@ -2142,7 +2142,7 @@ html{scroll-behavior:smooth}
     // data uses a format not represented by the completion key above.
     if (!parsed) {
       var existingStat = document.getElementById("stat-progress");
-      var match = existingStat && existingStat.textContent.match(/(\\d+)\\s*\\/\\s*(\\d+)/);
+      var match = existingStat && existingStat.textContent.match(/(\d+)\s*\/\s*(\d+)/);
       if (match) {
         count = Number(match[1]);
         if (!total) total = Number(match[2]);
@@ -2213,7 +2213,7 @@ html{scroll-behavior:smooth}
 
     var existingStreak = document.querySelector("[data-vsh-streak], #vsh-streak-count, .vsh-streak-count");
     if (existingStreak) {
-      var match = existingStreak.textContent.match(/\\d+/);
+      var match = existingStreak.textContent.match(/\d+/);
       if (match) return Number(match[0]);
     }
     return 0;
@@ -2288,7 +2288,7 @@ html{scroll-behavior:smooth}
   function normalizeUrl(url) {
     try {
       var parsed = new URL(url, window.location.href);
-      return parsed.pathname.replace(/\\/$/, "");
+      return parsed.pathname.replace(/\/$/, "");
     } catch (error) {
       return String(url || "");
     }
@@ -2298,12 +2298,12 @@ html{scroll-behavior:smooth}
     var url;
     try { url = new URL(anchor.href, window.location.href); }
     catch (error) { return; }
-    if (url.origin !== window.location.origin || !/\\.html$/i.test(url.pathname)) return;
+    if (url.origin !== window.location.origin || !/\.html$/i.test(url.pathname)) return;
 
     var item = liveItems.find(function (candidate) {
       return normalizeUrl(candidate.url) === normalizeUrl(url.href);
     });
-    if (!item && !/\\/projects\\//i.test(url.pathname)) return;
+    if (!item && !/\/projects\//i.test(url.pathname)) return;
 
     var record = {
       title: item ? item.title : (anchor.textContent || "Simulation").trim(),
@@ -2329,7 +2329,7 @@ html{scroll-behavior:smooth}
     var rules = {
       projectile: /projectile/i,
       gravity: /gravity|gravitational|free[ -]?fall/i,
-      pendulum: /pendulum|simple[ -]?harmonic|oscillation|\\bshm\\b/i
+      pendulum: /pendulum|simple[ -]?harmonic|oscillation|\bshm\b/i
     };
     var pattern = rules[matchType];
     if (!pattern) return null;
