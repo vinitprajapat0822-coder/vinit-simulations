@@ -2156,14 +2156,14 @@ html{scroll-behavior:smooth}
   function parseStreak(raw) {
     var value = parseStored(raw);
     if (typeof value === "number" && isFinite(value)) return Math.max(0, Math.floor(value));
-    if (typeof value === "string" && /^\\d+$/.test(value)) return Number(value);
+    if (typeof value === "string" && /^\d+$/.test(value)) return Number(value);
     if (!value || typeof value !== "object") return null;
 
     var fields = ["currentStreak", "streakCount", "streak", "count", "days", "current", "value"];
     for (var i = 0; i < fields.length; i++) {
       var candidate = value[fields[i]];
       if (typeof candidate === "number" && isFinite(candidate)) return Math.max(0, Math.floor(candidate));
-      if (typeof candidate === "string" && /^\\d+$/.test(candidate)) return Number(candidate);
+      if (typeof candidate === "string" && /^\d+$/.test(candidate)) return Number(candidate);
     }
 
     var dates = value.dates || value.activeDates || value.history;
@@ -2385,10 +2385,11 @@ html{scroll-behavior:smooth}
     if (!document.hidden) refreshDashboard(true);
   });
 
+  if (ring) ring.style.strokeDashoffset = "100";
   refreshDashboard(true);
   resolveQuickStarts();
   requestAnimationFrame(function () {
-    // Trigger the SVG stroke transition after its initial zero-progress paint.
+    // Start from the empty track and draw to the saved completion percentage.
     refreshDashboard(true);
   });
 
