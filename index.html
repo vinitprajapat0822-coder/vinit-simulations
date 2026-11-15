@@ -767,6 +767,287 @@ body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;
   }
 </style>
 
+
+<style id="student-dashboard-styles">
+  .learning-dashboard { padding-top: 18px; }
+  .dashboard-heading { align-items: flex-end; }
+  .dashboard-heading .eyebrow, .quick-start-heading .eyebrow { margin-bottom: 10px; }
+  .dashboard-heading h2, .quick-start-heading h2 { margin-bottom: 5px; }
+  .dashboard-catalog-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(98,231,255,.22);
+    border-radius: 999px;
+    background: rgba(98,231,255,.06);
+    color: #a6efff;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+    transition: transform .35s cubic-bezier(.22,1,.36,1);
+  }
+  .dashboard-catalog-link:active { transform: scale(.95); }
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0,1.12fr) minmax(0,.88fr);
+    grid-template-rows: minmax(142px,auto) minmax(174px,auto);
+    gap: 14px;
+  }
+  .dashboard-card {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 23px;
+    padding: 21px;
+    background:
+      linear-gradient(145deg,rgba(19,29,51,.86),rgba(10,16,31,.82)) padding-box,
+      linear-gradient(135deg,rgba(98,231,255,.43),rgba(167,139,250,.34),rgba(255,255,255,.07)) border-box;
+    box-shadow: 0 18px 44px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.1);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    transition: transform .4s cubic-bezier(.68,-.55,.265,1.55), box-shadow .3s ease;
+  }
+  .dashboard-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(125deg,rgba(255,255,255,.07),transparent 36%,transparent 72%,rgba(98,231,255,.035));
+  }
+  .dashboard-card:hover {
+    box-shadow: 0 22px 50px rgba(0,0,0,.23),0 0 25px rgba(98,231,255,.08),inset 0 1px 0 rgba(255,255,255,.13);
+  }
+  .dashboard-card:active { transform: scale(.95); }
+  .dashboard-card-head {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .dashboard-kicker {
+    display: block;
+    color: #8fa6c7;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: .15em;
+  }
+  .dashboard-card h3 {
+    margin: 5px 0 0;
+    color: #f3f7ff;
+    font-size: 17px;
+    font-weight: 850;
+    letter-spacing: -.03em;
+  }
+  .mastery-card { grid-row: span 2; min-height: 330px; }
+  .dashboard-live-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #7cf0bd;
+    box-shadow: 0 0 0 5px rgba(124,240,189,.08),0 0 15px rgba(124,240,189,.5);
+  }
+  .mastery-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px,3vw,34px);
+    min-height: 240px;
+    height: calc(100% - 35px);
+  }
+  .mastery-ring-wrap {
+    position: relative;
+    width: min(220px,55%);
+    flex: 0 1 220px;
+    aspect-ratio: 1;
+  }
+  .mastery-ring { display: block; width: 100%; height: 100%; overflow: visible; transform: rotate(-90deg); }
+  .mastery-ring-track, .mastery-ring-value {
+    fill: none;
+    stroke-width: 9;
+  }
+  .mastery-ring-track { stroke: rgba(190,211,245,.12); }
+  .mastery-ring-value {
+    stroke: url(#mastery-ring-gradient);
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    transition: stroke-dashoffset 1.1s cubic-bezier(.22,1,.36,1);
+    filter: drop-shadow(0 0 7px rgba(98,231,255,.35));
+  }
+  .mastery-ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+  }
+  .mastery-ring-center strong {
+    color: #f2fbff;
+    font-size: clamp(29px,4vw,43px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -.07em;
+  }
+  .mastery-ring-center span { margin-top: 7px; color: #9eafc9; font-size: 10px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+  .mastery-summary { max-width: 150px; }
+  .mastery-summary > strong { display: flex; align-items: baseline; gap: 6px; color: #e8f7ff; font-size: 23px; letter-spacing: -.04em; }
+  .mastery-summary > strong i { color: #7385a4; font-size: 14px; font-style: normal; }
+  .mastery-summary > span { display: block; color: #95a6c1; font-size: 10px; line-height: 1.5; }
+  .mastery-summary p { margin: 13px 0 0; color: #8192af; font-size: 11px; line-height: 1.65; }
+  .streak-card { min-height: 142px; }
+  .streak-card::after {
+    content: "";
+    position: absolute;
+    right: -28px;
+    top: -38px;
+    width: 142px;
+    height: 142px;
+    border-radius: 50%;
+    background: radial-gradient(circle,rgba(255,161,95,.18),rgba(255,115,90,.045) 48%,transparent 72%);
+    pointer-events: none;
+    animation: streak-glow 3.2s ease-in-out infinite alternate;
+  }
+  @keyframes streak-glow { from { opacity: .55; } to { opacity: 1; } }
+  .streak-flame {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 39px;
+    height: 39px;
+    border: 1px solid rgba(255,170,115,.24);
+    border-radius: 13px;
+    background: rgba(255,139,89,.09);
+    color: #ffbd8d;
+    font-size: 23px;
+    text-shadow: 0 0 15px rgba(255,142,90,.55);
+  }
+  .streak-value-row { position: relative; z-index: 1; display: flex; align-items: baseline; gap: 9px; margin-top: 13px; }
+  .streak-value-row strong { color: #fff2e9; font-size: 36px; line-height: 1; font-weight: 900; letter-spacing: -.06em; }
+  .streak-value-row span { color: #c3a995; font-size: 12px; font-weight: 750; }
+  .dashboard-card-note { position: relative; z-index: 1; margin: 8px 0 0; color: #8e9db5; font-size: 10px; line-height: 1.5; }
+  .recent-card { min-height: 174px; }
+  .recent-count { color: #8fa2c0; font-size: 10px; font-weight: 800; }
+  .recent-activity-list { position: relative; z-index: 1; display: grid; gap: 7px; padding: 0; margin: 14px 0 0; list-style: none; }
+  .recent-activity-list li { min-width: 0; }
+  .recent-activity-list a {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    padding: 7px 9px;
+    border: 1px solid rgba(180,207,245,.09);
+    border-radius: 11px;
+    background: rgba(255,255,255,.035);
+    color: #d7e7f7;
+    font-size: 11px;
+    font-weight: 730;
+    transition: transform .3s cubic-bezier(.22,1,.36,1),border-color .2s ease;
+  }
+  .recent-activity-list a:hover { border-color: rgba(98,231,255,.27); transform: translateX(3px); }
+  .recent-activity-list a:active { transform: scale(.95); }
+  .recent-activity-icon { flex: 0 0 auto; color: #85eaff; }
+  .recent-activity-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .recent-empty { padding: 10px 2px; color: #8292ad; font-size: 11px; line-height: 1.6; }
+  .quick-start-section { padding-top: 12px; padding-bottom: 40px; }
+  .quick-start-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+  .quick-start-heading h2 { font-size: clamp(21px,3vw,29px); }
+  .quick-start-heading p { margin: 0; color: #9eacc5; font-size: 12px; }
+  .quick-start-hint { display: inline-flex; align-items: center; gap: 7px; padding-bottom: 3px; color: #8193b2; font-size: 10px; white-space: nowrap; }
+  .quick-start-row {
+    display: grid;
+    grid-auto-columns: minmax(235px,1fr);
+    grid-auto-flow: column;
+    gap: 11px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding: 3px 2px 13px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(98,231,255,.26) transparent;
+    scroll-snap-type: x mandatory;
+  }
+  .quick-start-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid transparent;
+    border-radius: 17px;
+    background:
+      linear-gradient(135deg,rgba(18,28,50,.88),rgba(12,19,35,.86)) padding-box,
+      linear-gradient(115deg,rgba(98,231,255,.43),rgba(167,139,250,.3),rgba(255,255,255,.07)) border-box;
+    box-shadow: 0 12px 28px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(18px) saturate(145%);
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+    scroll-snap-align: start;
+    transition: transform .4s cubic-bezier(.68,-.55,.265,1.55),box-shadow .25s ease;
+  }
+  .quick-start-card:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(0,0,0,.2),0 0 22px rgba(98,231,255,.08); }
+  .quick-start-card:active { transform: scale(.95); }
+  .quick-start-icon {
+    display: grid;
+    place-items: center;
+    width: 39px;
+    height: 39px;
+    flex: 0 0 39px;
+    border: 1px solid rgba(98,231,255,.22);
+    border-radius: 13px;
+    background: linear-gradient(145deg,rgba(98,231,255,.15),rgba(167,139,250,.13));
+    color: #9cefff;
+    font-size: 20px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+  }
+  .quick-start-copy { display: block; min-width: 0; flex: 1 1 auto; }
+  .quick-start-copy strong, .quick-start-copy small { display: block; }
+  .quick-start-copy strong { overflow: hidden; color: #eff8ff; font-size: 11px; font-weight: 850; text-overflow: ellipsis; white-space: nowrap; }
+  .quick-start-copy small { margin-top: 4px; color: #91a3c0; font-size: 9px; }
+  .quick-start-arrow { color: #89eaff; font-size: 13px; }
+  .quick-start-card.is-unavailable { border-color: rgba(180,195,220,.12); background: linear-gradient(135deg,rgba(17,23,39,.75),rgba(10,15,28,.75)); }
+  .quick-start-card.is-unavailable .quick-start-icon { color: #7f8da7; border-color: rgba(180,195,220,.12); }
+  .quick-start-card.is-unavailable .quick-start-arrow { opacity: .4; }
+  @media (max-width: 760px) {
+    .dashboard-grid { grid-template-columns: minmax(0,1fr); grid-template-rows: auto; }
+    .mastery-card { grid-row: auto; min-height: 0; }
+    .mastery-content { min-height: 215px; }
+    .mastery-ring-wrap { width: min(190px,50%); flex-basis: 190px; }
+    .mastery-summary { max-width: 145px; }
+    .streak-card, .recent-card { min-height: 0; }
+    .quick-start-row { grid-auto-columns: minmax(245px,82%); }
+  }
+  @media (max-width: 420px) {
+    .dashboard-card { padding: 17px; border-radius: 19px; }
+    .mastery-content { gap: 10px; min-height: 190px; }
+    .mastery-ring-wrap { width: min(160px,48%); flex-basis: 160px; }
+    .mastery-ring-center strong { font-size: 32px; }
+    .mastery-summary { max-width: 125px; }
+    .mastery-summary > strong { font-size: 20px; }
+    .mastery-summary p { font-size: 10px; }
+    .quick-start-heading { align-items: flex-start; }
+    .quick-start-hint { font-size: 9px; }
+    .quick-start-row { grid-auto-columns: minmax(232px,88%); gap: 9px; }
+    .quick-start-card { padding: 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dashboard-card, .dashboard-catalog-link, .recent-activity-list a, .quick-start-card {
+      transition: none !important;
+      animation: none !important;
+    }
+    .streak-card::after { animation: none !important; }
+    .mastery-ring-value { transition: none !important; }
+  }
+</style>
+
 </head>
 <body class="catalog-locked catalog-locked" data-theme="holographic" data-appearance="evening" data-ambient="on">
 <canvas id="homepage-fluid-canvas" aria-hidden="true"></canvas>
@@ -879,6 +1160,82 @@ html{scroll-behavior:smooth}
       </div>
     </section>
 
+
+    <section class="section container learning-dashboard" id="learning-dashboard" aria-labelledby="learning-dashboard-title">
+      <div class="section-head dashboard-heading">
+        <div>
+          <div class="eyebrow">YOUR LEARNING JOURNEY</div>
+          <h2 id="learning-dashboard-title">Your Learning Dashboard</h2>
+          <p>A quick view of your progress, consistency and recently explored labs.</p>
+        </div>
+        <a class="dashboard-catalog-link" href="#simulations">Explore activities <span aria-hidden="true">↗</span></a>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="dashboard-card mastery-card" data-dashboard-card>
+          <div class="dashboard-card-head">
+            <div>
+              <span class="dashboard-kicker">YOUR MASTERY</span>
+              <h3>Mastery Ring</h3>
+            </div>
+            <span class="dashboard-live-dot" aria-label="Progress synced"></span>
+          </div>
+          <div class="mastery-content">
+            <div class="mastery-ring-wrap">
+              <svg class="mastery-ring" viewBox="0 0 180 180" role="img" aria-labelledby="mastery-ring-title mastery-ring-desc">
+                <title id="mastery-ring-title">Simulation completion progress</title>
+                <desc id="mastery-ring-desc">Your completed live simulations as a percentage of all live simulations.</desc>
+                <defs>
+                  <linearGradient id="mastery-ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#62e7ff"></stop>
+                    <stop offset="100%" stop-color="#a78bfa"></stop>
+                  </linearGradient>
+                </defs>
+                <circle class="mastery-ring-track" cx="90" cy="90" r="72"></circle>
+                <circle class="mastery-ring-value" id="mastery-ring-value" cx="90" cy="90" r="72" pathLength="100"></circle>
+              </svg>
+              <div class="mastery-ring-center">
+                <strong id="mastery-percent">0%</strong>
+                <span>Complete</span>
+              </div>
+            </div>
+            <div class="mastery-summary">
+              <strong><span id="mastery-completed-count">0</span><i>/</i><span id="mastery-total-count">0</span></strong>
+              <span>live simulations completed</span>
+              <p>Your progress updates when your saved learning activity changes.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="dashboard-card streak-card" data-dashboard-card>
+          <div class="dashboard-card-head">
+            <div>
+              <span class="dashboard-kicker">BUILD CONSISTENCY</span>
+              <h3>Current Streak</h3>
+            </div>
+            <span class="streak-flame" aria-hidden="true">♨</span>
+          </div>
+          <div class="streak-value-row">
+            <strong id="dashboard-streak-count">0</strong>
+            <span>Days</span>
+          </div>
+          <p class="dashboard-card-note" id="dashboard-streak-note">Your learning streak, synced from saved progress.</p>
+        </article>
+
+        <article class="dashboard-card recent-card" data-dashboard-card>
+          <div class="dashboard-card-head">
+            <div>
+              <span class="dashboard-kicker">PICK UP WHERE YOU LEFT OFF</span>
+              <h3>Recent Activity</h3>
+            </div>
+            <span class="recent-count" id="recent-activity-count">0 / 3</span>
+          </div>
+          <ul class="recent-activity-list" id="recent-activity-list" aria-live="polite">
+            <li class="recent-empty">Your opened simulations will appear here.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
     <section class="section container" id="experience-deck" aria-label="Interactive interface experience">
       <div class="exp-shell">
         <div id="experience-stage"></div>
@@ -925,6 +1282,34 @@ html{scroll-behavior:smooth}
             <p>Explore Physics and Mathematics through concept-led activities designed with JEE learning in mind.</p>
           </div>
         </article>
+      </div>
+    </section>
+
+    <section class="section container quick-start-section" id="quick-start" aria-labelledby="quick-start-title">
+      <div class="quick-start-heading">
+        <div>
+          <div class="eyebrow">JUMP INTO A CONCEPT</div>
+          <h2 id="quick-start-title">Quick Start</h2>
+          <p>Open a focused scenario and start experimenting.</p>
+        </div>
+        <span class="quick-start-hint">Swipe to explore <span aria-hidden="true">→</span></span>
+      </div>
+      <div class="quick-start-row" id="quick-start-row">
+        <a class="quick-start-card" data-quick-match="projectile" data-preset="max-range" href="#simulations">
+          <span class="quick-start-icon" aria-hidden="true">↗</span>
+          <span class="quick-start-copy"><strong>Projectile: Max Range</strong><small>Launch angle · range</small></span>
+          <span class="quick-start-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="quick-start-card" data-quick-match="gravity" data-preset="earth-moon" href="#simulations">
+          <span class="quick-start-icon" aria-hidden="true">◉</span>
+          <span class="quick-start-copy"><strong>Earth vs Moon Gravity</strong><small>Compare gravitational fields</small></span>
+          <span class="quick-start-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="quick-start-card" data-quick-match="pendulum" data-preset="pendulum-motion" href="#simulations">
+          <span class="quick-start-icon" aria-hidden="true">⟲</span>
+          <span class="quick-start-copy"><strong>Pendulum Motion</strong><small>Oscillation · time period</small></span>
+          <span class="quick-start-arrow" aria-hidden="true">↗</span>
+        </a>
       </div>
     </section>
     <section class="section container" id="simulations">
@@ -1655,6 +2040,362 @@ html{scroll-behavior:smooth}
       if (!reduceMotion && !hidden) frameId = window.requestAnimationFrame(draw);
     }
   }
+})();
+</script>
+
+
+<script id="student-dashboard-runtime">
+(function () {
+  "use strict";
+
+  var completedKey = "vsh-mastery-completed-v1";
+  var recentKey = "vsh-recent-activity-v1";
+  var recentList = document.getElementById("recent-activity-list");
+  var ring = document.getElementById("mastery-ring-value");
+  var percentText = document.getElementById("mastery-percent");
+  var completedText = document.getElementById("mastery-completed-count");
+  var totalText = document.getElementById("mastery-total-count");
+  var streakText = document.getElementById("dashboard-streak-count");
+  var recentCount = document.getElementById("recent-activity-count");
+  var lastSnapshot = "";
+  var liveItems = Array.isArray(window.CATALOG)
+    ? window.CATALOG.filter(function (item) { return item && item.status === "live" && item.url; })
+    : [];
+
+  function safeRead(key) {
+    try { return window.localStorage.getItem(key); }
+    catch (error) { return null; }
+  }
+
+  function safeWrite(key, value) {
+    try { window.localStorage.setItem(key, value); return true; }
+    catch (error) { return false; }
+  }
+
+  function parseStored(raw) {
+    if (raw === null || raw === undefined) return null;
+    try { return JSON.parse(raw); }
+    catch (error) { return raw; }
+  }
+
+  function normalizeToken(value) {
+    return String(value || "").trim().toLowerCase().replace(/\\/+/g, "/").replace(/\\/$/, "");
+  }
+
+  function itemTokens(item) {
+    var tokens = [];
+    ["id", "slug", "title", "url", "path"].forEach(function (key) {
+      if (item && item[key] !== undefined && item[key] !== null) {
+        tokens.push(normalizeToken(item[key]));
+        if (key === "url") {
+          try { tokens.push(normalizeToken(new URL(item[key], window.location.href).pathname)); }
+          catch (error) {}
+        }
+      }
+    });
+    return tokens.filter(Boolean);
+  }
+
+  function completedValues(value) {
+    if (Array.isArray(value)) return value;
+    if (value && typeof value === "object") {
+      var nested = value.completed || value.ids || value.items || value.simulations || value.list;
+      if (Array.isArray(nested)) return nested;
+      return Object.keys(value).filter(function (key) {
+        return value[key] === true || value[key] === 1;
+      });
+    }
+    if (typeof value === "number" && isFinite(value)) return value;
+    if (typeof value === "string" && /^\\d+$/.test(value)) return Number(value);
+    return [];
+  }
+
+  function getCompletion() {
+    var parsed = parseStored(safeRead(completedKey));
+    var values = completedValues(parsed);
+    var total = liveItems.length;
+    var count = 0;
+
+    if (typeof values === "number") {
+      count = Math.max(0, Math.min(total, values));
+    } else {
+      var completedSet = new Set();
+      values.forEach(function (entry) {
+        if (entry && typeof entry === "object") {
+          ["id", "slug", "title", "url", "path"].forEach(function (key) {
+            if (entry[key] !== undefined) completedSet.add(normalizeToken(entry[key]));
+          });
+        } else {
+          completedSet.add(normalizeToken(entry));
+        }
+      });
+
+      if (completedSet.size) {
+        count = liveItems.filter(function (item) {
+          return itemTokens(item).some(function (token) { return completedSet.has(token); });
+        }).length;
+        if (!count) count = Math.min(total, completedSet.size);
+      }
+    }
+
+    // Keep the homepage's existing progress summary as a fallback if older progress
+    // data uses a format not represented by the completion key above.
+    if (!parsed) {
+      var existingStat = document.getElementById("stat-progress");
+      var match = existingStat && existingStat.textContent.match(/(\\d+)\\s*\\/\\s*(\\d+)/);
+      if (match) {
+        count = Number(match[1]);
+        if (!total) total = Number(match[2]);
+      }
+    }
+
+    count = Math.max(0, Math.min(total, count));
+    return { completed: count, total: total, percent: total ? Math.round(count / total * 100) : 0 };
+  }
+
+  function parseStreak(raw) {
+    var value = parseStored(raw);
+    if (typeof value === "number" && isFinite(value)) return Math.max(0, Math.floor(value));
+    if (typeof value === "string" && /^\\d+$/.test(value)) return Number(value);
+    if (!value || typeof value !== "object") return null;
+
+    var fields = ["currentStreak", "streakCount", "streak", "count", "days", "current", "value"];
+    for (var i = 0; i < fields.length; i++) {
+      var candidate = value[fields[i]];
+      if (typeof candidate === "number" && isFinite(candidate)) return Math.max(0, Math.floor(candidate));
+      if (typeof candidate === "string" && /^\\d+$/.test(candidate)) return Number(candidate);
+    }
+
+    var dates = value.dates || value.activeDates || value.history;
+    if (Array.isArray(dates)) {
+      var dateSet = new Set(dates.map(function (entry) {
+        if (typeof entry === "string") return entry.slice(0, 10);
+        if (entry && typeof entry.date === "string") return entry.date.slice(0, 10);
+        return "";
+      }).filter(Boolean));
+      var cursor = new Date();
+      var streak = 0;
+      for (var day = 0; day < 370; day++) {
+        var stamp = cursor.getFullYear() + "-" + String(cursor.getMonth() + 1).padStart(2, "0") + "-" + String(cursor.getDate()).padStart(2, "0");
+        if (!dateSet.has(stamp)) {
+          if (day === 0) {
+            cursor.setDate(cursor.getDate() - 1);
+            continue;
+          }
+          break;
+        }
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      return streak;
+    }
+    return null;
+  }
+
+  function getStreak() {
+    var preferred = ["vsh-daily-streak-v1", "vsh-streak-v1", "vsh-daily-streak", "vsh-streak"];
+    for (var i = 0; i < preferred.length; i++) {
+      var raw = safeRead(preferred[i]);
+      if (raw !== null) {
+        var result = parseStreak(raw);
+        if (result !== null) return result;
+      }
+    }
+
+    try {
+      for (var j = 0; j < localStorage.length; j++) {
+        var key = localStorage.key(j);
+        if (!key || !/streak/i.test(key)) continue;
+        var parsed = parseStreak(localStorage.getItem(key));
+        if (parsed !== null) return parsed;
+      }
+    } catch (error) {}
+
+    var existingStreak = document.querySelector("[data-vsh-streak], #vsh-streak-count, .vsh-streak-count");
+    if (existingStreak) {
+      var match = existingStreak.textContent.match(/\\d+/);
+      if (match) return Number(match[0]);
+    }
+    return 0;
+  }
+
+  function readRecent() {
+    var value = parseStored(safeRead(recentKey));
+    if (!Array.isArray(value)) return [];
+    return value.filter(function (entry) {
+      return entry && typeof entry === "object" && entry.url && entry.title;
+    }).slice(0, 3);
+  }
+
+  function renderRecent() {
+    if (!recentList) return;
+    var recent = readRecent();
+    recentList.textContent = "";
+    if (recentCount) recentCount.textContent = recent.length + " / 3";
+
+    if (!recent.length) {
+      var empty = document.createElement("li");
+      empty.className = "recent-empty";
+      empty.textContent = "Open a live simulation from the catalog. Your latest three will appear here.";
+      recentList.appendChild(empty);
+      return;
+    }
+
+    recent.forEach(function (entry) {
+      var li = document.createElement("li");
+      var link = document.createElement("a");
+      var icon = document.createElement("span");
+      var title = document.createElement("span");
+      icon.className = "recent-activity-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = entry.icon || "◈";
+      title.className = "recent-activity-title";
+      title.textContent = entry.title;
+      link.href = entry.url;
+      link.setAttribute("aria-label", "Open " + entry.title);
+      link.appendChild(icon);
+      link.appendChild(title);
+      li.appendChild(link);
+      recentList.appendChild(li);
+    });
+  }
+
+  function refreshDashboard(force) {
+    var signature = [
+      safeRead(completedKey) || "",
+      safeRead(recentKey) || "",
+      getStreak(),
+      liveItems.length
+    ].join("|");
+    if (!force && signature === lastSnapshot) return;
+    lastSnapshot = signature;
+
+    var progress = getCompletion();
+    if (percentText) percentText.textContent = progress.percent + "%";
+    if (completedText) completedText.textContent = String(progress.completed);
+    if (totalText) totalText.textContent = String(progress.total);
+    if (ring) {
+      ring.style.strokeDashoffset = String(100 - progress.percent);
+      ring.setAttribute("aria-label", progress.percent + " percent complete");
+    }
+    if (streakText) streakText.textContent = String(getStreak());
+    renderRecent();
+
+    var stat = document.getElementById("stat-progress");
+    if (stat) stat.textContent = progress.completed + " / " + progress.total;
+  }
+
+  function normalizeUrl(url) {
+    try {
+      var parsed = new URL(url, window.location.href);
+      return parsed.pathname.replace(/\\/$/, "");
+    } catch (error) {
+      return String(url || "");
+    }
+  }
+
+  function recordSimulationClick(anchor) {
+    var url;
+    try { url = new URL(anchor.href, window.location.href); }
+    catch (error) { return; }
+    if (url.origin !== window.location.origin || !/\\.html$/i.test(url.pathname)) return;
+
+    var item = liveItems.find(function (candidate) {
+      return normalizeUrl(candidate.url) === normalizeUrl(url.href);
+    });
+    if (!item && !/\\/projects\\//i.test(url.pathname)) return;
+
+    var record = {
+      title: item ? item.title : (anchor.textContent || "Simulation").trim(),
+      url: url.href,
+      icon: item && item.icon ? item.icon : "◈",
+      openedAt: Date.now()
+    };
+    var current = readRecent().filter(function (entry) {
+      return normalizeUrl(entry.url) !== normalizeUrl(record.url);
+    });
+    current.unshift(record);
+    safeWrite(recentKey, JSON.stringify(current.slice(0, 3)));
+    refreshDashboard(true);
+  }
+
+  // Record catalog / shortcut launches before browser navigation.
+  document.addEventListener("click", function (event) {
+    var anchor = event.target && event.target.closest ? event.target.closest("a[href]") : null;
+    if (anchor) recordSimulationClick(anchor);
+  }, true);
+
+  function matchLab(matchType) {
+    var rules = {
+      projectile: /projectile/i,
+      gravity: /gravity|gravitational|free[ -]?fall/i,
+      pendulum: /pendulum|simple[ -]?harmonic|oscillation|\\bshm\\b/i
+    };
+    var pattern = rules[matchType];
+    if (!pattern) return null;
+
+    var candidates = liveItems.map(function (item) {
+      var text = [item.title, item.desc, item.category, item.tags].join(" ");
+      var title = String(item.title || "");
+      var score = 0;
+      if (pattern.test(title)) score += 5;
+      if (pattern.test(String(item.category || ""))) score += 3;
+      if (pattern.test(String(item.desc || ""))) score += 2;
+      if (pattern.test(String(item.tags || ""))) score += 1;
+      return { item: item, score: score, text: text };
+    }).filter(function (entry) { return entry.score > 0; });
+
+    candidates.sort(function (a, b) { return b.score - a.score; });
+    return candidates.length ? candidates[0].item : null;
+  }
+
+  function resolveQuickStarts() {
+    var cards = document.querySelectorAll(".quick-start-card[data-quick-match]");
+    cards.forEach(function (card) {
+      var item = matchLab(card.getAttribute("data-quick-match"));
+      var status = card.querySelector(".quick-start-copy small");
+      if (!item || !item.url) {
+        card.href = "#simulations";
+        card.classList.add("is-unavailable");
+        card.setAttribute("aria-label", card.querySelector("strong").textContent + " — no matching live simulation yet; browse the activity catalog");
+        if (status) status.textContent = "Browse catalog · lab not live yet";
+        return;
+      }
+
+      try {
+        var target = new URL(item.url, window.location.href);
+        target.searchParams.set("preset", card.getAttribute("data-preset"));
+        card.href = target.href;
+        card.classList.remove("is-unavailable");
+        card.removeAttribute("aria-disabled");
+        if (status) status.textContent = "Open " + (item.title || "simulation");
+      } catch (error) {
+        card.href = "#simulations";
+        card.classList.add("is-unavailable");
+      }
+    });
+  }
+
+  // Repaint on cross-tab changes, page refocus and same-tab storage writes.
+  window.addEventListener("storage", function (event) {
+    if (!event.key || /mastery-completed|streak|recent-activity/i.test(event.key)) refreshDashboard(true);
+  });
+  window.addEventListener("focus", function () { refreshDashboard(true); });
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) refreshDashboard(true);
+  });
+
+  refreshDashboard(true);
+  resolveQuickStarts();
+  requestAnimationFrame(function () {
+    // Trigger the SVG stroke transition after its initial zero-progress paint.
+    refreshDashboard(true);
+  });
+
+  var pollId = window.setInterval(function () {
+    if (!document.hidden) refreshDashboard(false);
+  }, 1200);
+  window.addEventListener("pagehide", function () { window.clearInterval(pollId); }, { once: true });
 })();
 </script>
 
