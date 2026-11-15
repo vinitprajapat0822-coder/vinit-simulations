@@ -5,7 +5,7 @@
 <title>Projectile Motion Laboratory | Vinit Simulation Hub</title>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
-:root{color-scheme:dark;--bg:#070a14;--panel:rgba(14,22,44,.72);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
+:root{color-scheme:dark;--bg:#080b16;--surface:#101629;--panel:var(--surface);--text:#f2f5ff;--muted:#9ba8c5;--cyan:#62e7ff;--purple:#a78bfa;--violet:var(--purple);--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(163,184,230,.18);--lab-radius:18px;--canvas-top:#111c30;--canvas-bottom:#080b16}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
 a{color:inherit;text-decoration:none}.wrap{width:min(1220px,calc(100% - 24px));margin:auto}
 header{position:sticky;top:0;z-index:10;background:rgba(7,10,20,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
@@ -39,6 +39,55 @@ canvas{display:block;width:100%;height:min(430px,54vh);background:#0a1220;border
 .challenge-panel.is-success .challenge-status{color:var(--cyan);font-weight:800}
 @keyframes challengePulse{0%{transform:scale(.97);box-shadow:0 0 0 rgba(98,231,255,0)}55%{transform:scale(1.02);box-shadow:0 0 34px rgba(98,231,255,.3)}100%{transform:scale(1);}}
 @media(prefers-reduced-motion:reduce){.challenge-panel.is-success{animation:none}}
+
+/* ── Projectile Lab: responsive controls, landing view and theme tokens ── */
+body{background:radial-gradient(ellipse at 50% 0%,rgba(98,231,255,.055),transparent 42%),var(--bg);color:var(--text)}
+.panel{border-radius:var(--lab-radius);background:var(--panel);border-color:var(--line)}
+.ph{color:var(--text);letter-spacing:.015em}
+.control-panel .pb{padding:14px}
+.control-group{padding:2px 0 12px}
+.control-group+.control-group{margin-top:9px;padding-top:12px;border-top:1px solid var(--line)}
+.control-group-title{margin:0 0 6px;color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+label.row{align-items:center;gap:10px;min-height:30px;margin:7px 0 2px;color:var(--muted);font-size:13px}
+label.row b{color:var(--text);font-variant-numeric:tabular-nums}
+input[type=range]{display:block;width:100%;min-height:48px;margin:0;padding:0;accent-color:var(--cyan);cursor:pointer;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:7px;border-radius:99px;background:linear-gradient(90deg,rgba(98,231,255,.42),var(--line))}
+input[type=range]::-webkit-slider-thumb{width:23px;height:23px;margin-top:-8px;border:2px solid var(--bg);border-radius:50%;background:var(--cyan);box-shadow:0 0 0 3px rgba(98,231,255,.15),0 0 14px rgba(98,231,255,.24);-webkit-appearance:none}
+input[type=range]::-moz-range-track{height:7px;border-radius:99px;background:linear-gradient(90deg,rgba(98,231,255,.42),var(--line))}
+input[type=range]::-moz-range-thumb{width:19px;height:19px;border:2px solid var(--bg);border-radius:50%;background:var(--cyan);box-shadow:0 0 0 3px rgba(98,231,255,.15)}
+.actions{gap:9px;margin-top:10px}
+.btn{min-height:48px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2,var(--surface));color:var(--text);font-size:13px;transition:transform .25s ease,border-color .25s ease,background .25s ease}
+.btn:hover{border-color:var(--cyan)}
+.btn:active{transform:scale(.97)}
+.btn.primary{border:1px solid transparent;background:linear-gradient(115deg,var(--cyan),var(--purple));color:var(--bg)}
+.simulation-stage{position:relative;isolation:isolate;padding:12px;overflow:hidden;border-radius:14px}
+.simulation-canvas{position:relative;z-index:0;display:block;width:100%;height:min(430px,54vh);min-height:260px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--canvas-top),var(--canvas-bottom));}
+.simulation-start-screen{position:absolute;z-index:2;inset:12px;display:grid;place-items:center;padding:16px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(145deg,rgba(8,11,22,.72),rgba(8,11,22,.55));backdrop-filter:blur(11px) saturate(135%);-webkit-backdrop-filter:blur(11px) saturate(135%);opacity:1;visibility:visible;transform:scale(1);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1),visibility 0s linear 0s}
+.simulation-start-screen.is-dismissed{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.975);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1),visibility 0s linear .5s}
+.simulation-start-card{width:min(440px,100%);padding:clamp(20px,4vw,34px);border:1px solid transparent;border-radius:20px;background:linear-gradient(145deg,rgba(17,27,48,.94),rgba(10,16,31,.94)) padding-box,linear-gradient(135deg,rgba(98,231,255,.48),rgba(167,139,250,.34),var(--line)) border-box;box-shadow:0 22px 60px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);text-align:center}
+.start-kicker{color:var(--cyan);font-size:9px;font-weight:850;letter-spacing:.16em}
+.simulation-start-card h2{margin:9px 0 8px;color:var(--text);font-size:clamp(23px,4vw,32px);letter-spacing:-.045em}
+.simulation-start-card p{max-width:34ch;margin:0 auto 18px;color:var(--muted);font-size:13px;line-height:1.65}
+.start-simulation-btn{display:flex;align-items:center;justify-content:center;gap:15px;width:100%;min-height:54px;padding:14px 18px;border:1px solid transparent;border-radius:14px;background:linear-gradient(110deg,var(--cyan),var(--purple));color:var(--bg);font:inherit;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 10px 28px rgba(98,231,255,.16);transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .25s ease}
+.start-simulation-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(98,231,255,.22)}
+.start-simulation-btn:active{transform:scale(.96)}
+.simulation-start-card small{display:block;margin-top:12px;color:var(--muted);font-size:10px}
+.challenge-panel{border-color:var(--line);background:var(--surface)}
+.challenge-panel.is-success{border-color:var(--green);box-shadow:0 0 20px rgba(98,231,255,.12)}
+.challenge-panel.is-success .challenge-status{color:var(--green)}
+body[data-theme="holographic"]{--bg:#080b16;--surface:#101629;--surface-2:#151d32;--panel:rgba(16,22,41,.78);--text:#f2f5ff;--muted:#9ba8c5;--cyan:#62e7ff;--purple:#a78bfa;--violet:var(--purple);--green:#7cf0bd;--line:rgba(163,184,230,.18);--lab-radius:18px;--canvas-top:#121d34;--canvas-bottom:#080b16}
+body[data-theme="constellation"]{--bg:#080d1b;--surface:#111b32;--surface-2:#172440;--panel:rgba(15,27,51,.8);--text:#edf6ff;--muted:#9db3cf;--cyan:#83d9ff;--purple:#c0a7ff;--violet:var(--purple);--green:#80edc1;--line:rgba(151,190,241,.23);--lab-radius:18px;--canvas-top:#14223d;--canvas-bottom:#080d1b}
+body[data-theme="control-room"]{--bg:#0a111b;--surface:#141f2d;--surface-2:#1a2939;--panel:#111c2a;--text:#edf4fb;--muted:#a4b3c5;--cyan:#78cce9;--purple:#9baed0;--violet:var(--purple);--green:#83d8b0;--line:rgba(155,185,218,.34);--lab-radius:13px;--canvas-top:#172638;--canvas-bottom:#0a111b}
+body[data-theme="terminal"]{--bg:#050b08;--surface:#0b1710;--surface-2:#102117;--panel:#0b1710;--text:#d9ffe4;--muted:#8eae98;--cyan:#73f59d;--purple:#55cf86;--violet:var(--purple);--green:#8bffb0;--line:rgba(115,245,157,.3);--lab-radius:7px;--canvas-top:#0c1a11;--canvas-bottom:#050b08;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+body[data-theme="terminal"] .panel,body[data-theme="terminal"] .simulation-start-card,body[data-theme="terminal"] .simulation-start-screen{border-radius:var(--lab-radius);background:var(--surface);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+body[data-theme="terminal"] .simulation-start-card{border:1px solid var(--line)}
+body[data-theme="terminal"] .simulation-start-screen{border:1px solid var(--line)}
+body[data-theme="terminal"] .start-simulation-btn{border:1px solid var(--cyan);border-radius:5px;background:var(--surface-2);color:var(--cyan);box-shadow:none}
+body[data-theme="control-room"] .panel{border-width:1px;border-radius:13px}
+body[data-theme="control-room"] .simulation-start-card{border-radius:13px}
+@media(max-width:600px){.simulation-stage{padding:8px}.simulation-start-screen{inset:8px;padding:10px}.simulation-start-card{padding:20px 16px}.simulation-canvas{height: min(390px,48vh);min-height:240px}.layout{gap:10px}.control-panel .pb{padding:12px}.control-group{padding-bottom:10px}}
+@media(prefers-reduced-motion:reduce){.simulation-start-screen,.start-simulation-btn,.btn{transition:none!important}.simulation-start-screen.is-dismissed{transform:none}}
+
 </style>
 </head>
 <body>
@@ -47,8 +96,8 @@ canvas{display:block;width:100%;height:min(430px,54vh);background:#0a1220;border
 <section class="hero"><div class="eyebrow">PROJECTILE</div><h1>Projectile Motion Laboratory</h1><p class="lead">Launch a projectile under constant gravity. Horizontal velocity stays constant; vertical motion is uniformly accelerated. Compare the dashed ideal path with the live trail and velocity vector.</p></section>
 <div class="layout">
 <aside>
-<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Launch speed u <b id="uV">28 m/s</b></label><input type="range" id="u" min="5" max="50" step="0.5" value="28">
-<label class="row">Angle θ <b id="thV">40°</b></label><input type="range" id="th" min="10" max="90" step="1" value="40">
+<div class="panel control-panel"><div class="ph">Parameters · launch setup</div><div class="pb"><div class="control-group"><div class="control-group-title">Launch parameters</div><label class="row">Launch speed u <b id="uV">28 m/s</b></label><input type="range" id="u" min="5" max="50" step="0.5" value="28">
+<label class="row">Angle θ <b id="thV">40°</b></label><input type="range" id="th" min="10" max="90" step="1" value="40"></div><div class="control-group environment-group"><div class="control-group-title">Environment</div>
 <label class="row">g <b id="gV">9.8</b></label><input type="range" id="g" min="1.6" max="20" step="0.1" value="9.8"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div>
 <div class="actions challenge-actions"><button class="btn" type="button" id="challengeBtn">Challenge Mode</button></div>
 <div class="challenge-panel" id="challengePanel" hidden>
@@ -63,7 +112,17 @@ canvas{display:block;width:100%;height:min(430px,54vh);background:#0a1220;border
 </ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="960" height="430"></canvas></div></div>
+<div class="panel simulation-viewport"><div class="pb simulation-stage"><canvas id="c" class="simulation-canvas" width="960" height="430" aria-label="Projectile trajectory simulation canvas"></canvas>
+<div class="simulation-start-screen" id="simulationStartScreen" role="region" aria-labelledby="simulationStartTitle">
+  <div class="simulation-start-card">
+    <span class="start-kicker">VINIT SIMULATION LAB · 01</span>
+    <h2 id="simulationStartTitle">Projectile Motion</h2>
+    <p>Explore how launch speed, angle and gravity shape a projectile’s path.</p>
+    <button class="start-simulation-btn" id="startSimulationBtn" type="button">Start Simulation <span aria-hidden="true">→</span></button>
+    <small>Adjust the launch parameters after entering the lab.</small>
+  </div>
+</div>
+</div></div>
 <div class="panel"><div class="ph">Live measurements</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory · problem links</div><div class="pb explain"><h3>Components</h3>
 <code>u_x = u cosθ</code> · <code>u_y = u sinθ</code>
@@ -101,7 +160,11 @@ function world(p,W,H){
 }
 function draw(){
   const [W,H]=size();const p=phys();const m=world(p,W,H);
-  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const canvasStyle=getComputedStyle(canvas);
+  const canvasBackground=ctx.createLinearGradient(0,0,0,H);
+  canvasBackground.addColorStop(0,canvasStyle.getPropertyValue('--canvas-top').trim()||'#111c30');
+  canvasBackground.addColorStop(1,canvasStyle.getPropertyValue('--canvas-bottom').trim()||'#080b16');
+  ctx.fillStyle=canvasBackground;ctx.fillRect(0,0,W,H);
   // ground + grid
   ctx.strokeStyle='#1e293b';ctx.beginPath();ctx.moveTo(m.pad,H-m.pad);ctx.lineTo(W-20,H-m.pad);ctx.stroke();
   if(challengeActive){
@@ -195,5 +258,32 @@ reset();
 })();
 
 </script>
+
+<script id="projectile-ui-runtime">
+(function(){
+  "use strict";
+  var startScreen=document.getElementById("simulationStartScreen");
+  var startButton=document.getElementById("startSimulationBtn");
+  var validThemes=["holographic","constellation","control-room","terminal"];
+  function syncTheme(){
+    try{
+      var theme=localStorage.getItem("vsh-interface-theme-v2");
+      if(validThemes.indexOf(theme)>=0)document.body.setAttribute("data-theme",theme);
+    }catch(error){}
+  }
+  syncTheme();
+  window.addEventListener("storage",function(event){
+    if(!event.key||event.key==="vsh-interface-theme-v2")syncTheme();
+  });
+  if(startButton&&startScreen){
+    startButton.addEventListener("click",function(){
+      startScreen.classList.add("is-dismissed");
+      startScreen.setAttribute("aria-hidden","true");
+      startButton.setAttribute("tabindex","-1");
+    });
+  }
+})();
+</script>
+
 </body>
 </html>
