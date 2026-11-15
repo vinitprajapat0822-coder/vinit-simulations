@@ -21,10 +21,54 @@ header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blu
 .formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan);font-size:12px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}}
 @media(max-width:520px){canvas{height:340px}.hero h1{font-size:28px}}
+
+/* Liquid Flow UI — presentation-only layer */
+:root{--purple:var(--violet,#a78bfa);--surface:var(--panel,#101629);--surface-2:#151f36;--liquid-cyan-rgb:98,231,255;--liquid-purple-rgb:167,139,250}
+body{position:relative;isolation:isolate;overflow-x:hidden;background:radial-gradient(ellipse at 12% 0%,rgba(var(--liquid-cyan-rgb),.065),transparent 35%),radial-gradient(ellipse at 92% 22%,rgba(var(--liquid-purple-rgb),.065),transparent 30%),var(--bg);color:var(--text)}
+body>header,body>main,body>.wrap{position:relative;z-index:1}
+#fluid-bg{position:fixed;inset:0;z-index:-1;display:block;width:100vw;height:100vh;border:0;border-radius:0;background:transparent;opacity:.15;pointer-events:none}
+.panel,.liquid-glass-panel{min-width:0;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(16,22,41,.78),rgba(10,16,31,.72));box-shadow:0 16px 38px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.07);backdrop-filter:blur(14px) saturate(145%);-webkit-backdrop-filter:blur(14px) saturate(145%)}
+.control-panel{overflow:hidden}.panel-head,.panel-head h2,.panel-head h3,.ph{color:var(--text)}
+.control-group-title{margin:3px 0 9px;color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}
+.control-group-title:not(:first-child){padding-top:10px;border-top:1px solid var(--line)}
+.field label,label.row{color:var(--muted)}.field label .hint,label.row b{color:var(--text)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;min-width:0;min-height:48px;margin:0;padding:0;background:transparent;accent-color:var(--cyan);cursor:pointer;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{width:100%;height:8px;border:1px solid rgba(var(--liquid-cyan-rgb),.2);border-radius:99px;background:linear-gradient(90deg,rgba(var(--liquid-cyan-rgb),.32),rgba(var(--liquid-purple-rgb),.14));box-shadow:inset 0 0 5px rgba(var(--liquid-cyan-rgb),.24)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border:2px solid var(--bg);border-radius:50%;background:var(--cyan);box-shadow:0 0 10px rgba(var(--liquid-cyan-rgb),.7),0 0 19px rgba(var(--liquid-cyan-rgb),.35);transition:transform .2s ease}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.16)}
+input[type=range]::-moz-range-track{height:8px;border:1px solid rgba(var(--liquid-cyan-rgb),.2);border-radius:99px;background:linear-gradient(90deg,rgba(var(--liquid-cyan-rgb),.32),rgba(var(--liquid-purple-rgb),.14));box-shadow:inset 0 0 5px rgba(var(--liquid-cyan-rgb),.24)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid var(--bg);border-radius:50%;background:var(--cyan);box-shadow:0 0 10px rgba(var(--liquid-cyan-rgb),.7),0 0 19px rgba(var(--liquid-cyan-rgb),.35)}
+input[type=range]:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+input[type=number],select{min-height:48px;border-color:var(--line);border-radius:11px;background:var(--surface);color:var(--text)}
+.btn,.liquid-btn,button{-webkit-tap-highlight-color:transparent}
+.btn,.liquid-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:12px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2,var(--surface));color:var(--text);font-weight:800;cursor:pointer;transition:transform .35s cubic-bezier(.68,-.55,.265,1.55),border-color .22s ease,box-shadow .22s ease,background .22s ease}
+.btn.primary,.liquid-btn{border-color:transparent;background:linear-gradient(135deg,var(--cyan),var(--purple));color:var(--bg);box-shadow:0 8px 22px rgba(var(--liquid-cyan-rgb),.12),inset 0 1px 0 rgba(255,255,255,.22)}
+.btn:hover,.liquid-btn:hover{border-color:var(--cyan);box-shadow:0 10px 26px rgba(var(--liquid-cyan-rgb),.12)}.btn:active,.liquid-btn:active{transform:scale(.92)}
+.actions{gap:9px}.actions .btn{flex:1}
+.liquid-canvas-stage{position:relative;isolation:isolate;overflow:hidden;min-width:0;border:1px solid var(--line);border-radius:15px;background:linear-gradient(160deg,var(--surface),var(--bg))}
+.liquid-canvas-stage>canvas:not(#fluid-bg){position:relative;z-index:0;display:block;width:100%;max-width:100%;border:1px solid var(--line);border-radius:12px;background:linear-gradient(160deg,var(--surface-2,var(--surface)),var(--bg))}
+.liquid-start-screen{position:absolute;z-index:2;inset:0;display:grid;place-items:center;padding:clamp(12px,3vw,24px);border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,rgba(5,10,22,.62),rgba(5,10,22,.46));backdrop-filter:blur(11px) saturate(135%);-webkit-backdrop-filter:blur(11px) saturate(135%);opacity:1;visibility:visible;transform:scale(1);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1),visibility 0s linear 0s}
+.liquid-start-screen.is-dismissed{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.975);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1),visibility 0s linear .5s}
+.liquid-start-card{width:min(440px,100%);padding:clamp(20px,4vw,34px);border:1px solid transparent;border-radius:20px;background:linear-gradient(145deg,rgba(16,25,45,.96),rgba(8,14,28,.96)) padding-box,linear-gradient(135deg,rgba(var(--liquid-cyan-rgb),.48),rgba(var(--liquid-purple-rgb),.36),var(--line)) border-box;box-shadow:0 22px 55px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.1);text-align:center}
+.liquid-start-kicker{color:var(--cyan);font-size:9px;font-weight:900;letter-spacing:.16em}.liquid-start-card h2{margin:9px 0 8px;color:var(--text);font-size:clamp(22px,4vw,31px);letter-spacing:-.045em}
+.liquid-start-card p{max-width:38ch;margin:0 auto 18px;color:var(--muted);font-size:13px;line-height:1.65}.liquid-start-card .liquid-btn{width:100%;min-height:54px;font-size:14px}.liquid-start-card small{display:block;margin-top:12px;color:var(--muted);font-size:10px}
+.note,.tip{border-color:var(--line)}
+body[data-theme="holographic"]{--bg:#080b16;--surface:#101629;--surface-2:#151f36;--text:#f2f5ff;--muted:#9ba8c5;--cyan:#62e7ff;--purple:#a78bfa;--violet:var(--purple);--green:#7cf0bd;--line:rgba(163,184,230,.18);--liquid-cyan-rgb:98,231,255;--liquid-purple-rgb:167,139,250;--panel:rgba(16,22,41,.72)}
+body[data-theme="constellation"]{--bg:#080d1b;--surface:#111b32;--surface-2:#172440;--text:#edf6ff;--muted:#9db3cf;--cyan:#83d9ff;--purple:#c0a7ff;--violet:var(--purple);--green:#80edc1;--line:rgba(151,190,241,.23);--liquid-cyan-rgb:131,217,255;--liquid-purple-rgb:192,167,255;--panel:rgba(15,27,51,.8)}
+body[data-theme="control-room"]{--bg:#0a111b;--surface:#141f2d;--surface-2:#1a2939;--text:#edf4fb;--muted:#a4b3c5;--cyan:#78cce9;--purple:#9baed0;--violet:var(--purple);--green:#83d8b0;--line:rgba(155,185,218,.34);--liquid-cyan-rgb:120,204,233;--liquid-purple-rgb:155,174,208;--panel:#111c2a}
+body[data-theme="terminal"]{--bg:#050b08;--surface:#0b1710;--surface-2:#102117;--text:#d9ffe4;--muted:#8eae98;--cyan:#73f59d;--purple:#55cf86;--violet:var(--purple);--green:#8bffb0;--line:rgba(115,245,157,.3);--liquid-cyan-rgb:115,245,157;--liquid-purple-rgb:85,207,134;--panel:#0b1710;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+body[data-theme="terminal"] .panel,body[data-theme="terminal"] .liquid-start-card,body[data-theme="terminal"] .liquid-start-screen,body[data-theme="terminal"] .liquid-canvas-stage{border-radius:7px;background:var(--surface);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+body[data-theme="terminal"] .liquid-start-card,body[data-theme="terminal"] .liquid-start-screen{border:1px solid var(--line)}
+body[data-theme="terminal"] .btn.primary,body[data-theme="terminal"] .liquid-btn{border:1px solid var(--cyan);border-radius:5px;background:var(--surface-2);color:var(--cyan);box-shadow:none}
+body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-canvas-stage{border-radius:13px}body[data-theme="control-room"] .liquid-start-card{border-radius:13px}
+@media(max-width:600px){.liquid-start-card{padding:20px 16px}.liquid-start-screen{padding:10px}.actions .btn{min-height:48px}}
+@media(prefers-reduced-motion:reduce){.liquid-start-screen,.liquid-start-card .liquid-btn,.btn,.liquid-btn{transition:none!important}.liquid-start-screen.is-dismissed{transform:none}input[type=range]::-webkit-slider-thumb{transition:none}}
+
 </style>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 </head>
 <body>
+<canvas id="fluid-bg" aria-hidden="true"></canvas>
 <header>
   <div class="wrap nav">
     <a class="brand" href="../index.html">
@@ -43,9 +87,10 @@ header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blu
   </section>
 
   <div class="layout">
-    <aside class="panel">
+    <aside class="panel liquid-glass-panel control-panel">
       <div class="panel-head"><h2>Controls</h2></div>
       <div class="panel-body">
+        <div class="control-group-title">Motion Parameters</div>
         <div class="field">
           <label>Initial Position (x₀) <span class="hint" id="x0Val">0 m</span></label>
           <div class="inputrow">
@@ -78,6 +123,7 @@ header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blu
           </div>
         </div>
 
+        <div class="control-group-title">Playback</div>
         <div class="actions">
           <button class="btn primary" id="playBtn">Play</button>
           <button class="btn" id="resetBtn">Reset</button>
@@ -96,7 +142,18 @@ header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blu
             <strong>Position · Velocity · Acceleration</strong>
             <span id="timeLabel">t = 0.00 s</span>
           </div>
-          <canvas id="canvas" width="800" height="420"></canvas>
+          <div class="liquid-canvas-stage">
+<canvas id="canvas" width="800" height="420"></canvas>
+<div class="liquid-start-screen" id="liquidStartScreen" role="region" aria-labelledby="liquidStartTitle">
+ <div class="liquid-start-card">
+  <span class="liquid-start-kicker">KINEMATICS LAB · 01</span>
+  <h2 id="liquidStartTitle">1D Motion Graphs</h2>
+  <p>Explore position, velocity and acceleration as you change the motion parameters.</p>
+  <button class="liquid-btn" id="liquidStartButton" type="button">Start Simulation <span aria-hidden="true">→</span></button>
+  <small>Explore the controls after entering the simulation.</small>
+ </div>
+</div>
+</div>
         </div>
       </div>
 
@@ -354,5 +411,41 @@ header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blu
 })();
 </script>
 <script src="../lab-theme.js?v=3"></script>
+
+<script id="liquid-flow-runtime">
+(function(){
+"use strict";
+var canvas=document.getElementById("fluid-bg");if(!canvas)return;
+var ctx=canvas.getContext("2d");if(!ctx){canvas.hidden=true;return;}
+var key="vsh-interface-theme-v2",themes=["holographic","constellation","control-room","terminal"];
+var motion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
+var lowCore=(Number(navigator.hardwareConcurrency)||4)<4,lowMemory=Number(navigator.deviceMemory)>0&&Number(navigator.deviceMemory)<=2;
+var staticMode=lowCore||lowMemory||!!(motion&&motion.matches),w=0,h=0,dpr=1,t=0,last=0,raf=0,running=false;
+var mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches,count=mobile?2:3;
+function syncTheme(){try{var v=localStorage.getItem(key);if(themes.indexOf(v)>=0)document.body.setAttribute("data-theme",v)}catch(e){}}
+function palette(){var s=getComputedStyle(document.body);return[s.getPropertyValue("--cyan").trim()||"#62e7ff",s.getPropertyValue("--purple").trim()||s.getPropertyValue("--violet").trim()||"#a78bfa"]}
+function paint(){
+ ctx.clearRect(0,0,w,h);var colors=palette(),n=staticMode?2:count;
+ for(var i=0;i<n;i++){
+  var x=w/2+Math.sin(t+i)*w*(mobile?0.24:0.32),y=h/2+Math.cos(t*1.5+i)*h*(mobile?0.22:0.30);
+  var base=mobile?108:154,r=staticMode?base:base+Math.sin(t*2+i)*(mobile?22:42),g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,i%2===0?colors[0]:colors[1]);g.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+ }
+}
+function resize(){mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches;count=mobile?2:3;dpr=Math.min(devicePixelRatio||1,mobile?1:1.25);w=Math.max(1,innerWidth);h=Math.max(1,innerHeight);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);paint()}
+function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=0}
+function frame(now){if(!running||document.hidden){stop();return}if(now-last>=33){var dt=last?Math.min((now-last)/1000,.06):.033;last=now;t+=dt*2.8;paint()}raf=requestAnimationFrame(frame)}
+function start(){if(staticMode){paint();return}if(running||document.hidden)return;running=true;last=0;raf=requestAnimationFrame(frame)}
+syncTheme();resize();if(staticMode)paint();else start();
+addEventListener("resize",resize,{passive:true});
+document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});
+addEventListener("storage",function(e){if(!e.key||e.key===key){syncTheme();paint()}});
+document.addEventListener("vsh-theme-change",function(e){if(e.detail&&themes.indexOf(e.detail.theme)>=0){document.body.setAttribute("data-theme",e.detail.theme);paint()}});
+if(motion&&motion.addEventListener)motion.addEventListener("change",function(e){staticMode=lowCore||lowMemory||e.matches;stop();if(staticMode)paint();else start()});
+var overlay=document.getElementById("liquidStartScreen"),button=document.getElementById("liquidStartButton");
+if(overlay&&button)button.addEventListener("click",function(){overlay.classList.add("is-dismissed");overlay.setAttribute("aria-hidden","true");button.setAttribute("tabindex","-1")});
+})();
+</script>
 </body>
 </html>
