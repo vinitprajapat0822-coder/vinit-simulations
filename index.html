@@ -1046,7 +1046,46 @@ body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;
     .streak-card::after { animation: none !important; }
     .mastery-ring-value { transition: none !important; }
   }
-</style>
+
+  .recommended-next{position:relative;z-index:1;margin-top:16px;padding-top:13px;border-top:1px solid rgba(174,202,239,.1)}
+  .recommended-next-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:5px 10px;margin-bottom:10px}
+  .recommended-next-head h4{margin:0;color:#e9f7ff;font-size:12px;font-weight:850;letter-spacing:-.02em}
+  .recommended-next-head>span{color:#8295b3;font-size:9px}
+  .recommended-next-list{display:flex;flex-wrap:wrap;gap:7px}
+  .recommendation-pill{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 10px;border:1px solid rgba(98,231,255,.18);border-radius:999px;background:linear-gradient(115deg,rgba(98,231,255,.085),rgba(167,139,250,.08));color:#bcefff;font-size:10px;font-weight:780;line-height:1.35;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 5px 16px rgba(0,0,0,.1);transition:transform .35s cubic-bezier(.68,-.55,.265,1.55),border-color .2s ease,box-shadow .2s ease}
+  .recommendation-pill:hover{border-color:rgba(98,231,255,.4);box-shadow:0 0 18px rgba(98,231,255,.09),inset 0 1px 0 rgba(255,255,255,.08)}
+  .recommendation-pill:active{transform:scale(.95)}
+  .recommendation-pill span:first-child{color:#83eaff}
+  .recommendation-empty{color:#8b9bb5;font-size:10px;line-height:1.5}
+  .daily-quiz-card{grid-column:1/-1;min-height:0}
+  .daily-quiz-status{display:inline-flex;align-items:center;min-height:28px;padding:6px 10px;border:1px solid rgba(98,231,255,.18);border-radius:999px;background:rgba(98,231,255,.07);color:#a9eaff;font-size:9px;font-weight:850;white-space:nowrap}
+  .daily-quiz-status.is-complete{border-color:rgba(124,240,189,.3);background:rgba(124,240,189,.08);color:#a8f4d0}
+  .daily-quiz-layout{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:22px;margin-top:17px}
+  .daily-quiz-number{color:#91a8c8;font-size:9px;font-weight:850;letter-spacing:.13em}
+  .daily-quiz-number i{padding:0 4px;color:#62e7ff;font-style:normal}
+  .daily-quiz-prompt>p{max-width:560px;margin:9px 0 10px;color:#f0f7ff;font-size:clamp(14px,1.7vw,17px);font-weight:760;line-height:1.55;letter-spacing:-.018em}
+  .daily-quiz-score{min-height:16px;color:#94a7c4;font-size:10px;line-height:1.5}
+  .daily-quiz-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .quiz-option{display:flex;align-items:center;gap:10px;min-width:0;min-height:45px;padding:9px 12px;border:1px solid rgba(173,198,237,.14);border-radius:13px;background:rgba(255,255,255,.045);color:#e2efff;font:inherit;font-size:12px;font-weight:780;text-align:left;cursor:pointer;transition:transform .35s cubic-bezier(.68,-.55,.265,1.55),background .25s ease,border-color .25s ease,box-shadow .25s ease,opacity .25s ease}
+  .quiz-option>span{display:grid;place-items:center;width:23px;height:23px;flex:0 0 23px;border:1px solid rgba(98,231,255,.18);border-radius:8px;background:rgba(98,231,255,.07);color:#9ceaff;font-size:9px;font-weight:900}
+  .quiz-option:hover:not(:disabled){border-color:rgba(98,231,255,.42);background:rgba(98,231,255,.075);box-shadow:0 0 20px rgba(98,231,255,.07)}
+  .quiz-option:active:not(:disabled){transform:scale(.95)}
+  .quiz-option:focus-visible,.recommendation-pill:focus-visible{outline:2px solid #62e7ff;outline-offset:3px}
+  .quiz-option.is-correct{border-color:rgba(108,238,177,.62);background:rgba(55,190,128,.14);color:#b7f6d5;box-shadow:0 0 24px rgba(68,220,151,.12)}
+  .quiz-option.is-correct>span{border-color:rgba(108,238,177,.45);background:rgba(68,220,151,.13);color:#a8f4d0}
+  .quiz-option.is-wrong{border-color:rgba(231,126,166,.58);background:rgba(172,73,119,.14);color:#f0c0d2;box-shadow:0 0 22px rgba(207,91,143,.1)}
+  .quiz-option.is-wrong>span{border-color:rgba(231,126,166,.4);background:rgba(172,73,119,.13);color:#f0b4cb}
+  .quiz-option.is-muted{opacity:.48}
+  .quiz-option:disabled{cursor:default}
+  .quiz-feedback{min-height:0;margin-top:10px;padding:0 11px;overflow:hidden;border:1px solid transparent;border-radius:12px;color:transparent;font-size:10px;line-height:1.55;opacity:0;transform:translateY(5px) scale(.97);transition:opacity .28s ease,transform .35s cubic-bezier(.22,1,.36,1),padding .25s ease,background .25s ease,border-color .25s ease}
+  .quiz-feedback.is-visible{min-height:36px;padding:9px 11px;opacity:1;transform:translateY(0) scale(1)}
+  .quiz-feedback.is-success{border-color:rgba(108,238,177,.22);background:rgba(55,190,128,.09);color:#aaf0ce}
+  .quiz-feedback.is-error{border-color:rgba(231,126,166,.24);background:rgba(172,73,119,.1);color:#efb5cb}
+  @media(max-width:760px){.daily-quiz-layout{grid-template-columns:minmax(0,1fr);gap:15px}.daily-quiz-card{grid-column:1}}
+  @media(max-width:420px){.recommended-next-head{align-items:flex-start}.recommended-next-head>span{font-size:8px}.recommendation-pill{font-size:9px;padding:7px 9px}.daily-quiz-layout{gap:12px}.daily-quiz-prompt>p{font-size:14px}.daily-quiz-options{gap:7px}.quiz-option{min-height:43px;padding:8px 9px;font-size:11px}.daily-quiz-status{font-size:8px}}
+  @media(prefers-reduced-motion:reduce){.recommendation-pill,.quiz-option,.quiz-feedback{transition:none!important}}
+
+  </style>
 
 </head>
 <body class="catalog-locked catalog-locked" data-theme="holographic" data-appearance="evening" data-ambient="on">
@@ -1233,6 +1272,41 @@ html{scroll-behavior:smooth}
           <ul class="recent-activity-list" id="recent-activity-list" aria-live="polite">
             <li class="recent-empty">Your opened simulations will appear here.</li>
           </ul>
+
+          <section class="recommended-next" aria-labelledby="recommended-next-title">
+            <div class="recommended-next-head">
+              <h4 id="recommended-next-title">Recommended Next</h4>
+              <span>Based on your unfinished labs</span>
+            </div>
+            <div class="recommended-next-list" id="recommended-next-list" aria-live="polite">
+              <span class="recommendation-empty">Loading your next steps…</span>
+            </div>
+          </section>
+        </article>
+        <article class="dashboard-card daily-quiz-card" id="daily-quiz-card" data-dashboard-card aria-labelledby="daily-quiz-title">
+          <div class="dashboard-card-head">
+            <div>
+              <span class="dashboard-kicker">A QUICK CONCEPT CHECK</span>
+              <h3 id="daily-quiz-title">Daily Quiz</h3>
+            </div>
+            <span class="daily-quiz-status" id="daily-quiz-status">Today · 1 question</span>
+          </div>
+          <div class="daily-quiz-layout">
+            <div class="daily-quiz-prompt">
+              <span class="daily-quiz-number">QUESTION 01 <i>·</i> PROJECTILE MOTION</span>
+              <p>For a projectile launched and landing at the same height, neglecting air resistance, which launch angle gives the maximum horizontal range?</p>
+              <div class="daily-quiz-score" id="daily-quiz-score" aria-live="polite">Your score will appear here after you answer.</div>
+            </div>
+            <div class="daily-quiz-answer-area">
+              <div class="daily-quiz-options" id="daily-quiz-options" role="group" aria-label="Choose the correct launch angle">
+                <button class="quiz-option" type="button" data-quiz-answer="0" aria-pressed="false"><span>A</span> 30°</button>
+                <button class="quiz-option" type="button" data-quiz-answer="1" aria-pressed="false"><span>B</span> 45°</button>
+                <button class="quiz-option" type="button" data-quiz-answer="2" aria-pressed="false"><span>C</span> 60°</button>
+                <button class="quiz-option" type="button" data-quiz-answer="3" aria-pressed="false"><span>D</span> 90°</button>
+              </div>
+              <div class="quiz-feedback" id="daily-quiz-feedback" role="status" aria-live="polite"></div>
+            </div>
+          </div>
         </article>
       </div>
     </section>
@@ -2397,6 +2471,65 @@ html{scroll-behavior:smooth}
     if (!document.hidden) refreshDashboard(false);
   }, 1200);
   window.addEventListener("pagehide", function () { window.clearInterval(pollId); }, { once: true });
+})();
+</script>
+
+
+<script id="daily-quiz-and-recommendations-runtime">
+(function(){
+"use strict";
+var quizKey="vsh-daily-quiz-v1",completedKey="vsh-mastery-completed-v1",questionId="projectile-range-angle-v1",correctIndex=1;
+var optionRoot=document.getElementById("daily-quiz-options"),feedback=document.getElementById("daily-quiz-feedback"),scoreText=document.getElementById("daily-quiz-score"),statusText=document.getElementById("daily-quiz-status"),recommendationRoot=document.getElementById("recommended-next-list"),snapshot="";
+var explanations={correct:"Correct! At 45°, sin(2θ)=1, so horizontal range is maximum when launch and landing heights are equal.",incorrect:"Good effort. The correct answer is 45°: for equal launch and landing heights, R = u² sin(2θ) / g."};
+function dateKey(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function read(key){try{return window.localStorage.getItem(key)}catch(e){return null}}
+function write(key,value){try{window.localStorage.setItem(key,JSON.stringify(value));return true}catch(e){return false}}
+function todayQuiz(){
+ var raw=read(quizKey);if(!raw)return null;
+ try{var v=JSON.parse(raw);if(!v||v.date!==dateKey()||v.questionId!==questionId||v.completed!==true)return null;var n=Number(v.selectedIndex);if(!Number.isInteger(n)||n<0||n>3)return null;return{selected:n,correct:n===correctIndex,score:n===correctIndex?1:0}}catch(e){return null}
+}
+function renderQuiz(){
+ if(!optionRoot)return;var saved=todayQuiz(),buttons=optionRoot.querySelectorAll("[data-quiz-answer]");
+ if(statusText){statusText.textContent=saved?"Completed · "+saved.score+"/1 score":"Today · 1 question";statusText.classList.toggle("is-complete",!!saved)}
+ if(scoreText)scoreText.textContent=saved?"Today's score: "+saved.score+" / 1"+(saved.correct?" · Great work!":" · Keep learning!"):"Your score will appear here after you answer.";
+ if(feedback){feedback.classList.remove("is-visible","is-success","is-error");if(saved){feedback.textContent=saved.correct?explanations.correct:explanations.incorrect;feedback.classList.add("is-visible",saved.correct?"is-success":"is-error")}else feedback.textContent=""}
+ buttons.forEach(function(b){var n=Number(b.getAttribute("data-quiz-answer"));b.disabled=!!saved;b.setAttribute("aria-pressed",saved&&saved.selected===n?"true":"false");b.classList.remove("is-correct","is-wrong","is-muted");if(saved){if(n===correctIndex)b.classList.add("is-correct");else if(n===saved.selected)b.classList.add("is-wrong");else b.classList.add("is-muted")}});
+}
+function answer(event){
+ var b=event.target&&event.target.closest?event.target.closest("[data-quiz-answer]"):null;if(!b||!optionRoot||!optionRoot.contains(b)||todayQuiz())return;
+ var n=Number(b.getAttribute("data-quiz-answer"));if(!Number.isInteger(n)||n<0||n>3)return;
+ var record={date:dateKey(),questionId:questionId,selectedIndex:n,correctIndex:correctIndex,correct:n===correctIndex,score:n===correctIndex?1:0,total:1,completed:true,completedAt:new Date().toISOString()};
+ if(!write(quizKey,record)){if(feedback){feedback.textContent="This browser could not save your attempt. Check local storage settings.";feedback.classList.add("is-visible","is-error")}return}
+ snapshot="";renderQuiz();
+}
+function norm(v){return String(v||"").trim().toLowerCase().replace(/\\/g,"/").replace(/\/$/,"")}
+function tokens(item){var out=[];["id","slug","title","url","path"].forEach(function(k){if(item&&item[k]!==undefined&&item[k]!==null){out.push(norm(item[k]));if(k==="url"){try{out.push(norm(new URL(item[k],window.location.href).pathname))}catch(e){}}}});return out.filter(Boolean)}
+function completedData(){
+ var raw=read(completedKey);if(raw===null)return{set:new Set(),count:0,numeric:false};var v;try{v=JSON.parse(raw)}catch(e){v=raw}
+ if(typeof v==="number"||(typeof v==="string"&&/^\d+$/.test(v)))return{set:new Set(),count:Math.max(0,Number(v)),numeric:true};
+ var arr=Array.isArray(v)?v:[];
+ if(v&&typeof v==="object"&&!Array.isArray(v)){var nested=v.completed||v.ids||v.items||v.simulations||v.list;if(Array.isArray(nested))arr=nested;else arr=Object.keys(v).filter(function(k){return v[k]===true||v[k]===1})}
+ var set=new Set();arr.forEach(function(x){if(x&&typeof x==="object")["id","slug","title","url","path"].forEach(function(k){if(x[k]!==undefined)set.add(norm(x[k]))});else set.add(norm(x))});
+ return{set:set,count:0,numeric:false};
+}
+function recommendations(){
+ if(!recommendationRoot)return;recommendationRoot.textContent="";
+ var labs=Array.isArray(window.CATALOG)?window.CATALOG.filter(function(x){return x&&x.status==="live"&&x.url&&x.title}):[];
+ if(!labs.length){var none=document.createElement("span");none.className="recommendation-empty";none.textContent="Live lab suggestions will appear here when the catalog is ready.";recommendationRoot.appendChild(none);return}
+ var done=completedData(),left=labs.filter(function(x,i){return done.numeric?i>=done.count:!tokens(x).some(function(t){return done.set.has(t)})}).slice(0,2);
+ if(!left.length){var all=document.createElement("span");all.className="recommendation-empty";all.textContent="You have completed every live simulation. Check back when new labs are added.";recommendationRoot.appendChild(all);return}
+ left.forEach(function(item){var u;try{u=new URL(item.url,window.location.href);if(u.origin!==window.location.origin||!/\.html$/i.test(u.pathname))return}catch(e){return}
+ var a=document.createElement("a"),icon=document.createElement("span"),label=document.createElement("span");a.className="recommendation-pill";a.href=u.href;a.setAttribute("aria-label","Try "+item.title);icon.setAttribute("aria-hidden","true");icon.textContent="✦";label.textContent="Try: "+item.title;a.appendChild(icon);a.appendChild(label);recommendationRoot.appendChild(a)});
+ if(!recommendationRoot.children.length){var safe=document.createElement("span");safe.className="recommendation-empty";safe.textContent="No eligible lab links are available right now.";recommendationRoot.appendChild(safe)}
+}
+function refresh(){var next=[read(quizKey)||"",read(completedKey)||"",dateKey(),Array.isArray(window.CATALOG)?window.CATALOG.length:0].join("|");if(next===snapshot)return;snapshot=next;renderQuiz();recommendations()}
+if(optionRoot)optionRoot.addEventListener("click",answer);
+window.addEventListener("storage",function(e){if(!e.key||e.key===quizKey||e.key===completedKey){snapshot="";refresh()}});
+window.addEventListener("focus",function(){snapshot="";refresh()});
+document.addEventListener("visibilitychange",function(){if(!document.hidden){snapshot="";refresh()}});
+renderQuiz();recommendations();
+var timer=window.setInterval(function(){if(!document.hidden)refresh()},1200);
+window.addEventListener("pagehide",function(){window.clearInterval(timer)},{once:true});
 })();
 </script>
 
