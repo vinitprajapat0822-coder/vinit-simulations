@@ -1200,8 +1200,8 @@ body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;
     color: var(--muted);
   }
   .mastery-ring-value { stroke: url(#mastery-ring-gradient); }
-  .mastery-ring defs stop:first-child { stop-color: var(--cyan); }
-  .mastery-ring defs stop:last-child { stop-color: var(--purple); }
+  .mastery-ring-gradient-stop-cyan { stop-color: var(--cyan); }
+  .mastery-ring-gradient-stop-purple { stop-color: var(--purple); }
   .mastery-ring-track { stroke: var(--line); }
   .mastery-ring-value { filter: drop-shadow(0 0 7px rgba(var(--vsh-cyan-rgb),.35)); }
   .mastery-ring-center strong, .streak-value-row strong { color: var(--text); }
@@ -1524,8 +1524,8 @@ html{scroll-behavior:smooth}
                 <desc id="mastery-ring-desc">Your completed live simulations as a percentage of all live simulations.</desc>
                 <defs>
                   <linearGradient id="mastery-ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#62e7ff"></stop>
-                    <stop offset="100%" stop-color="#a78bfa"></stop>
+                    <stop class="mastery-ring-gradient-stop-cyan" offset="0%"></stop>
+                    <stop class="mastery-ring-gradient-stop-purple" offset="100%"></stop>
                   </linearGradient>
                 </defs>
                 <circle class="mastery-ring-track" cx="90" cy="90" r="72"></circle>
