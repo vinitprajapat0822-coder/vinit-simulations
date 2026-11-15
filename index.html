@@ -697,6 +697,7 @@ body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;
     transition: transform .3s cubic-bezier(.22,1,.36,1),opacity .2s ease;
   }
   .quick-links a:hover { color: #90edff; transform: translateX(4px); }
+  .quick-links a:active { transform: scale(.95); }
   .quick-links a:last-child { border-bottom: 0; }
   .footer { padding: 0 0 23px; border: 0; background: transparent; }
   .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; color: #8594b0; font-size: 11px; }
@@ -1558,7 +1559,8 @@ html{scroll-behavior:smooth}
         navigator.clipboard.writeText(address).then(function () {
           showCopyStatus("Copied!", true);
         }).catch(function () {
-          showCopyStatus(fallbackCopy() ? "Copied!" : "Copy unavailable", fallbackCopy.lastResult !== false);
+          var copied = fallbackCopy();
+          showCopyStatus(copied ? "Copied!" : "Copy unavailable", copied);
         });
       } else {
         var success = fallbackCopy();
@@ -1617,7 +1619,7 @@ html{scroll-behavior:smooth}
           var radius = base * blob.size * (mobile.matches ? .82 : 1);
           var gradient = context.createRadialGradient(x, y, 0, x, y, radius);
           gradient.addColorStop(0, blob.color);
-          gradient.addColorStop(.58, blob.color.replace(/\.\\d+\\)/, ".045)"));
+          gradient.addColorStop(.58, i % 2 === 0 ? "rgba(98,231,255,.045)" : "rgba(167,139,250,.045)");
           gradient.addColorStop(1, "rgba(8,11,22,0)");
           context.fillStyle = gradient;
           context.beginPath();
