@@ -259,8 +259,516 @@ body[data-theme="constellation"] .cat-grid{display:flex;flex-wrap:wrap;gap:18px;
   background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 40%);pointer-events:none}
 </style>
 
+
+<style id="homepage-liquid-system">
+  :root {
+    --bg: #080b16;
+    --cyan: #62e7ff;
+    --purple: #a78bfa;
+    --liquid-panel: rgba(18, 25, 45, .64);
+    --liquid-border: rgba(198, 219, 255, .16);
+    --liquid-muted: #a8b4cc;
+    --liquid-spring: all .45s cubic-bezier(.68, -.55, .265, 1.55);
+  }
+  body {
+    isolation: isolate;
+    background:
+      radial-gradient(ellipse at 12% 6%, rgba(98, 231, 255, .095), transparent 34%),
+      radial-gradient(ellipse at 88% 26%, rgba(167, 139, 250, .11), transparent 32%),
+      #080b16 !important;
+    color: #f4f7ff;
+  }
+  #homepage-fluid-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: .82;
+  }
+  .nav-wrap {
+    background: rgba(8, 11, 22, .74);
+    border-bottom: 1px solid rgba(190, 216, 255, .12);
+    backdrop-filter: blur(24px) saturate(155%);
+    -webkit-backdrop-filter: blur(24px) saturate(155%);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .18);
+  }
+  .nav { min-height: 76px; gap: 20px; }
+  .brand { gap: 13px; min-width: 0; letter-spacing: .035em; }
+  .brand-icon {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    border-radius: 15px;
+    box-shadow: 0 9px 25px rgba(98, 231, 255, .14), inset 0 1px 0 rgba(255,255,255,.56) !important;
+  }
+  .brand-wordmark { display: block; font-size: 12px; line-height: 1.25; font-weight: 850; letter-spacing: .075em; }
+  .brand-wordmark small { margin-top: 4px; font-size: 9px; letter-spacing: .21em; color: #9caac5; }
+  .nav-tools { display: flex; align-items: center; gap: 16px; }
+  .nav-links {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 5px;
+    border: 1px solid rgba(193, 214, 255, .1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .025);
+  }
+  .nav-links a {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 35px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    color: #aeb9cf;
+    font-size: 12px;
+    font-weight: 720;
+    white-space: nowrap;
+    transition: transform .32s cubic-bezier(.22,1,.36,1), opacity .2s ease;
+  }
+  .nav-links a:hover, .nav-links a.is-active { color: #f5fbff; }
+  .nav-links a:active { transform: scale(.95); }
+  .nav-pill {
+    position: absolute;
+    z-index: 0;
+    top: 5px;
+    left: 5px;
+    width: 0;
+    height: calc(100% - 10px);
+    pointer-events: none;
+    border: 1px solid rgba(98, 231, 255, .4);
+    border-radius: 999px;
+    background: linear-gradient(110deg, rgba(98, 231, 255, .2), rgba(167, 139, 250, .22));
+    box-shadow: 0 0 22px rgba(98, 231, 255, .12), inset 0 1px 0 rgba(255,255,255,.15);
+    opacity: 0;
+    transition: all 0.45s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  .nav-links.is-ready .nav-pill { opacity: 1; }
+  .theme-picker {
+    padding: 5px 8px;
+    border: 1px solid rgba(190, 216, 255, .12);
+    border-radius: 13px;
+    background: rgba(255,255,255,.035);
+  }
+  .theme-picker label { display: block; margin: 0 0 2px; color: #8392ad; font-size: 9px; letter-spacing: .06em; }
+  .theme-picker select {
+    max-width: 146px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #e8efff;
+    font-size: 11px;
+  }
+  .theme-picker select option { background: #101629; color: #f4f7ff; }
+  .nav-toggle {
+    border: 1px solid rgba(190,216,255,.18);
+    border-radius: 12px;
+    background: rgba(255,255,255,.06);
+    color: #eaf7ff;
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .nav-toggle:active { transform: scale(.95); }
+  .appearance-bar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 11px;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(190,216,255,.07);
+    background: rgba(8,11,22,.28);
+    color: #9daac2;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .appearance-bar .lbl { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+  .appearance-bar .seg { display: flex; gap: 4px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.045); }
+  .appearance-bar .seg button {
+    padding: 5px 11px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #9daac2;
+    font-size: 10px;
+    cursor: pointer;
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .appearance-bar .seg button[aria-pressed="true"] { color: #07111b; background: linear-gradient(105deg,var(--cyan),#a4d7ff 55%,var(--purple)); font-weight: 800; }
+  .appearance-bar .seg button:active { transform: scale(.94); }
+  .amb-toggle { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; }
+  .amb-toggle input { accent-color: var(--cyan); }
+  main, .footer { position: relative; z-index: 1; }
+  .hero { padding-top: clamp(54px, 8vw, 94px); padding-bottom: 54px; }
+  .eyebrow {
+    border: 1px solid rgba(98,231,255,.27);
+    background: linear-gradient(100deg,rgba(98,231,255,.11),rgba(167,139,250,.09));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    color: #94f0ff;
+    padding: 7px 13px;
+    font-size: 10px;
+    letter-spacing: .13em;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .hero-title {
+    position: relative;
+    isolation: isolate;
+    max-width: 900px;
+    margin: 20px 0 15px;
+    font-size: clamp(2.35rem, 7vw, 5.25rem);
+    line-height: 1.015;
+    letter-spacing: -.067em;
+    font-weight: 900;
+    text-wrap: balance;
+  }
+  .hero-title::after {
+    content: attr(data-lens);
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    color: #fff;
+    pointer-events: none;
+    opacity: 0;
+    text-shadow: 0 0 14px rgba(98,231,255,.55), 0 0 32px rgba(167,139,250,.3);
+    -webkit-mask-image: radial-gradient(circle 88px at var(--lens-x, 50%) var(--lens-y, 50%), #000 0 72%, transparent 100%);
+    mask-image: radial-gradient(circle 88px at var(--lens-x, 50%) var(--lens-y, 50%), #000 0 72%, transparent 100%);
+    transition: opacity .2s ease;
+  }
+  .hero-title.is-lensing::after { opacity: .92; }
+  .gradient-text {
+    background: linear-gradient(100deg,#62e7ff 0%,#c3eaff 42%,#a78bfa 100%);
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+  .hero > p { max-width: 590px; color: #aab6cf; font-size: clamp(14px,1.5vw,16px); line-height: 1.75; }
+  .stats { gap: 11px; margin-top: 26px; }
+  .stat {
+    position: relative;
+    min-width: 132px;
+    padding: 12px 17px;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 17px;
+    background: linear-gradient(rgba(16,24,43,.74),rgba(12,18,34,.72)) padding-box,
+      linear-gradient(135deg,rgba(98,231,255,.48),rgba(167,139,250,.3),rgba(255,255,255,.07)) border-box;
+    box-shadow: 0 14px 32px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(18px) saturate(145%);
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+  }
+  .stat strong { font-size: 24px; line-height: 1.2; color: #a3f2ff; letter-spacing: -.04em; }
+  .stat span { color: #a7b4cc; font-size: 10px; letter-spacing: .025em; }
+  .section { padding-top: 38px; padding-bottom: 54px; }
+  .section-head { margin-bottom: 22px; }
+  .section h2 { font-size: clamp(23px,3vw,34px); letter-spacing: -.045em; font-weight: 850; }
+  .section-head p { color: #a4b1ca; line-height: 1.7; }
+  .why-section { padding-top: 24px; }
+  .why-heading { margin-bottom: 20px; }
+  .why-heading .eyebrow { margin-bottom: 12px; }
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 15px;
+  }
+  .why-card, .about-panel, .contact-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(145deg,rgba(19,29,51,.82),rgba(11,17,33,.76)) padding-box,
+      linear-gradient(135deg,rgba(98,231,255,.42),rgba(167,139,250,.32),rgba(255,255,255,.08)) border-box;
+    box-shadow: 0 20px 48px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.09);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+  }
+  .why-card {
+    min-height: 232px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 23px;
+    border-radius: 23px;
+    transition: transform .45s cubic-bezier(.68,-.55,.265,1.55);
+  }
+  .why-card::after, .contact-card::after, .about-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(130deg,rgba(255,255,255,.075),transparent 32%,transparent 72%,rgba(98,231,255,.035));
+  }
+  .why-card:hover { transform: translateY(-5px) scale(1.015); box-shadow: 0 22px 54px rgba(0,0,0,.25),0 0 28px rgba(98,231,255,.09),inset 0 1px 0 rgba(255,255,255,.13); }
+  .feature-icon, .contact-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 49px;
+    height: 49px;
+    border: 1px solid rgba(98,231,255,.26);
+    border-radius: 16px;
+    background: linear-gradient(145deg,rgba(98,231,255,.14),rgba(167,139,250,.13));
+    color: #9aeeff;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12),0 10px 24px rgba(0,0,0,.14);
+  }
+  .feature-icon svg, .contact-icon svg { width: 25px; height: 25px; }
+  .why-card-copy { position: relative; z-index: 1; }
+  .why-kicker, .contact-index { color: #8ba4c4; font-size: 9px; font-weight: 800; letter-spacing: .15em; }
+  .why-card h3 { margin: 6px 0 7px; font-size: 19px; font-weight: 820; letter-spacing: -.035em; }
+  .why-card p { margin: 0; color: #a8b5ce; font-size: 13px; line-height: 1.7; }
+  .search {
+    border: 1px solid rgba(150,190,230,.22);
+    border-radius: 14px;
+    background: rgba(10,16,32,.72);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .filters { gap: 8px; }
+  .filter, .view-more-btn, .subject-seg button {
+    border: 1px solid rgba(170,197,235,.17);
+    background: rgba(255,255,255,.045);
+    color: #acbad1;
+    transition: transform .35s cubic-bezier(.22,1,.36,1);
+  }
+  .filter[aria-pressed="true"], .subject-seg button[aria-pressed="true"] {
+    color: #06111a;
+    border-color: transparent;
+    background: linear-gradient(110deg,var(--cyan),#b9dfff 54%,var(--purple));
+    box-shadow: 0 8px 24px rgba(98,231,255,.12);
+  }
+  .filter:hover, .view-more-btn:hover, .subject-seg button:hover { transform: translateY(-2px); }
+  .filter:active, .view-more-btn:active, .subject-seg button:active { transform: scale(.95); }
+  .card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(183,207,244,.14);
+    border-radius: 20px;
+    background: linear-gradient(145deg,rgba(20,29,51,.82),rgba(11,17,32,.82));
+    box-shadow: 0 15px 34px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.065);
+    backdrop-filter: blur(18px) saturate(135%);
+    -webkit-backdrop-filter: blur(18px) saturate(135%);
+    transition: transform .4s cubic-bezier(.22,1,.36,1);
+  }
+  .card:hover { transform: translateY(-4px) scale(1.008); border-color: rgba(98,231,255,.38); box-shadow: 0 20px 40px rgba(0,0,0,.22),0 0 24px rgba(98,231,255,.07); }
+  .card-icon { border-radius: 14px; border-color: rgba(98,231,255,.2); background: linear-gradient(145deg,rgba(98,231,255,.11),rgba(167,139,250,.1)); }
+  .card h3 { font-weight: 800; letter-spacing: -.02em; }
+  .card p { color: #aab6cd; line-height: 1.65; }
+  .card-link { color: #8deeff; }
+  .view-more-btn { border-radius: 999px; }
+  .about-section { padding-top: 40px; }
+  .about-panel {
+    display: grid;
+    grid-template-columns: minmax(0,1.35fr) minmax(240px,.8fr);
+    align-items: center;
+    gap: clamp(24px,5vw,58px);
+    padding: clamp(24px,4.5vw,48px);
+    border-radius: 28px;
+  }
+  .about-copy, .about-highlights { position: relative; z-index: 1; }
+  .about-copy .eyebrow { margin-bottom: 14px; }
+  .about-copy h2 { margin: 0 0 16px; font-size: clamp(28px,4.2vw,45px); line-height: 1.12; }
+  .about-copy p { max-width: 640px; margin: 0 0 12px; color: #aebbd2; font-size: 14px; line-height: 1.8; }
+  .about-highlights { display: grid; gap: 10px; }
+  .about-highlight {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 14px;
+    border: 1px solid rgba(185,210,248,.11);
+    border-radius: 16px;
+    background: rgba(255,255,255,.035);
+  }
+  .highlight-mark { color: #8deeff; font-size: 11px; font-weight: 900; letter-spacing: .06em; }
+  .about-highlight strong, .about-highlight small { display: block; }
+  .about-highlight strong { color: #eff7ff; font-size: 12px; }
+  .about-highlight small { margin-top: 2px; color: #99a8c2; font-size: 11px; }
+  .contact-section { padding-top: 32px; padding-bottom: 48px; }
+  .contact-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; }
+  .contact-card {
+    min-width: 0;
+    min-height: 292px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 23px;
+    border-radius: 23px;
+    transition: transform .4s cubic-bezier(.22,1,.36,1);
+  }
+  .contact-card:hover { transform: translateY(-4px); box-shadow: 0 22px 48px rgba(0,0,0,.24),0 0 26px rgba(167,139,250,.08),inset 0 1px 0 rgba(255,255,255,.12); }
+  .contact-card-top { position: relative; z-index: 1; width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .contact-card h3 { position: relative; z-index: 1; margin: 19px 0 7px; font-size: 19px; letter-spacing: -.025em; }
+  .contact-card p { position: relative; z-index: 1; margin: 0 0 18px; color: #a8b5ce; font-size: 12px; line-height: 1.7; }
+  .email-copy {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    margin: auto 0 11px;
+    padding: 10px 11px;
+    border: 1px solid rgba(98,231,255,.2);
+    border-radius: 12px;
+    background: rgba(98,231,255,.055);
+    color: #b9efff;
+    font-size: 11px;
+    text-align: left;
+    cursor: pointer;
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .email-copy > span:first-child { overflow-wrap: anywhere; }
+  .copy-glyph { flex: 0 0 auto; color: #8deeff; font-size: 17px; }
+  .copy-tooltip {
+    position: absolute;
+    right: 8px;
+    bottom: calc(100% + 8px);
+    padding: 5px 9px;
+    border: 1px solid rgba(98,231,255,.3);
+    border-radius: 8px;
+    background: #111c31;
+    color: #a8f3ff;
+    font-size: 10px;
+    font-weight: 800;
+    opacity: 0;
+    transform: translateY(5px);
+    pointer-events: none;
+  }
+  .email-copy.is-copied .copy-tooltip { opacity: 1; transform: translateY(0); }
+  .email-copy:active { transform: scale(.95); }
+  .contact-action {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 17px;
+    width: 100%;
+    margin-top: auto;
+    padding: 12px 14px;
+    overflow: visible;
+    border: 1px solid rgba(98,231,255,.31);
+    border-radius: 13px;
+    background: linear-gradient(110deg,rgba(98,231,255,.13),rgba(167,139,250,.13));
+    color: #e9f9ff;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+    transition: transform .35s cubic-bezier(.22,1,.36,1);
+  }
+  .contact-action:hover { transform: translateY(-2px); }
+  .contact-action:active { transform: scale(.95); }
+  .orbit-button::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #d7fbff;
+    box-shadow: 0 0 8px 3px rgba(98,231,255,.72),0 0 18px 6px rgba(167,139,250,.35);
+    transform-origin: 0 0;
+    transform: rotate(0deg) translateX(76px);
+    animation: orbit-dot 4.5s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes orbit-dot { to { transform: rotate(360deg) translateX(76px); } }
+  .quick-links { position: relative; z-index: 1; display: grid; width: 100%; gap: 4px; margin-top: auto; }
+  .quick-links a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 2px;
+    border-bottom: 1px solid rgba(185,210,248,.1);
+    color: #c3d1e8;
+    font-size: 12px;
+    font-weight: 700;
+    transition: transform .3s cubic-bezier(.22,1,.36,1),opacity .2s ease;
+  }
+  .quick-links a:hover { color: #90edff; transform: translateX(4px); }
+  .quick-links a:last-child { border-bottom: 0; }
+  .footer { padding: 0 0 23px; border: 0; background: transparent; }
+  .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; color: #8594b0; font-size: 11px; }
+  .footer-divider {
+    flex: 0 0 100%;
+    height: 1px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg,transparent,rgba(98,231,255,.62),rgba(167,139,250,.55),transparent);
+    box-shadow: 0 0 12px rgba(98,231,255,.22);
+  }
+  .bento-card, .contact-card, .why-card, .card, .filter, .view-more-btn, .email-copy, .contact-action, .nav-toggle, .appearance-bar button {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .why-card:active, .contact-card:active, .bento-card:active { transform: scale(.95); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid #62e7ff;
+    outline-offset: 4px;
+    box-shadow: 0 0 0 5px rgba(98,231,255,.11);
+  }
+  @media (max-width: 900px) {
+    .nav { flex-wrap: wrap; padding-top: 9px; padding-bottom: 9px; }
+    .nav-tools { gap: 9px; }
+    .theme-picker select { max-width: 120px; }
+    .why-grid, .contact-grid { gap: 11px; }
+    .why-card, .contact-card { padding: 19px; }
+  }
+  @media (max-width: 760px) {
+    .nav { min-height: 68px; }
+    .nav-tools { display: none; flex: 0 0 100%; align-items: stretch; flex-direction: column; padding: 8px 0 5px; }
+    .nav-tools.is-open { display: flex; }
+    .nav-links { justify-content: center; flex-wrap: wrap; border-radius: 16px; }
+    .nav-pill { display: none; }
+    .theme-picker { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .theme-picker label { margin: 0; }
+    .theme-picker select { max-width: none; }
+    .hero { padding-top: 48px; padding-bottom: 35px; }
+    .why-grid { grid-template-columns: 1fr; }
+    .why-card { min-height: 0; display: grid; grid-template-columns: 49px minmax(0,1fr); align-items: start; gap: 14px; }
+    .about-panel { grid-template-columns: 1fr; gap: 22px; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .contact-card { min-height: 0; }
+  }
+  @media (max-width: 420px) {
+    .container { width: min(100% - 24px,1140px); }
+    .brand { gap: 9px; }
+    .brand-icon { width: 42px; height: 42px; flex-basis: 42px; }
+    .brand-wordmark { font-size: 10px; }
+    .brand-wordmark small { font-size: 8px; letter-spacing: .16em; }
+    .hero-title { font-size: clamp(2.15rem,10.1vw,2.6rem); letter-spacing: -.06em; }
+    .stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+    .stat { min-width: 0; padding: 11px 12px; }
+    .stat strong { font-size: 21px; }
+    .stat span { font-size: 10px; }
+    .appearance-bar { gap: 8px; }
+    .appearance-bar .seg button { padding: 5px 8px; }
+    .about-panel { padding: 22px 18px; border-radius: 22px; }
+    .why-card, .contact-card { border-radius: 19px; }
+    .email-copy { font-size: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .why-card, .contact-card, .card, .filter, .contact-action, .nav-links a, .orbit-button::after {
+      animation: none !important;
+      transition: none !important;
+    }
+    .hero-title::after { display: none; }
+  }
+</style>
+
 </head>
 <body class="catalog-locked catalog-locked" data-theme="holographic" data-appearance="evening" data-ambient="on">
+<canvas id="homepage-fluid-canvas" aria-hidden="true"></canvas>
 
 <div id="vsh-splash" class="vsh-splash" role="dialog" aria-modal="true" aria-label="Welcome">
   <div class="vsh-splash-card">
@@ -315,17 +823,18 @@ html{scroll-behavior:smooth}
 
   <header class="nav-wrap">
     <nav class="container nav" aria-label="Main">
-      <a class="brand" href="#home">
-        <span class="brand-icon vinit-mark" aria-label="VINIT monogram" title="VINIT"><span class="vm-stack" aria-hidden="true"><span class="vm-v">V</span><span class="vm-mid">INI</span><span class="vm-t">T</span></span></span></span>
-        <span>VINIT SIMULATION HUB<small>SCIENCE · VISUALIZED</small></span>
+      <a class="brand" href="#home" aria-label="Vinit Simulation Hub home">
+        <span class="brand-icon vinit-mark" aria-hidden="true"><span class="vm-stack"><span class="vm-v">V</span><span class="vm-mid">INI</span><span class="vm-t">T</span></span></span>
+        <span class="brand-wordmark">VINIT SIMULATION HUB<small>SCIENCE · VISUALIZED</small></span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false"
         aria-controls="primary-navigation" aria-label="Open navigation menu">
         <span class="nav-toggle-icon" aria-hidden="true">☰</span>
       </button>
       <div class="nav-tools" id="primary-navigation">
-        <div class="nav-links">
-          <a href="#simulations">Explore</a>
+        <div class="nav-links" id="homepage-navigation">
+          <span class="nav-pill" aria-hidden="true"></span>
+          <a href="#simulations" class="is-active" aria-current="page">Explore</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
         </div>
@@ -359,7 +868,7 @@ html{scroll-behavior:smooth}
   <main>
     <section class="hero container" id="home">
       <div class="eyebrow">Interactive Physics · Mathematics · JEE</div>
-      <h1>Learn science by <span class="gradient-text">experimenting</span></h1>
+      <h1 class="hero-title" data-lens="Learn science by experimenting">Learn science by <span class="gradient-text">experimenting</span></h1>
       <p>Visual simulations, accurate calculations and concept-focused activities. Built for students who want to understand, not just memorize.</p>
       <div class="stats">
         <div class="stat"><strong id="stat-total">139</strong><span>Planned activities</span></div>
@@ -375,6 +884,48 @@ html{scroll-behavior:smooth}
       </div>
     </section>
 
+
+    <section class="section container why-section" id="why-vsh" aria-labelledby="why-vsh-title">
+      <div class="section-head why-heading">
+        <div>
+          <div class="eyebrow">BUILT FOR CURIOUS MINDS</div>
+          <h2 id="why-vsh-title">Why Vinit Simulation Hub?</h2>
+          <p>Learn by exploring, testing ideas and connecting concepts.</p>
+        </div>
+      </div>
+      <div class="why-grid">
+        <article class="why-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3.2 14 8l5.1 1.2-3.8 3.5.9 5.2L12 15.4l-4.2 2.5.9-5.2-3.8-3.5L10 8l2-4.8Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M4 3.5 5.2 5M20 3.5 18.8 5M3 15l2-.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="why-card-copy">
+            <span class="why-kicker">EXPLORE YOUR WAY</span>
+            <h3>4 Immersive Themes</h3>
+            <p>Choose Holographic, Constellation, Control Room or Terminal to make the learning space your own.</p>
+          </div>
+        </article>
+        <article class="why-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.2V12m5 7.2V6.8m5 12.4v-4.8m5 4.8V4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m3 8 5-3 5 5 7-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="why-card-copy">
+            <span class="why-kicker">KEEP MOVING FORWARD</span>
+            <h3>Progress Tracking</h3>
+            <p>Track completed activities and build a clear picture of the concepts you have explored.</p>
+          </div>
+        </article>
+        <article class="why-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5 19 6v5.4c0 4.2-2.8 7.5-7 9.1-4.2-1.6-7-4.9-7-9.1V6l7-2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="m8.5 12.1 2.2 2.2 4.8-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="why-card-copy">
+            <span class="why-kicker">MADE FOR THE SYLLABUS</span>
+            <h3>JEE Focused</h3>
+            <p>Explore Physics and Mathematics through concept-led activities designed with JEE learning in mind.</p>
+          </div>
+        </article>
+      </div>
+    </section>
     <section class="section container" id="simulations">
       <div class="section-head">
         <div>
@@ -390,35 +941,89 @@ html{scroll-behavior:smooth}
       <p class="empty" id="empty" hidden>No matching activities. Try another search or filter.</p>
     </section>
 
-    <section class="section container" id="about">
-      <h2>About this project</h2>
-      <p style="color:var(--muted);max-width:640px">
-        Vinit Simulation Hub aims to become a comprehensive interactive science platform.
-        We prioritize scientific accuracy, mobile performance and clear explanations.
-        Activities are released only after basic validation — unimplemented tools are clearly marked “Coming soon”.
-      </p>
+
+    <section class="section container about-section" id="about" aria-labelledby="about-title">
+      <div class="about-panel">
+        <div class="about-copy">
+          <div class="eyebrow">ABOUT THE PROJECT</div>
+          <h2 id="about-title">Understand the idea.<br><span class="gradient-text">See the science.</span></h2>
+          <p>Vinit Simulation Hub is an interactive learning space built to make Physics and Mathematics easier to explore. Instead of relying only on static explanations, experiment with visual models, change values and observe how concepts respond.</p>
+          <p>Scientific clarity, mobile usability and meaningful learning come first. Activities are released as working experiences, while upcoming topics remain clearly labelled.</p>
+        </div>
+        <div class="about-highlights" aria-label="Project principles">
+          <div class="about-highlight"><span class="highlight-mark">01</span><span><strong>Experiment first</strong><small>Learn through active exploration.</small></span></div>
+          <div class="about-highlight"><span class="highlight-mark">02</span><span><strong>Concept-led</strong><small>Connect visuals with the underlying science.</small></span></div>
+          <div class="about-highlight"><span class="highlight-mark">03</span><span><strong>Student focused</strong><small>Designed for clear, accessible study sessions.</small></span></div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <span>© 2026 Vinit Simulation Hub</span>
-      <span>Built for learning · GitHub Pages</span>
-    </div>
-  
-  <section class="section container" id="contact" style="padding-bottom:56px">
-    <div class="hero" style="margin:0">
-      <div class="eyebrow">CONTACT</div>
-      <h2 style="margin:10px 0 8px;font-size:clamp(22px,4vw,32px)">Contact Vinit Simulation Hub</h2>
-      <p style="max-width:560px">Lab ideas, feedback, or collaboration. Prefer email for academic / JEE content requests.</p>
-      <div style="display:grid;gap:12px;margin-top:18px;max-width:460px">
-        <a href="mailto:vinitprajapat0822@gmail.com" style="display:block;padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);text-decoration:none">Email · vinitprajapat0822@gmail.com</a>
-        <a href="https://github.com/vinitprajapat0822-coder/vinit-simulations" style="display:block;padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);text-decoration:none">GitHub repository</a>
-        <a href="https://vinit-simulation.is-a.dev/" style="display:block;padding:14px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);text-decoration:none">Live hub · vinit-simulation.is-a.dev</a>
+
+  <section class="section container contact-section" id="contact" aria-labelledby="contact-title">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">STAY CONNECTED</div>
+        <h2 id="contact-title">Continue the conversation.</h2>
+        <p>Share feedback, suggest a lab or explore the project source.</p>
       </div>
+    </div>
+    <div class="contact-grid">
+      <article class="contact-card">
+        <div class="contact-card-top">
+          <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="m5 7 7 5.5L19 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="contact-index">01 / CONTACT</span>
+        </div>
+        <h3>Get in Touch</h3>
+        <p>Have an idea, question or academic feedback? Send a message by email.</p>
+        <button class="email-copy" id="copy-email" type="button" aria-describedby="copy-email-status">
+          <span>vinitprajapat0822@gmail.com</span>
+          <span class="copy-glyph" aria-hidden="true">⧉</span>
+          <span class="copy-tooltip" id="copy-email-status" role="status" aria-live="polite">Copy email</span>
+        </button>
+        <a class="contact-action orbit-button" href="mailto:vinitprajapat0822@gmail.com">
+          <span>Send an email</span><span aria-hidden="true">↗</span>
+        </a>
+      </article>
+      <article class="contact-card">
+        <div class="contact-card-top">
+          <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 19c-4.2 1.3-4.2-2.1-5.8-2.5M14.8 21v-3.2c0-.9.1-1.5-.4-2.1 3.2-.4 6.6-1.6 6.6-7.2a5.6 5.6 0 0 0-1.5-3.9 5.2 5.2 0 0 0-.1-3.8s-1.2-.4-4 1.5a13.5 13.5 0 0 0-7.2 0C5.4.4 4.2.8 4.2.8a5.2 5.2 0 0 0-.1 3.8 5.6 5.6 0 0 0-1.5 3.9c0 5.6 3.4 6.8 6.6 7.2-.5.6-.5 1.2-.5 2.1V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="contact-index">02 / OPEN SOURCE</span>
+        </div>
+        <h3>Source Code</h3>
+        <p>Explore the project repository, follow updates and review the implementation.</p>
+        <a class="contact-action" href="https://github.com/vinitprajapat0822-coder/vinit-simulations" target="_blank" rel="noopener noreferrer">
+          <span>View on GitHub</span><span aria-hidden="true">↗</span>
+        </a>
+      </article>
+      <article class="contact-card quick-links-card">
+        <div class="contact-card-top">
+          <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5h16M4 12h16M4 17.5h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="18" cy="17.5" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
+          </span>
+          <span class="contact-index">03 / NAVIGATION</span>
+        </div>
+        <h3>Quick Links</h3>
+        <p>Jump straight to the main areas of the hub.</p>
+        <nav class="quick-links" aria-label="Footer quick links">
+          <a href="#home"><span>Home</span><span aria-hidden="true">↗</span></a>
+          <a href="#simulations"><span>Simulations</span><span aria-hidden="true">↗</span></a>
+          <a href="#about"><span>About</span><span aria-hidden="true">↗</span></a>
+        </nav>
+      </article>
     </div>
   </section>
 
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-divider" aria-hidden="true"></div>
+      <span>© 2026 Vinit Simulation Hub</span>
+      <span>Built for learning · GitHub Pages</span>
+    </div>
   </footer>
 
   <script src="catalog.js?v=34"></script>
@@ -824,5 +1429,232 @@ html{scroll-behavior:smooth}
 </script>
 
   <script src="vsh-progress.js?v=2"></script>
+
+<script id="homepage-liquid-interactions">
+(function () {
+  "use strict";
+
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Sliding liquid navigation pill.
+  var nav = document.getElementById("homepage-navigation");
+  if (nav) {
+    var pill = nav.querySelector(".nav-pill");
+    var links = Array.prototype.slice.call(nav.querySelectorAll("a[href^='#']"));
+    var activeLink = nav.querySelector("a.is-active") || links[0];
+
+    function movePill(link, animate) {
+      if (!pill || !link || window.innerWidth <= 760) return;
+      var linkRect = link.getBoundingClientRect();
+      var navRect = nav.getBoundingClientRect();
+      if (!linkRect.width) return;
+      pill.style.left = (linkRect.left - navRect.left + nav.scrollLeft) + "px";
+      pill.style.width = linkRect.width + "px";
+      if (animate && !reduceMotion) {
+        pill.style.transform = "scaleX(1.12)";
+        window.clearTimeout(movePill.springTimer);
+        movePill.springTimer = window.setTimeout(function () {
+          pill.style.transform = "scaleX(1)";
+        }, 190);
+      } else {
+        pill.style.transform = "scaleX(1)";
+      }
+      nav.classList.add("is-ready");
+    }
+
+    function setActive(link) {
+      if (!link) return;
+      activeLink = link;
+      links.forEach(function (item) {
+        var selected = item === link;
+        item.classList.toggle("is-active", selected);
+        if (selected) item.setAttribute("aria-current", "page");
+        else item.removeAttribute("aria-current");
+      });
+      movePill(link, true);
+    }
+
+    links.forEach(function (link) {
+      link.addEventListener("click", function () { setActive(link); });
+    });
+
+    window.addEventListener("resize", function () {
+      window.requestAnimationFrame(function () { movePill(activeLink, false); });
+    }, { passive: true });
+
+    window.requestAnimationFrame(function () { movePill(activeLink, false); });
+
+    if ("IntersectionObserver" in window) {
+      var sectionToLink = {
+        home: "#simulations",
+        simulations: "#simulations",
+        about: "#about",
+        contact: "#contact"
+      };
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var target = sectionToLink[entry.target.id];
+          if (!target) return;
+          var link = nav.querySelector('a[href="' + target + '"]');
+          if (link) setActive(link);
+        });
+      }, { rootMargin: "-38% 0px -48% 0px", threshold: 0 });
+      ["home", "simulations", "about", "contact"].forEach(function (id) {
+        var section = document.getElementById(id);
+        if (section) observer.observe(section);
+      });
+    }
+  }
+
+  // Peek-through lens that follows a pointer across the hero title.
+  var heroTitle = document.querySelector(".hero-title");
+  if (heroTitle && !reduceMotion) {
+    heroTitle.addEventListener("pointerenter", function () {
+      heroTitle.classList.add("is-lensing");
+    });
+    heroTitle.addEventListener("pointermove", function (event) {
+      var rect = heroTitle.getBoundingClientRect();
+      heroTitle.style.setProperty("--lens-x", (event.clientX - rect.left) + "px");
+      heroTitle.style.setProperty("--lens-y", (event.clientY - rect.top) + "px");
+    }, { passive: true });
+    heroTitle.addEventListener("pointerleave", function () {
+      heroTitle.classList.remove("is-lensing");
+    });
+  }
+
+  // Copy-to-clipboard feedback for the visible email address.
+  var copyButton = document.getElementById("copy-email");
+  if (copyButton) {
+    var copyStatus = document.getElementById("copy-email-status");
+    var copyTimer = 0;
+    function showCopyStatus(message, success) {
+      copyButton.classList.toggle("is-copied", !!success);
+      if (copyStatus) copyStatus.textContent = message;
+      window.clearTimeout(copyTimer);
+      if (success) {
+        copyTimer = window.setTimeout(function () {
+          copyButton.classList.remove("is-copied");
+          if (copyStatus) copyStatus.textContent = "Copy email";
+        }, 1700);
+      }
+    }
+    copyButton.addEventListener("click", function () {
+      var address = "vinitprajapat0822@gmail.com";
+      function fallbackCopy() {
+        var area = document.createElement("textarea");
+        area.value = address;
+        area.setAttribute("readonly", "");
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.appendChild(area);
+        area.select();
+        var copied = false;
+        try { copied = document.execCommand("copy"); } catch (error) { copied = false; }
+        document.body.removeChild(area);
+        return copied;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address).then(function () {
+          showCopyStatus("Copied!", true);
+        }).catch(function () {
+          showCopyStatus(fallbackCopy() ? "Copied!" : "Copy unavailable", fallbackCopy.lastResult !== false);
+        });
+      } else {
+        var success = fallbackCopy();
+        showCopyStatus(success ? "Copied!" : "Copy unavailable", success);
+      }
+    });
+  }
+
+  // Dedicated, responsive fluid canvas; fewer blobs and a capped pixel ratio on phones.
+  var canvas = document.getElementById("homepage-fluid-canvas");
+  if (canvas && canvas.getContext) {
+    var context = canvas.getContext("2d", { alpha: true });
+    if (context) {
+      var width = 0;
+      var height = 0;
+      var pixelRatio = 1;
+      var pointer = { x: 0, y: 0, targetX: 0, targetY: 0, active: false };
+      var frameId = 0;
+      var hidden = document.hidden;
+      var mobile = window.matchMedia ? window.matchMedia("(max-width: 700px)") : { matches: false };
+      var colors = [
+        { color: "rgba(98,231,255,.145)", x: .15, y: .26, size: .31, speed: .00015, phase: .4 },
+        { color: "rgba(167,139,250,.14)", x: .82, y: .31, size: .29, speed: .00012, phase: 2.1 },
+        { color: "rgba(98,231,255,.095)", x: .52, y: .83, size: .34, speed: .0001, phase: 4.2 },
+        { color: "rgba(167,139,250,.09)", x: .94, y: .79, size: .24, speed: .00013, phase: 1.2 }
+      ];
+
+      function resizeCanvas() {
+        width = Math.max(1, window.innerWidth);
+        height = Math.max(1, window.innerHeight);
+        pixelRatio = Math.min(window.devicePixelRatio || 1, mobile.matches ? 1.15 : 1.5);
+        canvas.width = Math.round(width * pixelRatio);
+        canvas.height = Math.round(height * pixelRatio);
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        if (reduceMotion) draw(performance.now());
+      }
+
+      function draw(time) {
+        if (!context || hidden) return;
+        context.clearRect(0, 0, width, height);
+        pointer.x += (pointer.targetX - pointer.x) * .035;
+        pointer.y += (pointer.targetY - pointer.y) * .035;
+        var count = mobile.matches ? 2 : 4;
+        var base = Math.max(width, height);
+        for (var i = 0; i < count; i++) {
+          var blob = colors[i];
+          var angle = time * blob.speed + blob.phase;
+          var driftX = Math.sin(angle) * width * .055;
+          var driftY = Math.cos(angle * .82) * height * .06;
+          var influenceX = pointer.active ? (pointer.x - width * .5) * .035 : 0;
+          var influenceY = pointer.active ? (pointer.y - height * .5) * .035 : 0;
+          var x = width * blob.x + driftX + influenceX * (i % 2 ? .65 : -.4);
+          var y = height * blob.y + driftY + influenceY * (i % 2 ? -.35 : .55);
+          var radius = base * blob.size * (mobile.matches ? .82 : 1);
+          var gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+          gradient.addColorStop(0, blob.color);
+          gradient.addColorStop(.58, blob.color.replace(/\.\\d+\\)/, ".045)"));
+          gradient.addColorStop(1, "rgba(8,11,22,0)");
+          context.fillStyle = gradient;
+          context.beginPath();
+          context.ellipse(x, y, radius, radius * .72, Math.sin(angle) * .15, 0, Math.PI * 2);
+          context.fill();
+        }
+        if (!reduceMotion && !hidden) frameId = window.requestAnimationFrame(draw);
+      }
+
+      window.addEventListener("pointermove", function (event) {
+        pointer.targetX = event.clientX;
+        pointer.targetY = event.clientY;
+        pointer.active = true;
+      }, { passive: true });
+      window.addEventListener("pointerdown", function (event) {
+        pointer.targetX = event.clientX;
+        pointer.targetY = event.clientY;
+        pointer.active = true;
+      }, { passive: true });
+      window.addEventListener("resize", resizeCanvas, { passive: true });
+      document.addEventListener("visibilitychange", function () {
+        hidden = document.hidden;
+        if (hidden) {
+          if (frameId) window.cancelAnimationFrame(frameId);
+          frameId = 0;
+        } else if (!reduceMotion) {
+          frameId = window.requestAnimationFrame(draw);
+        } else {
+          draw(performance.now());
+        }
+      });
+      resizeCanvas();
+      if (!reduceMotion && !hidden) frameId = window.requestAnimationFrame(draw);
+    }
+  }
+})();
+</script>
+
 </body>
 </html>
