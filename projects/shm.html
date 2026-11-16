@@ -120,7 +120,7 @@ const ctx=canvasManager.context;
 function sync(){document.getElementById("mV").textContent=mEl.value+" kg";document.getElementById("kV").textContent=kEl.value+" N/m";document.getElementById("AV").textContent=AEl.value+" m";}
 function phys(){const m=+mEl.value,k=+kEl.value,A=+AEl.value,w=Math.sqrt(k/m);return{m,k,A,w,T:2*Math.PI/w};}
 function draw(){
- const W=canvasManager.width,H=canvasManager.height,p=phys(),x=p.A*Math.cos(p.w*t),v=-p.A*p.w*Math.sin(p.w*t),E=.5*p.k*p.A*p.A,KE=.5*p.m*v*v,PE=.5*p.k*x*x;
+ const W=canvasManager.width,H=canvasManager.height,p=phys(),x=p.A*Math.cos(p.w*t),v=-p.A*p.w*Math.sin(p.w*t),E=0.5*p.k*p.A*p.A,KE=0.5*p.m*v*v,PE=0.5*p.k*x*x;
  ctx.fillStyle="#0a1220";ctx.fillRect(0,0,W,H);
  const base=W*.2,y=H*.4,sc=80,end=base+100+x*sc;
  ctx.fillStyle="#334155";ctx.fillRect(base-20,y-40,16,80);
