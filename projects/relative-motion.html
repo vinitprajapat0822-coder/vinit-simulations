@@ -237,10 +237,11 @@ Pick a positive direction once; every velocity is signed.</div></div>
     });
   });
 
-  window.addEventListener("pagehide", function () {
+  window.addEventListener("pagehide", function (event) {
+    if (event.persisted) return;
     engine.destroy();
     canvasManager.destroy();
-  }, { once: true });
+  });
 })();
 </script>
 
