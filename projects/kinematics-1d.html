@@ -9,7 +9,7 @@
 <style>
 :root{color-scheme:dark;--bg:#080b16;--panel:#10172a;--panel2:#151f36;--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--red:#ff8e9c;--line:#273451;--radius:18px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#192650 0,transparent 34%),radial-gradient(ellipse at 100% 20%,#281942 0,transparent 27%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}a{color:inherit;text-decoration:none}.wrap{width:min(1240px,calc(100% - 28px));margin:auto}
+button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}a{color:inherit;text-decoration:none}.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}
 header{position:sticky;top:0;z-index:10;background:#080b16eF;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:.3px}.logo{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;color:var(--cyan);background:linear-gradient(135deg,#17334b,#2b2050);border:1px solid #3d5878;font-size:22px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.nav a:last-child{color:var(--cyan);font-size:13px}
 .hero{padding:35px 0 24px}.eyebrow{display:inline-flex;border:1px solid #63e6ff45;background:#63e6ff0d;border-radius:99px;padding:5px 11px;color:var(--cyan);font-size:11px;font-weight:750;letter-spacing:1.4px}.hero h1{font-size:clamp(30px,5vw,52px);letter-spacing:-1.6px;line-height:1.08;margin:14px 0 10px}.grad{background:linear-gradient(100deg,var(--cyan),#b4b8ff 65%,var(--violet));color:transparent;background-clip:text}.hero p{max-width:780px;color:var(--muted);margin:0}
 .layout{display:grid;grid-template-columns:minmax(290px,340px) minmax(0,1fr);gap:16px;align-items:start;padding-bottom:30px}.panel{background:linear-gradient(145deg,#111a2eF2,#0d1324F7);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h2,.panel-head h3{font-size:16px;margin:0}.panel-body{padding:17px}
@@ -66,6 +66,15 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
 
 </style>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
+<style id="core-engine-responsive">
+.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}
+canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
+.btn:disabled{opacity:.48;cursor:not-allowed;transform:none}
+@media(max-width:600px){
+  .wrap{padding:0 12px}
+  canvas:not(#fluid-bg){height:min(390px,48vh);min-height:240px}
+}
+</style>
 </head>
 <body>
 <canvas id="fluid-bg" aria-hidden="true"></canvas>
@@ -183,42 +192,32 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
 </main>
 
 <script>
-(function(){
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  const $ = id => document.getElementById(id);
+(function () {
+  "use strict";
 
-  let playing = false;
+  const $ = function (id) { return document.getElementById(id); };
+  const canvas = $("canvas");
+  const playButton = $("playBtn");
+  const resetButton = $("resetBtn");
+  const startScreen = $("liquidStartScreen");
+  const startButton = $("liquidStartButton");
+
+  const x0 = $("x0"), x0Num = $("x0Num");
+  const u = $("u"), uNum = $("uNum");
+  const a = $("a"), aNum = $("aNum");
+  const tmax = $("tmax"), tmaxNum = $("tmaxNum");
+
   let t = 0;
-  let animId = null;
-  let lastTs = 0;
+  let hasStarted = false;
+  let engine = null;
 
-  const x0 = $('x0'), x0Num = $('x0Num');
-  const u = $('u'), uNum = $('uNum');
-  const a = $('a'), aNum = $('aNum');
-  const tmax = $('tmax'), tmaxNum = $('tmaxNum');
-
-  function sync(range, num, label, suffix, decimals=1) {
-    range.addEventListener('input', () => {
-      num.value = range.value;
-      if(label) label.textContent = Number(range.value).toFixed(decimals) + suffix;
-      resetAnim();
-    });
-    num.addEventListener('input', () => {
-      let v = parseFloat(num.value);
-      if(isNaN(v)) return;
-      v = Math.max(+range.min, Math.min(+range.max, v));
-      range.value = v;
-      num.value = v;
-      if(label) label.textContent = v.toFixed(decimals) + suffix;
-      resetAnim();
-    });
-  }
-
-  sync(x0, x0Num, $('x0Val'), ' m', 1);
-  sync(u, uNum, $('uVal'), ' m/s', 1);
-  sync(a, aNum, $('aVal'), ' m/s²', 2);
-  sync(tmax, tmaxNum, $('tVal'), ' s', 1);
+  const canvasManager = new CanvasManager(canvas, {
+    maxDpr: 2,
+    onResize: function () {
+      if (engine) engine.renderNow();
+    }
+  });
+  const ctx = canvasManager.context;
 
   function getParams() {
     return {
@@ -229,110 +228,74 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
     };
   }
 
-  function pos(p, t) { return p.x0 + p.u * t + 0.5 * p.a * t * t; }
-  function vel(p, t) { return p.u + p.a * t; }
-
-  function resetAnim() {
-    playing = false;
-    t = 0;
-    $('playBtn').textContent = 'Play';
-    $('timeLabel').textContent = 't = 0.00 s';
-    update();
+  function pos(p, time) {
+    return p.x0 + p.u * time + 0.5 * p.a * time * time;
   }
 
-  $('playBtn').addEventListener('click', () => {
-    playing = !playing;
-    $('playBtn').textContent = playing ? 'Pause' : 'Play';
-    if (playing) {
-      lastTs = 0;
-      animId = requestAnimationFrame(loop);
-    }
-  });
-
-  $('resetBtn').addEventListener('click', () => {
-    x0.value = x0Num.value = 0;
-    u.value = uNum.value = 8;
-    a.value = aNum.value = -2;
-    tmax.value = tmaxNum.value = 8;
-    $('x0Val').textContent = '0.0 m';
-    $('uVal').textContent = '8.0 m/s';
-    $('aVal').textContent = '-2.00 m/s²';
-    $('tVal').textContent = '8.0 s';
-    resetAnim();
-  });
-
-  function loop(ts) {
-    if (!playing) return;
-    if (!lastTs) lastTs = ts;
-    const dt = Math.min((ts - lastTs) / 1000, 0.05);
-    lastTs = ts;
-    t += dt;
-    const p = getParams();
-    if (t > p.tmax) {
-      t = p.tmax;
-      playing = false;
-      $('playBtn').textContent = 'Play';
-    }
-    $('timeLabel').textContent = 't = ' + t.toFixed(2) + ' s';
-    update();
-    if (playing) animId = requestAnimationFrame(loop);
+  function vel(p, time) {
+    return p.u + p.a * time;
   }
 
-  function updateResults(p, t) {
-    const x = pos(p, t);
-    const v = vel(p, t);
-    $('rX').textContent = x.toFixed(2) + ' m';
-    $('rV').textContent = v.toFixed(2) + ' m/s';
-    $('rA').textContent = p.a.toFixed(2) + ' m/s²';
-    $('rS').textContent = (x - p.x0).toFixed(2) + ' m';
+  function updateLabels() {
+    $("x0Val").textContent = Number(x0.value).toFixed(1) + " m";
+    $("uVal").textContent = Number(u.value).toFixed(1) + " m/s";
+    $("aVal").textContent = Number(a.value).toFixed(2) + " m/s²";
+    $("tVal").textContent = Number(tmax.value).toFixed(1) + " s";
+  }
+
+  function updateResults(p, time) {
+    const position = pos(p, time);
+    const velocity = vel(p, time);
+    $("rX").textContent = position.toFixed(2) + " m";
+    $("rV").textContent = velocity.toFixed(2) + " m/s";
+    $("rA").textContent = p.a.toFixed(2) + " m/s²";
+    $("rS").textContent = (position - p.x0).toFixed(2) + " m";
   }
 
   function draw() {
     const p = getParams();
+    const width = canvasManager.width;
+    const height = canvasManager.height;
+
     updateResults(p, t);
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    const W = Math.max(1, rect.width);
-    const H = Math.max(1, rect.height || 420);
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#07101f';
-    ctx.fillRect(0, 0, W, H);
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#07101f";
+    ctx.fillRect(0, 0, width, height);
 
-    // Three stacked graph areas
+    // Three stacked graph areas.
     const padL = 48, padR = 16, padT = 18, padB = 22;
-    const graphH = (H - padT - padB - 20) / 3;
-    const graphW = W - padL - padR;
+    const graphH = (height - padT - padB - 20) / 3;
+    const graphW = width - padL - padR;
 
     const graphs = [
-      { title: 'Position x (m)', color: '#63e6ff', yFn: (tt) => pos(p, tt), unit: 'm' },
-      { title: 'Velocity v (m/s)', color: '#7cf0bd', yFn: (tt) => vel(p, tt), unit: 'm/s' },
-      { title: 'Acceleration a (m/s²)', color: '#a78bfa', yFn: () => p.a, unit: 'm/s²' }
+      { title: "Position x (m)", color: "#63e6ff", yFn: function (tt) { return pos(p, tt); } },
+      { title: "Velocity v (m/s)", color: "#7cf0bd", yFn: function (tt) { return vel(p, tt); } },
+      { title: "Acceleration a (m/s²)", color: "#a78bfa", yFn: function () { return p.a; } }
     ];
 
-    // Find global y range for position and velocity
     let maxAbs = 1;
-    for (let i = 0; i <= 60; i++) {
-      const tt = (i / 60) * p.tmax;
-      maxAbs = Math.max(maxAbs, Math.abs(pos(p, tt)), Math.abs(vel(p, tt)), Math.abs(p.a));
+    for (let i = 0; i <= 60; i += 1) {
+      const sampleTime = (i / 60) * p.tmax;
+      maxAbs = Math.max(
+        maxAbs,
+        Math.abs(pos(p, sampleTime)),
+        Math.abs(vel(p, sampleTime)),
+        Math.abs(p.a)
+      );
     }
     maxAbs *= 1.15;
 
-    graphs.forEach((g, idx) => {
-      const y0 = padT + idx * (graphH + 10);
+    graphs.forEach(function (graph, index) {
+      const y0 = padT + index * (graphH + 10);
       const midY = y0 + graphH / 2;
 
-      // Background
-      ctx.fillStyle = '#0a1220';
+      ctx.fillStyle = "#0a1220";
       ctx.fillRect(padL, y0, graphW, graphH);
 
-      // Grid
-      ctx.strokeStyle = '#1b2b40';
+      ctx.strokeStyle = "#1b2b40";
       ctx.lineWidth = 1;
-      for (let i = 0; i <= 4; i++) {
+      for (let i = 0; i <= 4; i += 1) {
         const yy = y0 + (i / 4) * graphH;
         ctx.beginPath();
         ctx.moveTo(padL, yy);
@@ -340,77 +303,148 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
         ctx.stroke();
       }
 
-      // Zero line
-      ctx.strokeStyle = '#334155';
+      ctx.strokeStyle = "#334155";
       ctx.beginPath();
       ctx.moveTo(padL, midY);
       ctx.lineTo(padL + graphW, midY);
       ctx.stroke();
 
-      // Axes labels
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '10px system-ui';
-      ctx.textAlign = 'right';
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "10px system-ui";
+      ctx.textAlign = "right";
       ctx.fillText(maxAbs.toFixed(0), padL - 6, y0 + 10);
       ctx.fillText((-maxAbs).toFixed(0), padL - 6, y0 + graphH - 2);
-      ctx.textAlign = 'left';
-      ctx.fillStyle = g.color;
-      ctx.font = 'bold 11px system-ui';
-      ctx.fillText(g.title, padL + 6, y0 + 14);
+      ctx.textAlign = "left";
+      ctx.fillStyle = graph.color;
+      ctx.font = "bold 11px system-ui";
+      ctx.fillText(graph.title, padL + 6, y0 + 14);
 
-      // Plot curve
-      ctx.strokeStyle = g.color;
+      ctx.strokeStyle = graph.color;
       ctx.lineWidth = 2.2;
       ctx.beginPath();
       const steps = 120;
-      for (let i = 0; i <= steps; i++) {
-        const tt = (i / steps) * p.tmax;
-        const val = g.yFn(tt);
-        const xx = padL + (tt / p.tmax) * graphW;
-        const yy = midY - (val / maxAbs) * (graphH / 2);
+      for (let i = 0; i <= steps; i += 1) {
+        const sampleTime = (i / steps) * p.tmax;
+        const value = graph.yFn(sampleTime);
+        const xx = padL + (sampleTime / p.tmax) * graphW;
+        const yy = midY - (value / maxAbs) * (graphH / 2);
         if (i === 0) ctx.moveTo(xx, yy);
         else ctx.lineTo(xx, yy);
       }
       ctx.stroke();
 
-      // Current time marker
-      const cx = padL + (t / p.tmax) * graphW;
-      const cy = midY - (g.yFn(t) / maxAbs) * (graphH / 2);
-      ctx.fillStyle = g.color;
+      const currentX = padL + (t / p.tmax) * graphW;
+      const currentY = midY - (graph.yFn(t) / maxAbs) * (graphH / 2);
+      ctx.fillStyle = graph.color;
       ctx.beginPath();
-      ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
+      ctx.arc(currentX, currentY, 4.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Vertical time line
-      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.strokeStyle = "rgba(255,255,255,0.15)";
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(cx, y0);
-      ctx.lineTo(cx, y0 + graphH);
+      ctx.moveTo(currentX, y0);
+      ctx.lineTo(currentX, y0 + graphH);
       ctx.stroke();
     });
 
-    // Time axis label
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('Time (s)', padL + graphW / 2, H - 6);
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "11px system-ui";
+    ctx.textAlign = "center";
+    ctx.fillText("Time (s)", padL + graphW / 2, height - 6);
+    $("timeLabel").textContent = "t = " + t.toFixed(2) + " s";
   }
 
-  function update() {
-    draw();
+  engine = new SimulationEngine({
+    maxDelta: 0.05,
+    update: function (deltaTime) {
+      const p = getParams();
+      t = Math.min(t + deltaTime, p.tmax);
+      return t < p.tmax;
+    },
+    render: draw,
+    onReset: function () {
+      t = 0;
+      $("timeLabel").textContent = "t = 0.00 s";
+    },
+    onStateChange: function (state) {
+      playButton.textContent = state.running ? "Pause" : "Play";
+    },
+    onError: function (error) {
+      playButton.textContent = "Play";
+      $("timeLabel").textContent = "Simulation error";
+      if (window.console && console.error) console.error("Kinematics lab error:", error);
+    }
+  });
+
+  function resetAnimation() {
+    engine.reset();
   }
 
-  if ('ResizeObserver' in window) {
-    new ResizeObserver(update).observe(canvas);
-  } else {
-    window.addEventListener('resize', update);
+  function syncPair(range, number, label, suffix, decimals) {
+    range.addEventListener("input", function () {
+      number.value = range.value;
+      label.textContent = Number(range.value).toFixed(decimals) + suffix;
+      resetAnimation();
+    });
+
+    number.addEventListener("input", function () {
+      let value = parseFloat(number.value);
+      if (!Number.isFinite(value)) return;
+      value = Math.max(Number(range.min), Math.min(Number(range.max), value));
+      range.value = value;
+      number.value = value;
+      label.textContent = value.toFixed(decimals) + suffix;
+      resetAnimation();
+    });
   }
 
-  update();
+  syncPair(x0, x0Num, $("x0Val"), " m", 1);
+  syncPair(u, uNum, $("uVal"), " m/s", 1);
+  syncPair(a, aNum, $("aVal"), " m/s²", 2);
+  syncPair(tmax, tmaxNum, $("tVal"), " s", 1);
+  updateLabels();
+  engine.reset();
+
+  startButton.addEventListener("click", function () {
+    if (hasStarted) return;
+    hasStarted = true;
+    playButton.disabled = false;
+    startScreen.classList.add("is-dismissed");
+    startScreen.setAttribute("aria-hidden", "true");
+    startButton.setAttribute("tabindex", "-1");
+    engine.start();
+  });
+
+  playButton.disabled = true;
+  playButton.addEventListener("click", function () {
+    if (!hasStarted) return;
+    if (engine.isRunning) {
+      engine.pause();
+    } else {
+      if (t >= getParams().tmax) engine.reset();
+      engine.resume();
+    }
+  });
+
+  resetButton.addEventListener("click", function () {
+    x0.value = x0Num.value = 0;
+    u.value = uNum.value = 8;
+    a.value = aNum.value = -2;
+    tmax.value = tmaxNum.value = 8;
+    updateLabels();
+    engine.reset();
+  });
+
+  window.addEventListener("pagehide", function () {
+    engine.destroy();
+    canvasManager.destroy();
+  }, { once: true });
 })();
 </script>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 
 <script id="liquid-flow-runtime">
 (function(){
