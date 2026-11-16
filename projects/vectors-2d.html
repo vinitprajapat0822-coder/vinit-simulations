@@ -7,7 +7,7 @@
 <style>
 :root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.62);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(255,255,255,.12)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 24px));margin:auto}
+a{color:inherit;text-decoration:none}.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}
 header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 .nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;gap:8px;align-items:center;font-weight:800}
@@ -74,6 +74,15 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
 @media(prefers-reduced-motion:reduce){.liquid-start-screen,.liquid-start-card .liquid-btn,.btn,.liquid-btn{transition:none!important}.liquid-start-screen.is-dismissed{transform:none}input[type=range]::-webkit-slider-thumb{transition:none}}
 
 </style>
+<style id="core-engine-responsive">
+.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}
+canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
+.btn:disabled{opacity:.48;cursor:not-allowed;transform:none}
+@media(max-width:600px){
+  .wrap{padding:0 12px}
+  canvas:not(#fluid-bg){height:min(390px,48vh);min-height:240px}
+}
+</style>
 </head>
 <body>
 <canvas id="fluid-bg" aria-hidden="true"></canvas>
@@ -112,48 +121,161 @@ Resolve into perpendicular components, add components, then rebuild the magnitud
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
+(function () {
+  "use strict";
 
-(function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const aEl=document.getElementById('A'),bEl=document.getElementById('B'),angEl=document.getElementById('ang');
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-playBtn.style.display='none';
-function sync(){AV.textContent=aEl.value;BV.textContent=bEl.value;angV.textContent=angEl.value+'°';draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-function draw(){
-  const [W,H]=size();
-  const A=+aEl.value,B=+bEl.value,th=+angEl.value*Math.PI/180;
-  const Rx=A+B*Math.cos(th), Ry=B*Math.sin(th);
-  const R=Math.hypot(Rx,Ry), phi=Math.atan2(Ry,Rx);
-  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-  const cx=W*0.28,cy=H*0.55,sc=8;
-  // axes
-  ctx.strokeStyle='#334155';ctx.beginPath();ctx.moveTo(40,cy);ctx.lineTo(W-40,cy);ctx.moveTo(cx,30);ctx.lineTo(cx,H-30);ctx.stroke();
-  function arrow(x1,y1,x2,y2,col,label){
-    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-    const ang=Math.atan2(y2-y1,x2-x1);
-    ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-10*Math.cos(ang-0.4),y2-10*Math.sin(ang-0.4));ctx.lineTo(x2-10*Math.cos(ang+0.4),y2-10*Math.sin(ang+0.4));ctx.closePath();ctx.fill();
-    ctx.font='12px system-ui';ctx.fillText(label,x2+6,y2-6);
+  const canvas = document.getElementById("c");
+  const aEl = document.getElementById("A");
+  const bEl = document.getElementById("B");
+  const angleEl = document.getElementById("ang");
+  const aValue = document.getElementById("AV");
+  const bValue = document.getElementById("BV");
+  const angleValue = document.getElementById("angV");
+  const playButton = document.getElementById("playBtn");
+  const resetButton = document.getElementById("resetBtn");
+  const results = document.getElementById("res");
+  const startScreen = document.getElementById("liquidStartScreen");
+  const startButton = document.getElementById("liquidStartButton");
+
+  let hasStarted = false;
+  let engine = null;
+
+  const canvasManager = new CanvasManager(canvas, {
+    maxDpr: 2,
+    onResize: function () {
+      if (engine) engine.renderNow();
+    }
+  });
+  const ctx = canvasManager.context;
+
+  function syncControls() {
+    aValue.textContent = aEl.value;
+    bValue.textContent = bEl.value;
+    angleValue.textContent = angleEl.value + "°";
   }
-  arrow(cx,cy,cx+A*sc,cy,'#63e6ff','A');
-  arrow(cx+A*sc,cy,cx+A*sc+B*sc*Math.cos(th),cy-B*sc*Math.sin(th),'#a78bfa','B');
-  arrow(cx,cy,cx+Rx*sc,cy-Ry*sc,'#fbbf24','R = A+B');
-  // parallelogram ghost
-  ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.setLineDash([4,4]);
-  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+B*sc*Math.cos(th),cy-B*sc*Math.sin(th));ctx.lineTo(cx+Rx*sc,cy-Ry*sc);ctx.stroke();
-  ctx.setLineDash([]);
-  res.innerHTML='<div class="result"><span>|R|</span><strong>'+R.toFixed(2)+'</strong></div>'+
-    '<div class="result"><span>direction φ</span><strong>'+(phi*180/Math.PI).toFixed(1)+'°</strong></div>'+
-    '<div class="result"><span>R_x</span><strong>'+Rx.toFixed(2)+'</strong></div>'+
-    '<div class="result"><span>R_y</span><strong>'+Ry.toFixed(2)+'</strong></div>';
-}
-aEl.oninput=bEl.oninput=angEl.oninput=sync;
-resetBtn.onclick=function(){aEl.value=8;bEl.value=6;angEl.value=50;sync();};
-sync();
-})();
 
+  function draw() {
+    const width = canvasManager.width;
+    const height = canvasManager.height;
+    const A = Number(aEl.value);
+    const B = Number(bEl.value);
+    const theta = Number(angleEl.value) * Math.PI / 180;
+    const Rx = A + B * Math.cos(theta);
+    const Ry = B * Math.sin(theta);
+    const R = Math.hypot(Rx, Ry);
+    const phi = Math.atan2(Ry, Rx);
+
+    ctx.fillStyle = "#0a1220";
+    ctx.fillRect(0, 0, width, height);
+
+    const cx = width * 0.28;
+    const cy = height * 0.55;
+    const scale = 8;
+
+    ctx.strokeStyle = "#334155";
+    ctx.beginPath();
+    ctx.moveTo(40, cy);
+    ctx.lineTo(width - 40, cy);
+    ctx.moveTo(cx, 30);
+    ctx.lineTo(cx, height - 30);
+    ctx.stroke();
+
+    function arrow(x1, y1, x2, y2, color, label) {
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 10 * Math.cos(angle - 0.4), y2 - 10 * Math.sin(angle - 0.4));
+      ctx.lineTo(x2 - 10 * Math.cos(angle + 0.4), y2 - 10 * Math.sin(angle + 0.4));
+      ctx.closePath();
+      ctx.fill();
+      ctx.font = "12px system-ui";
+      ctx.fillText(label, x2 + 6, y2 - 6);
+    }
+
+    arrow(cx, cy, cx + A * scale, cy, "#63e6ff", "A");
+    arrow(
+      cx + A * scale,
+      cy,
+      cx + A * scale + B * scale * Math.cos(theta),
+      cy - B * scale * Math.sin(theta),
+      "#a78bfa",
+      "B"
+    );
+    arrow(cx, cy, cx + Rx * scale, cy - Ry * scale, "#fbbf24", "R = A+B");
+
+    ctx.strokeStyle = "rgba(255,255,255,0.12)";
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + B * scale * Math.cos(theta), cy - B * scale * Math.sin(theta));
+    ctx.lineTo(cx + Rx * scale, cy - Ry * scale);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    results.innerHTML =
+      '<div class="result"><span>|R|</span><strong>' + R.toFixed(2) + "</strong></div>" +
+      '<div class="result"><span>direction φ</span><strong>' +
+      (phi * 180 / Math.PI).toFixed(1) + "°</strong></div>" +
+      '<div class="result"><span>R_x</span><strong>' + Rx.toFixed(2) + "</strong></div>" +
+      '<div class="result"><span>R_y</span><strong>' + Ry.toFixed(2) + "</strong></div>";
+  }
+
+  engine = new SimulationEngine({
+    update: function () { return false; },
+    render: draw,
+    onReset: function () {},
+    onStateChange: function (state) {
+      playButton.textContent = state.running ? "Pause" : "Play";
+    }
+  });
+
+  syncControls();
+  engine.reset();
+
+  startButton.addEventListener("click", function () {
+    if (hasStarted) return;
+    hasStarted = true;
+    startScreen.classList.add("is-dismissed");
+    startScreen.setAttribute("aria-hidden", "true");
+    startButton.setAttribute("tabindex", "-1");
+    engine.start();
+  });
+
+  playButton.style.display = "none";
+  playButton.disabled = true;
+  playButton.addEventListener("click", function () {
+    if (!hasStarted) return;
+    if (engine.isRunning) engine.pause();
+    else engine.resume();
+  });
+
+  resetButton.addEventListener("click", function () {
+    engine.reset();
+  });
+
+  [aEl, bEl, angleEl].forEach(function (input) {
+    input.addEventListener("input", function () {
+      syncControls();
+      engine.renderNow();
+    });
+  });
+
+  window.addEventListener("pagehide", function () {
+    engine.destroy();
+    canvasManager.destroy();
+  }, { once: true });
+})();
 </script>
 
 <script id="liquid-flow-runtime">
