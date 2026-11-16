@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style>
 :root{color-scheme:dark}body{margin:0;background:#080b16;color:#f2f6ff;font:15px/1.5 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
+a{color:inherit;text-decoration:none}.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}
 header{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.12)}
 .nav{min-height:54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;align-items:center;font-weight:800}
 .logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);font-weight:900}
@@ -55,6 +55,15 @@ body[data-theme="terminal"] .btn.primary,body[data-theme="terminal"] .liquid-btn
 body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-canvas-stage{border-radius:13px}body[data-theme="control-room"] .liquid-start-card{border-radius:13px}
 @media(max-width:600px){.liquid-start-card{padding:20px 16px}.liquid-start-screen{padding:10px}.liquid-canvas-stage{padding:8px!important}.liquid-start-screen{inset:8px}}
 @media(prefers-reduced-motion:reduce){.liquid-start-screen,.liquid-btn,.btn,button{transition:none!important}.liquid-start-screen.is-dismissed{transform:none}}</style>
+<style id="core-engine-responsive">
+.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}
+canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
+.btn:disabled{opacity:.48;cursor:not-allowed;transform:none}
+@media(max-width:600px){
+  .wrap{padding:0 12px}
+  canvas:not(#fluid-bg){height:min(390px,48vh);min-height:240px}
+}
+</style>
 </head><body>
 <canvas id="fluid-bg" aria-hidden="true"></canvas>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>OPTICS</a><a href="../index.html" style="color:#63e6ff">← Hub</a></div></header>
@@ -69,26 +78,31 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
 <div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>1/f = 1/v − 1/u</code></div></div>
 </div></div></main>
 <script src="../lab-theme.js?v=3"></script>
-<script>(function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const f=document.getElementById('f');
-const u=document.getElementById('u');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('fV').textContent=f.value;document.getElementById('uV').textContent=u.value;draw();}
-f.oninput=sync;
-u.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
+<script>
+(function () {
+"use strict";
+const canvas=document.getElementById("c"),f=document.getElementById("f"),u=document.getElementById("u");
+const playBtn=document.getElementById("playBtn"),resetBtn=document.getElementById("resetBtn"),res=document.getElementById("res"),overlay=document.getElementById("liquidStartScreen"),startBtn=document.getElementById("liquidStartButton");
+let entered=false,engine=null;
+const canvasManager=new CanvasManager(canvas,{maxDpr:2,onResize:function(){if(engine)engine.renderNow();}});
+const ctx=canvasManager.context;
+function sync(){document.getElementById("fV").textContent=f.value;document.getElementById("uV").textContent=u.value;}
 function draw(){
- const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- const f=+f.value,u=-Math.abs(+u.value);const v=1/(1/f-1/u);
-ctx.strokeStyle='#63e6ff';ctx.beginPath();ctx.moveTo(W/2,40);ctx.lineTo(W/2,H-40);ctx.stroke();
-ctx.fillStyle='#a78bfa';ctx.fillRect(W/2+u*2,H/2-20,8,20);
-if(isFinite(v))ctx.fillRect(W/2+v*2,H/2,8,20);
-res.innerHTML=`<div class="result"><span>v</span><strong>${isFinite(v)?v.toFixed(1):'∞'} cm</strong></div>`;
+ const W=canvasManager.width,H=canvasManager.height,ff=+f.value,uu=-Math.abs(+u.value),v=1/(1/ff-1/uu);
+ ctx.fillStyle="#0a1220";ctx.fillRect(0,0,W,H);
+ ctx.strokeStyle="#63e6ff";ctx.beginPath();ctx.moveTo(W/2,40);ctx.lineTo(W/2,H-40);ctx.stroke();
+ ctx.fillStyle="#a78bfa";ctx.fillRect(W/2+uu*2,H/2-20,8,20);if(isFinite(v))ctx.fillRect(W/2+v*2,H/2,8,20);
+ res.innerHTML='<div class="result"><span>v</span><strong>'+(isFinite(v)?v.toFixed(1):"∞")+' cm</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;last=ts;t+=0.016;draw();requestAnimationFrame(loop);}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-document.getElementById('resetBtn').onclick=()=>{playing=false;t=0;f.value=18;u.value=40;sync();playBtn.textContent='Play';};
-sync();requestAnimationFrame(loop);
-})();</script><script id="liquid-flow-runtime">(function(){"use strict";var canvas=document.getElementById("fluid-bg");if(!canvas)return;var ctx=canvas.getContext("2d");if(!ctx){canvas.hidden=true;return;}var key="vsh-interface-theme-v2",themes=["holographic","constellation","control-room","terminal"],motion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");var lowCore=(Number(navigator.hardwareConcurrency)||4)<4,lowMemory=Number(navigator.deviceMemory)>0&&Number(navigator.deviceMemory)<=2,staticMode=lowCore||lowMemory||!!(motion&&motion.matches);var w=0,h=0,dpr=1,t=0,last=0,raf=0,running=false,mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches,count=mobile?2:3;function syncTheme(){try{var v=localStorage.getItem(key);if(themes.indexOf(v)>=0)document.body.setAttribute("data-theme",v)}catch(e){}}function palette(){var s=getComputedStyle(document.body);return[s.getPropertyValue("--cyan").trim()||"#62e7ff",s.getPropertyValue("--purple").trim()||"#a78bfa"]}function paint(){ctx.clearRect(0,0,w,h);var colors=palette(),n=staticMode?2:count;for(var i=0;i<n;i++){var x=w/2+Math.sin(t+i)*w*(mobile?.24:.32),y=h/2+Math.cos(t*1.5+i)*h*(mobile?.22:.30),base=mobile?108:154,r=staticMode?base:base+Math.sin(t*2+i)*(mobile?22:42),g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,i%2===0?colors[0]:colors[1]);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}}function resize(){mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches;count=mobile?2:3;dpr=Math.min(devicePixelRatio||1,mobile?1:1.25);w=Math.max(1,innerWidth);h=Math.max(1,innerHeight);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);paint()}function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=0}function frame(now){if(!running||document.hidden){stop();return}if(now-last>=33){var dt=last?Math.min((now-last)/1000,.06):.033;last=now;t+=dt*2.8;paint()}raf=requestAnimationFrame(frame)}function start(){if(staticMode){paint();return}if(running||document.hidden)return;running=true;last=0;raf=requestAnimationFrame(frame)}syncTheme();resize();if(staticMode)paint();else start();addEventListener("resize",resize,{passive:true});document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});addEventListener("storage",function(e){if(!e.key||e.key===key){syncTheme();paint()}});document.addEventListener("vsh-theme-change",function(e){if(e.detail&&themes.indexOf(e.detail.theme)>=0){document.body.setAttribute("data-theme",e.detail.theme);paint()}});if(motion&&motion.addEventListener)motion.addEventListener("change",function(e){staticMode=lowCore||lowMemory||e.matches;stop();if(staticMode)paint();else start()});var overlay=document.getElementById("liquidStartScreen"),button=document.getElementById("liquidStartButton");if(overlay&&button)button.addEventListener("click",function(){overlay.classList.add("is-dismissed");overlay.setAttribute("aria-hidden","true");button.setAttribute("tabindex","-1")})})();</script>
+engine=new SimulationEngine({update:function(){return false;},render:draw,onReset:function(){},onStateChange:function(s){playBtn.textContent=s.running?"Pause":"Play";}});
+sync();engine.reset();
+startBtn.addEventListener("click",function(){if(entered)return;entered=true;overlay.classList.add("is-dismissed");overlay.setAttribute("aria-hidden","true");startBtn.setAttribute("tabindex","-1");engine.start();});
+playBtn.addEventListener("click",function(){if(!entered)return;if(engine.isRunning)engine.pause();else engine.resume();});
+resetBtn.addEventListener("click",function(){engine.reset();});
+[f,u].forEach(function(el){el.addEventListener("input",function(){sync();engine.renderNow();});});
+window.addEventListener("pagehide",function(e){if(e.persisted)return;engine.destroy();canvasManager.destroy();});
+})();
+</script><script id="liquid-flow-runtime">(function(){"use strict";var canvas=document.getElementById("fluid-bg");if(!canvas)return;var ctx=canvas.getContext("2d");if(!ctx){canvas.hidden=true;return;}var key="vsh-interface-theme-v2",themes=["holographic","constellation","control-room","terminal"],motion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");var lowCore=(Number(navigator.hardwareConcurrency)||4)<4,lowMemory=Number(navigator.deviceMemory)>0&&Number(navigator.deviceMemory)<=2,staticMode=lowCore||lowMemory||!!(motion&&motion.matches);var w=0,h=0,dpr=1,t=0,last=0,raf=0,running=false,mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches,count=mobile?2:3;function syncTheme(){try{var v=localStorage.getItem(key);if(themes.indexOf(v)>=0)document.body.setAttribute("data-theme",v)}catch(e){}}function palette(){var s=getComputedStyle(document.body);return[s.getPropertyValue("--cyan").trim()||"#62e7ff",s.getPropertyValue("--purple").trim()||"#a78bfa"]}function paint(){ctx.clearRect(0,0,w,h);var colors=palette(),n=staticMode?2:count;for(var i=0;i<n;i++){var x=w/2+Math.sin(t+i)*w*(mobile?.24:.32),y=h/2+Math.cos(t*1.5+i)*h*(mobile?.22:.30),base=mobile?108:154,r=staticMode?base:base+Math.sin(t*2+i)*(mobile?22:42),g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,i%2===0?colors[0]:colors[1]);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}}function resize(){mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches;count=mobile?2:3;dpr=Math.min(devicePixelRatio||1,mobile?1:1.25);w=Math.max(1,innerWidth);h=Math.max(1,innerHeight);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);paint()}function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=0}function frame(now){if(!running||document.hidden){stop();return}if(now-last>=33){var dt=last?Math.min((now-last)/1000,.06):.033;last=now;t+=dt*2.8;paint()}raf=requestAnimationFrame(frame)}function start(){if(staticMode){paint();return}if(running||document.hidden)return;running=true;last=0;raf=requestAnimationFrame(frame)}syncTheme();resize();if(staticMode)paint();else start();addEventListener("resize",resize,{passive:true});document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});addEventListener("storage",function(e){if(!e.key||e.key===key){syncTheme();paint()}});document.addEventListener("vsh-theme-change",function(e){if(e.detail&&themes.indexOf(e.detail.theme)>=0){document.body.setAttribute("data-theme",e.detail.theme);paint()}});if(motion&&motion.addEventListener)motion.addEventListener("change",function(e){staticMode=lowCore||lowMemory||e.matches;stop();if(staticMode)paint();else start()});var overlay=document.getElementById("liquidStartScreen"),button=document.getElementById("liquidStartButton");if(overlay&&button)button.addEventListener("click",function(){overlay.classList.add("is-dismissed");overlay.setAttribute("aria-hidden","true");button.setAttribute("tabindex","-1")})})();</script>
 </body></html>
