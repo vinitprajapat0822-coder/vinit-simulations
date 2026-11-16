@@ -8,7 +8,7 @@
 <style>
 :root{color-scheme:dark;--bg:#080b16;--panel:rgba(16,24,48,.55);--text:#f2f6ff;--muted:#9cabc8;--cyan:#63e6ff;--violet:#a78bfa;--green:#7cf0bd;--line:rgba(255,255,255,.12);--radius:18px}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,rgba(99,102,241,.18),transparent 42%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}
+a{color:inherit;text-decoration:none}.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}
 header{position:sticky;top:0;z-index:10;background:rgba(8,11,22,.75);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
 .nav{min-height:58px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center;font-weight:850}
 .logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#67e8f9,#a78bfa);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 22px rgba(99,102,241,.35)}
@@ -65,6 +65,15 @@ body[data-theme="terminal"] .btn.primary,body[data-theme="terminal"] .liquid-btn
 body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-canvas-stage{border-radius:13px}body[data-theme="control-room"] .liquid-start-card{border-radius:13px}
 @media(max-width:600px){.liquid-start-card{padding:20px 16px}.liquid-start-screen{padding:10px}.liquid-canvas-stage{padding:8px!important}.liquid-start-screen{inset:8px}}
 @media(prefers-reduced-motion:reduce){.liquid-start-screen,.liquid-btn,.btn,button{transition:none!important}.liquid-start-screen.is-dismissed{transform:none}}</style>
+<style id="core-engine-responsive">
+.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}
+canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
+.btn:disabled{opacity:.48;cursor:not-allowed;transform:none}
+@media(max-width:600px){
+  .wrap{padding:0 12px}
+  canvas:not(#fluid-bg){height:min(390px,48vh);min-height:240px}
+}
+</style>
 </head>
 <body>
 <canvas id="fluid-bg" aria-hidden="true"></canvas>
@@ -95,45 +104,190 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
   </div>
 </main>
 <script>
+(function () {
+  "use strict";
 
-(function(){
-const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
-const us=document.getElementById('us'),uk=document.getElementById('uk'),F=document.getElementById('F'),m=document.getElementById('m');
-let x=100,v=0,playing=false,last=0;const g=9.8;
-document.getElementById('lab-lead').textContent='Block moves only when applied force exceeds maximum static friction.';
-function sync(){usV.textContent=(+us.value).toFixed(2);ukV.textContent=(+uk.value).toFixed(2);fV.textContent=F.value;mV.textContent=m.value;results()}
-['us','uk','F','m'].forEach(id=>document.getElementById(id).oninput=sync);
-function N(){return parseFloat(m.value)*g}
-function fsmax(){return parseFloat(us.value)*N()}
-function fk(){return parseFloat(uk.value)*N()}
-function results(){
- const applied=+F.value;const moving=Math.abs(v)>0.02||applied>fsmax();
- const fr=moving?fk()*(v>=0||applied>0?1:-1):Math.min(applied,fsmax());
- document.getElementById('results').innerHTML='<div class="result"><span>N</span><strong>'+N().toFixed(1)+' N</strong></div><div class="result"><span>f<sub>s,max</sub></span><strong>'+fsmax().toFixed(2)+' N</strong></div><div class="result"><span>f<sub>k</sub></span><strong>'+fk().toFixed(2)+' N</strong></div><div class="result"><span>State</span><strong>'+(Math.abs(v)>0.05?'Sliding':'Rest')+'</strong></div>';
- return {applied,fr,moving};
-}
-function draw(){
- const dpr=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||700,H=360;
- canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
- ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
- ctx.fillStyle='#1e293b';ctx.fillRect(0,H-60,W,60);
- const r=results();const y=H-100;
- ctx.fillStyle='#63e6ff';ctx.fillRect(x,y,50,40);
- ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x+50,y+20);ctx.lineTo(x+50+r.applied*3,y+20);ctx.stroke();
- ctx.strokeStyle='#f87171';ctx.beginPath();ctx.moveTo(x,y+20);ctx.lineTo(x-Math.min(r.fr,r.applied)*3,y+20);ctx.stroke();
-}
-function loop(ts){if(!playing){draw();return}if(!last)last=ts;const dt=Math.min(.032,(ts-last)/1000);last=ts;
- const applied=+F.value,mass=+m.value;let net;
- if(Math.abs(v)<0.05 && applied<=fsmax()){v=0;net=0} else {const sign=v===0?(applied>0?1:-1):(v>0?1:-1);net=applied-fk()*sign;v+=net/mass*dt}
- x+=v*dt*40;if(x<40){x=40;v=0}if(x>canvas.clientWidth-90){x=canvas.clientWidth-90;v=0}
- draw();requestAnimationFrame(loop)}
-document.getElementById('playBtn').onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop)};
-document.getElementById('resetBtn').onclick=()=>{playing=false;x=100;v=0;us.value=.4;uk.value=.3;F.value=5;m.value=2;sync();draw();playBtn.textContent='Play'};
-sync();draw();
+  const canvas = document.getElementById("canvas");
+  const us = document.getElementById("us");
+  const uk = document.getElementById("uk");
+  const forceInput = document.getElementById("F");
+  const massInput = document.getElementById("m");
+  const playButton = document.getElementById("playBtn");
+  const resetButton = document.getElementById("resetBtn");
+  const startScreen = document.getElementById("liquidStartScreen");
+  const startButton = document.getElementById("liquidStartButton");
+  const resultsElement = document.getElementById("results");
+
+  let x = 100;
+  let velocity = 0;
+  let hasStarted = false;
+  const g = 9.8;
+  let engine = null;
+
+  document.getElementById("lab-lead").textContent =
+    "Block moves only when applied force exceeds maximum static friction.";
+
+  const canvasManager = new CanvasManager(canvas, {
+    maxDpr: 2,
+    onResize: function () {
+      if (engine) engine.renderNow();
+    }
+  });
+  const ctx = canvasManager.context;
+
+  function normalForce() {
+    return parseFloat(massInput.value) * g;
+  }
+
+  function maximumStaticFriction() {
+    return parseFloat(us.value) * normalForce();
+  }
+
+  function kineticFriction() {
+    return parseFloat(uk.value) * normalForce();
+  }
+
+  function results() {
+    const applied = Number(forceInput.value);
+    const moving = Math.abs(velocity) > 0.02 ||
+      applied > maximumStaticFriction();
+    const friction = moving
+      ? kineticFriction() * (velocity >= 0 || applied > 0 ? 1 : -1)
+      : Math.min(applied, maximumStaticFriction());
+
+    resultsElement.innerHTML =
+      '<div class="result"><span>N</span><strong>' +
+      normalForce().toFixed(1) + " N</strong></div>" +
+      '<div class="result"><span>f<sub>s,max</sub></span><strong>' +
+      maximumStaticFriction().toFixed(2) + " N</strong></div>" +
+      '<div class="result"><span>f<sub>k</sub></span><strong>' +
+      kineticFriction().toFixed(2) + " N</strong></div>" +
+      '<div class="result"><span>State</span><strong>' +
+      (Math.abs(velocity) > 0.05 ? "Sliding" : "Rest") + "</strong></div>";
+
+    return { applied: applied, fr: friction, moving: moving };
+  }
+
+  function syncControls() {
+    document.getElementById("usV").textContent = Number(us.value).toFixed(2);
+    document.getElementById("ukV").textContent = Number(uk.value).toFixed(2);
+    document.getElementById("fV").textContent = forceInput.value;
+    document.getElementById("mV").textContent = massInput.value;
+    results();
+  }
+
+  function draw() {
+    const width = canvasManager.width;
+    const height = canvasManager.height;
+    ctx.fillStyle = "#0a1220";
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#1e293b";
+    ctx.fillRect(0, height - 60, width, 60);
+
+    const state = results();
+    const y = height - 100;
+
+    ctx.fillStyle = "#63e6ff";
+    ctx.fillRect(x, y, 50, 40);
+
+    ctx.strokeStyle = "#a78bfa";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x + 50, y + 20);
+    ctx.lineTo(x + 50 + state.applied * 3, y + 20);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#f87171";
+    ctx.beginPath();
+    ctx.moveTo(x, y + 20);
+    ctx.lineTo(x - Math.min(state.fr, state.applied) * 3, y + 20);
+    ctx.stroke();
+  }
+
+  engine = new SimulationEngine({
+    maxDelta: 0.032,
+    update: function (deltaTime) {
+      const applied = Number(forceInput.value);
+      const mass = Number(massInput.value);
+      let net;
+
+      if (Math.abs(velocity) < 0.05 &&
+          applied <= maximumStaticFriction()) {
+        velocity = 0;
+        net = 0;
+      } else {
+        const direction = velocity === 0
+          ? (applied > 0 ? 1 : -1)
+          : (velocity > 0 ? 1 : -1);
+        net = applied - kineticFriction() * direction;
+        velocity += net / mass * deltaTime;
+      }
+
+      x += velocity * deltaTime * 40;
+      if (x < 40) {
+        x = 40;
+        velocity = 0;
+      }
+      if (x > canvasManager.width - 90) {
+        x = canvasManager.width - 90;
+        velocity = 0;
+      }
+      return true;
+    },
+    render: draw,
+    onReset: function () {
+      x = 100;
+      velocity = 0;
+      us.value = 0.4;
+      uk.value = 0.3;
+      forceInput.value = 5;
+      massInput.value = 2;
+      syncControls();
+    },
+    onStateChange: function (state) {
+      playButton.textContent = state.running ? "Pause" : "Play";
+    }
+  });
+
+  engine.reset();
+
+  startButton.addEventListener("click", function () {
+    if (hasStarted) return;
+    hasStarted = true;
+    playButton.disabled = false;
+    startScreen.classList.add("is-dismissed");
+    startScreen.setAttribute("aria-hidden", "true");
+    startButton.setAttribute("tabindex", "-1");
+    engine.start();
+  });
+
+  playButton.disabled = true;
+  playButton.addEventListener("click", function () {
+    if (!hasStarted) return;
+    if (engine.isRunning) engine.pause();
+    else engine.resume();
+  });
+
+  resetButton.addEventListener("click", function () {
+    engine.reset();
+  });
+
+  [us, uk, forceInput, massInput].forEach(function (input) {
+    input.addEventListener("input", function () {
+      syncControls();
+      engine.renderNow();
+    });
+  });
+
+  window.addEventListener("pagehide", function () {
+    engine.destroy();
+    canvasManager.destroy();
+  }, { once: true });
 })();
-
 </script>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script id="liquid-flow-runtime">(function(){"use strict";var canvas=document.getElementById("fluid-bg");if(!canvas)return;var ctx=canvas.getContext("2d");if(!ctx){canvas.hidden=true;return;}var key="vsh-interface-theme-v2",themes=["holographic","constellation","control-room","terminal"],motion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");var lowCore=(Number(navigator.hardwareConcurrency)||4)<4,lowMemory=Number(navigator.deviceMemory)>0&&Number(navigator.deviceMemory)<=2,staticMode=lowCore||lowMemory||!!(motion&&motion.matches);var w=0,h=0,dpr=1,t=0,last=0,raf=0,running=false,mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches,count=mobile?2:3;function syncTheme(){try{var v=localStorage.getItem(key);if(themes.indexOf(v)>=0)document.body.setAttribute("data-theme",v)}catch(e){}}function palette(){var s=getComputedStyle(document.body);return[s.getPropertyValue("--cyan").trim()||"#62e7ff",s.getPropertyValue("--purple").trim()||"#a78bfa"]}function paint(){ctx.clearRect(0,0,w,h);var colors=palette(),n=staticMode?2:count;for(var i=0;i<n;i++){var x=w/2+Math.sin(t+i)*w*(mobile?.24:.32),y=h/2+Math.cos(t*1.5+i)*h*(mobile?.22:.30),base=mobile?108:154,r=staticMode?base:base+Math.sin(t*2+i)*(mobile?22:42),g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,i%2===0?colors[0]:colors[1]);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}}function resize(){mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches;count=mobile?2:3;dpr=Math.min(devicePixelRatio||1,mobile?1:1.25);w=Math.max(1,innerWidth);h=Math.max(1,innerHeight);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);paint()}function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=0}function frame(now){if(!running||document.hidden){stop();return}if(now-last>=33){var dt=last?Math.min((now-last)/1000,.06):.033;last=now;t+=dt*2.8;paint()}raf=requestAnimationFrame(frame)}function start(){if(staticMode){paint();return}if(running||document.hidden)return;running=true;last=0;raf=requestAnimationFrame(frame)}syncTheme();resize();if(staticMode)paint();else start();addEventListener("resize",resize,{passive:true});document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});addEventListener("storage",function(e){if(!e.key||e.key===key){syncTheme();paint()}});document.addEventListener("vsh-theme-change",function(e){if(e.detail&&themes.indexOf(e.detail.theme)>=0){document.body.setAttribute("data-theme",e.detail.theme);paint()}});if(motion&&motion.addEventListener)motion.addEventListener("change",function(e){staticMode=lowCore||lowMemory||e.matches;stop();if(staticMode)paint();else start()});var overlay=document.getElementById("liquidStartScreen"),button=document.getElementById("liquidStartButton");if(overlay&&button)button.addEventListener("click",function(){overlay.classList.add("is-dismissed");overlay.setAttribute("aria-hidden","true");button.setAttribute("tabindex","-1")})})();</script>
 </body>
 </html>
