@@ -7,7 +7,7 @@
 <style>
 :root{color-scheme:dark;--bg:#080b16;--surface:#101629;--panel:var(--surface);--text:#f2f5ff;--muted:#9ba8c5;--cyan:#62e7ff;--purple:#a78bfa;--violet:var(--purple);--green:#7cf0bd;--amber:#fbbf24;--red:#ff8e9c;--line:rgba(163,184,230,.18);--lab-radius:18px;--canvas-top:#111c30;--canvas-bottom:#080b16}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{width:min(1220px,calc(100% - 24px));margin:auto}
+a{color:inherit;text-decoration:none}.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 12px}
 header{position:sticky;top:0;z-index:10;background:rgba(7,10,20,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 .nav{min-height:56px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;gap:8px;align-items:center;font-weight:800}
@@ -58,10 +58,11 @@ input[type=range]::-moz-range-thumb{width:19px;height:19px;border:2px solid var(
 .actions{gap:9px;margin-top:10px}
 .btn{min-height:48px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2,var(--surface));color:var(--text);font-size:13px;transition:transform .25s ease,border-color .25s ease,background .25s ease}
 .btn:hover{border-color:var(--cyan)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .btn:active{transform:scale(.97)}
 .btn.primary{border:1px solid transparent;background:linear-gradient(115deg,var(--cyan),var(--purple));color:var(--bg)}
 .simulation-stage{position:relative;isolation:isolate;padding:12px;overflow:hidden;border-radius:14px}
-.simulation-canvas{position:relative;z-index:0;display:block;width:100%;height:min(430px,54vh);min-height:260px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--canvas-top),var(--canvas-bottom));}
+.simulation-canvas{position:relative;z-index:0;display:block;width:100%;height:clamp(360px,62vh,720px);min-height:320px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--canvas-top),var(--canvas-bottom));}
 .simulation-start-screen{position:absolute;z-index:2;inset:12px;display:grid;place-items:center;padding:16px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(145deg,rgba(8,11,22,.72),rgba(8,11,22,.55));backdrop-filter:blur(11px) saturate(135%);-webkit-backdrop-filter:blur(11px) saturate(135%);opacity:1;visibility:visible;transform:scale(1);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1),visibility 0s linear 0s}
 .simulation-start-screen.is-dismissed{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.975);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1),visibility 0s linear .5s}
 .simulation-start-card{width:min(440px,100%);padding:clamp(20px,4vw,34px);border:1px solid transparent;border-radius:20px;background:linear-gradient(145deg,rgba(17,27,48,.94),rgba(10,16,31,.94)) padding-box,linear-gradient(135deg,rgba(98,231,255,.48),rgba(167,139,250,.34),var(--line)) border-box;box-shadow:0 22px 60px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);text-align:center}
@@ -137,151 +138,450 @@ For a target (x,y), eliminate t to get the trajectory equation; solve for θ or 
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../physics-core.js"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
+(function () {
+  "use strict";
 
-(function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const uEl=document.getElementById('u'),thEl=document.getElementById('th'),gEl=document.getElementById('g');
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-const challengeBtn=document.getElementById('challengeBtn'),challengePanel=document.getElementById('challengePanel'),challengeStatus=document.getElementById('challengeStatus');
-const targetRange=100;
-let challengeActive=false,playing=false,t=0,last=0,trail=[];
-function sync(){uV.textContent=uEl.value+' m/s';thV.textContent=thEl.value+'°';gV.textContent=gEl.value;}
-function phys(){
-  const u=+uEl.value,th=+thEl.value*Math.PI/180,g=+gEl.value;
-  const ux=u*Math.cos(th),uy=u*Math.sin(th);
-  const T=2*uy/g, R=ux*T, H=uy*uy/(2*g);
-  return {u,th,g,ux,uy,T,R,H};
-}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||900,H=canvas.clientHeight||430;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-function world(p,W,H){
-  const pad=48; const maxRange=challengeActive?Math.max(p.R,targetRange):p.R; const sx=(W-2*pad)/Math.max(maxRange*1.15,1); const sy=(H-2*pad)/Math.max(p.H*1.35,1); const s=Math.min(sx,sy);
-  return {pad,s, X:x=>pad+x*s, Y:y=>H-pad-y*s};
-}
-function draw(){
-  const [W,H]=size();const p=phys();const m=world(p,W,H);
-  const canvasStyle=getComputedStyle(canvas);
-  const canvasBackground=ctx.createLinearGradient(0,0,0,H);
-  canvasBackground.addColorStop(0,canvasStyle.getPropertyValue('--canvas-top').trim()||'#111c30');
-  canvasBackground.addColorStop(1,canvasStyle.getPropertyValue('--canvas-bottom').trim()||'#080b16');
-  ctx.fillStyle=canvasBackground;ctx.fillRect(0,0,W,H);
-  // ground + grid
-  ctx.strokeStyle='#1e293b';ctx.beginPath();ctx.moveTo(m.pad,H-m.pad);ctx.lineTo(W-20,H-m.pad);ctx.stroke();
-  if(challengeActive){
-    const tx=m.X(targetRange),ty=H-m.pad-7;
-    ctx.save();
-    ctx.strokeStyle='#62e7ff';ctx.fillStyle='#62e7ff';ctx.lineWidth=2;
-    ctx.shadowColor='rgba(98,231,255,.7)';ctx.shadowBlur=12;
-    ctx.beginPath();ctx.arc(tx,ty,12,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.arc(tx,ty,5,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(tx-17,ty);ctx.lineTo(tx+17,ty);ctx.moveTo(tx,ty-17);ctx.lineTo(tx,ty+17);ctx.stroke();
-    ctx.shadowBlur=0;ctx.font='bold 11px system-ui';ctx.fillText('TARGET · 100 m',tx>W-135?tx-112:tx+15,ty-15);
-    ctx.restore();
+  const canvas = document.getElementById("c");
+  const uEl = document.getElementById("u");
+  const thEl = document.getElementById("th");
+  const gEl = document.getElementById("g");
+  const uValue = document.getElementById("uV");
+  const thValue = document.getElementById("thV");
+  const gValue = document.getElementById("gV");
+  const playBtn = document.getElementById("playBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const resultPanel = document.getElementById("res");
+  const challengeBtn = document.getElementById("challengeBtn");
+  const challengePanel = document.getElementById("challengePanel");
+  const challengeStatus = document.getElementById("challengeStatus");
+  const startScreen = document.getElementById("simulationStartScreen");
+  const startButton = document.getElementById("startSimulationBtn");
+  const targetRange = 100;
+
+  if (!window.ProjectilePhysics ||
+      !window.CanvasManager ||
+      !window.SimulationEngine) {
+    throw new Error("Projectile lab core scripts failed to load.");
   }
-  // full ideal trajectory
-  ctx.strokeStyle='rgba(148,163,184,.35)';ctx.setLineDash([4,4]);ctx.beginPath();
-  for(let i=0;i<=80;i++){const tt=i/80*p.T;const x=p.ux*tt,y=p.uy*tt-0.5*p.g*tt*tt;const X=m.X(x),Y=m.Y(y);if(i===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y);}
-  ctx.stroke();ctx.setLineDash([]);
-  // trail
-  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();
-  trail.forEach((pt,i)=>{const X=m.X(pt[0]),Y=m.Y(pt[1]);if(i===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y);});ctx.stroke();
-  // current state
-  const tt=Math.min(t,p.T);const x=p.ux*tt,y=Math.max(0,p.uy*tt-0.5*p.g*tt*tt);
-  const vx=p.ux,vy=p.uy-p.g*tt;
-  const px=m.X(x),py=m.Y(y);
-  // velocity vector
-  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+vx*1.2,py-vy*1.2);ctx.stroke();
-  ctx.fillStyle='#94a3b8';ctx.font='11px system-ui';ctx.fillText('v',px+vx*1.2+4,py-vy*1.2);
-  // components at launch
-  if(tt<0.05){
-    ctx.strokeStyle='rgba(167,139,250,.8)';ctx.beginPath();ctx.moveTo(m.X(0),m.Y(0));ctx.lineTo(m.X(0)+p.ux*1.1,m.Y(0));ctx.stroke();
-    ctx.beginPath();ctx.moveTo(m.X(0),m.Y(0));ctx.lineTo(m.X(0),m.Y(0)-p.uy*1.1);ctx.stroke();
+
+  let challengeActive = false;
+  let hasStarted = false;
+  let simulationTime = 0;
+  let trail = [];
+  let engine = null;
+
+  function getProjectileParameters() {
+    return {
+      u: Number(uEl.value),
+      theta: Number(thEl.value) * Math.PI / 180,
+      h: 0,
+      g: Number(gEl.value)
+    };
   }
-  // ball
-  ctx.fillStyle='#63e6ff';ctx.shadowColor='rgba(99,230,255,.5)';ctx.shadowBlur=12;
-  ctx.beginPath();ctx.arc(px,py,7,0,6.28);ctx.fill();ctx.shadowBlur=0;
-  // markers R,H
-  ctx.fillStyle='#64748b';ctx.font='11px system-ui';
-  ctx.fillText('R',m.X(p.R)-4,H-m.pad+16);
-  ctx.fillText('H',8,m.Y(p.H)+4);
-  res.innerHTML=
-    '<div class="result"><span>Time of flight</span><strong>'+p.T.toFixed(2)+' s</strong></div>'+
-    '<div class="result"><span>Range R</span><strong>'+p.R.toFixed(2)+' m</strong></div>'+
-    '<div class="result"><span>Max height H</span><strong>'+p.H.toFixed(2)+' m</strong></div>'+
-    '<div class="result"><span>v_x (const)</span><strong>'+vx.toFixed(2)+' m/s</strong></div>'+
-    '<div class="result"><span>v_y now</span><strong>'+vy.toFixed(2)+' m/s</strong></div>'+
-    '<div class="result"><span>speed now</span><strong>'+Math.hypot(vx,vy).toFixed(2)+' m/s</strong></div>';
-}
-function loop(ts){
-  if(!playing){draw();return;}
-  if(!last)last=ts;const dt=Math.min(0.032,(ts-last)/1000);last=ts;
-  const p=phys();t+=dt;
-  const x=p.ux*t,y=p.uy*t-0.5*p.g*t*t;
-  if(y>=0) trail.push([x,y]);
-  if(t>=p.T){
-    t=p.T;playing=false;playBtn.textContent='Play';
-    if(challengeActive){
-      const hit=Math.abs(p.R-targetRange)<=2.5;
-      challengePanel.classList.toggle('is-success',hit);
-      challengeStatus.textContent=hit
-        ? '🎯 Target hit! Your calculated range is '+p.R.toFixed(2)+' m. Excellent launch!'
-        : 'Not quite. Your range is '+p.R.toFixed(2)+' m. Adjust speed or angle and try again.';
+
+  function syncControls() {
+    uValue.textContent = uEl.value + " m/s";
+    thValue.textContent = thEl.value + "°";
+    gValue.textContent = gEl.value;
+  }
+
+  function world(physics, width, height) {
+    const padding = 48;
+    const maxRange = challengeActive
+      ? Math.max(physics.range, targetRange)
+      : physics.range;
+    const maxHeight = Math.max(physics.maxHeight, 1);
+    const scaleX = (width - 2 * padding) /
+      Math.max(maxRange * 1.15, 1);
+    const scaleY = (height - 2 * padding) /
+      Math.max(maxHeight * 1.35, 1);
+    const scale = Math.max(0.001, Math.min(scaleX, scaleY));
+
+    return {
+      padding: padding,
+      scale: scale,
+      X: function (x) {
+        return padding + x * scale;
+      },
+      Y: function (y) {
+        return height - padding - y * scale;
+      }
+    };
+  }
+
+  function draw() {
+    const parameters = getProjectileParameters();
+    const physics = ProjectilePhysics.calculate(parameters);
+    const width = canvasManager.width;
+    const height = canvasManager.height;
+    const mapping = world(physics, width, height);
+    const canvasStyle = getComputedStyle(canvas);
+    const context = canvasManager.context;
+    const gradient = context.createLinearGradient(0, 0, 0, height);
+
+    gradient.addColorStop(
+      0,
+      canvasStyle.getPropertyValue("--canvas-top").trim() || "#111c30"
+    );
+    gradient.addColorStop(
+      1,
+      canvasStyle.getPropertyValue("--canvas-bottom").trim() || "#080b16"
+    );
+
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+
+    // Ground line.
+    context.strokeStyle = "#1e293b";
+    context.beginPath();
+    context.moveTo(mapping.padding, height - mapping.padding);
+    context.lineTo(width - 20, height - mapping.padding);
+    context.stroke();
+
+    // Optional 100 m challenge target.
+    if (challengeActive) {
+      const targetX = mapping.X(targetRange);
+      const targetY = height - mapping.padding - 7;
+
+      context.save();
+      context.strokeStyle = "#62e7ff";
+      context.fillStyle = "#62e7ff";
+      context.lineWidth = 2;
+      context.shadowColor = "rgba(98,231,255,.7)";
+      context.shadowBlur = 12;
+
+      context.beginPath();
+      context.arc(targetX, targetY, 12, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.arc(targetX, targetY, 5, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(targetX - 17, targetY);
+      context.lineTo(targetX + 17, targetY);
+      context.moveTo(targetX, targetY - 17);
+      context.lineTo(targetX, targetY + 17);
+      context.stroke();
+
+      context.shadowBlur = 0;
+      context.font = "bold 11px system-ui";
+      context.fillText(
+        "TARGET · 100 m",
+        targetX > width - 135 ? targetX - 112 : targetX + 15,
+        targetY - 15
+      );
+      context.restore();
     }
-  }
-  draw();if(playing)requestAnimationFrame(loop);
-}
-function reset(){
-  playing=false;t=0;last=0;trail=[];playBtn.textContent='Play';
-  if(challengeActive){
-    challengePanel.classList.remove('is-success');
-    challengeStatus.textContent='Mission: Hit the target at 100m. Adjust speed or angle, then press Play.';
-  }
-  sync();draw();
-}
-uEl.oninput=thEl.oninput=gEl.oninput=function(){
-  if(challengeActive){
-    challengePanel.classList.remove('is-success');
-    challengeStatus.textContent='Mission: Hit the target at 100m. Your settings changed; run the launch to test them.';
-  }
-  sync();if(!playing){trail=[];t=0;draw();}
-};
-playBtn.onclick=function(){const p=phys();if(t>=p.T){t=0;trail=[];}playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=reset;
-challengeBtn.addEventListener('click',function(){
-  challengeActive=!challengeActive;
-  challengePanel.hidden=!challengeActive;
-  challengeBtn.textContent=challengeActive?'Exit Challenge':'Challenge Mode';
-  challengeBtn.classList.toggle('primary',challengeActive);
-  reset();
-});
-reset();
-})();
 
+    // Ideal trajectory is calculated by the shared physics core.
+    context.strokeStyle = "rgba(148,163,184,.35)";
+    context.setLineDash([4, 4]);
+    context.beginPath();
+
+    for (let index = 0; index <= 80; index += 1) {
+      const sampleTime = index / 80 * physics.flightTime;
+      const position = ProjectilePhysics.positionAt(
+        parameters,
+        sampleTime
+      );
+      const x = mapping.X(position.x);
+      const y = mapping.Y(position.y - parameters.h);
+
+      if (index === 0) context.moveTo(x, y);
+      else context.lineTo(x, y);
+    }
+
+    context.stroke();
+    context.setLineDash([]);
+
+    // Live trail.
+    context.strokeStyle = "#63e6ff";
+    context.lineWidth = 2;
+    context.beginPath();
+
+    trail.forEach(function (point, index) {
+      const x = mapping.X(point[0]);
+      const y = mapping.Y(point[1]);
+
+      if (index === 0) context.moveTo(x, y);
+      else context.lineTo(x, y);
+    });
+
+    context.stroke();
+
+    // Current position and velocity come from the shared physics core.
+    const currentTime = Math.min(simulationTime, physics.flightTime);
+    const position = ProjectilePhysics.positionAt(parameters, currentTime);
+    const velocity = ProjectilePhysics.velocityAt(parameters, currentTime);
+    const visibleHeight = Math.max(0, position.y - parameters.h);
+    const pointX = mapping.X(position.x);
+    const pointY = mapping.Y(visibleHeight);
+
+    context.strokeStyle = "#fbbf24";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(pointX, pointY);
+    context.lineTo(
+      pointX + velocity.vx * 1.2,
+      pointY - velocity.vy * 1.2
+    );
+    context.stroke();
+
+    context.fillStyle = "#94a3b8";
+    context.font = "11px system-ui";
+    context.fillText(
+      "v",
+      pointX + velocity.vx * 1.2 + 4,
+      pointY - velocity.vy * 1.2
+    );
+
+    // Launch velocity components.
+    if (currentTime < 0.05) {
+      context.strokeStyle = "rgba(167,139,250,.8)";
+      context.beginPath();
+      context.moveTo(mapping.X(0), mapping.Y(0));
+      context.lineTo(
+        mapping.X(0) + physics.ux * 1.1,
+        mapping.Y(0)
+      );
+      context.stroke();
+
+      context.beginPath();
+      context.moveTo(mapping.X(0), mapping.Y(0));
+      context.lineTo(
+        mapping.X(0),
+        mapping.Y(0) - physics.uy * 1.1
+      );
+      context.stroke();
+    }
+
+    // Projectile body.
+    context.fillStyle = "#63e6ff";
+    context.shadowColor = "rgba(99,230,255,0.5)";
+    context.shadowBlur = 12;
+    context.beginPath();
+    context.arc(pointX, pointY, 7, 0, Math.PI * 2);
+    context.fill();
+    context.shadowBlur = 0;
+
+    // Range and height markers.
+    context.fillStyle = "#64748b";
+    context.font = "11px system-ui";
+    context.fillText(
+      "R",
+      mapping.X(physics.range) - 4,
+      height - mapping.padding + 16
+    );
+    context.fillText(
+      "H",
+      8,
+      mapping.Y(physics.maxHeight - parameters.h) + 4
+    );
+
+    resultPanel.innerHTML =
+      '<div class="result"><span>Time of flight</span><strong>' +
+      physics.flightTime.toFixed(2) + " s</strong></div>" +
+      '<div class="result"><span>Range R</span><strong>' +
+      physics.range.toFixed(2) + " m</strong></div>" +
+      '<div class="result"><span>Max height H</span><strong>' +
+      (physics.maxHeight - parameters.h).toFixed(2) + " m</strong></div>" +
+      '<div class="result"><span>v_x (const)</span><strong>' +
+      velocity.vx.toFixed(2) + " m/s</strong></div>" +
+      '<div class="result"><span>v_y now</span><strong>' +
+      velocity.vy.toFixed(2) + " m/s</strong></div>" +
+      '<div class="result"><span>speed now</span><strong>' +
+      velocity.speed.toFixed(2) + " m/s</strong></div>";
+  }
+
+  function updateSimulation(deltaTime) {
+    const parameters = getProjectileParameters();
+    const physics = ProjectilePhysics.calculate(parameters);
+
+    simulationTime = Math.min(
+      simulationTime + deltaTime,
+      physics.flightTime
+    );
+
+    const position = ProjectilePhysics.positionAt(
+      parameters,
+      simulationTime
+    );
+
+    if (position.y >= parameters.h - 1e-8) {
+      trail.push([position.x, position.y - parameters.h]);
+    }
+
+    if (simulationTime >= physics.flightTime) {
+      simulationTime = physics.flightTime;
+
+      if (challengeActive) {
+        const targetCheck = ProjectilePhysics.checkTarget(
+          parameters,
+          targetRange,
+          0,
+          2.5
+        );
+        const hit = targetCheck.hit;
+
+        challengePanel.classList.toggle("is-success", hit);
+        challengeStatus.textContent = hit
+          ? "🎯 Target hit! Your calculated range is " +
+            physics.range.toFixed(2) + " m. Excellent launch!"
+          : "Not quite. Your range is " +
+            physics.range.toFixed(2) +
+            " m. Adjust speed or angle and try again.";
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+
+  function resetChallengeStatus() {
+    if (!challengeActive) return;
+
+    challengePanel.classList.remove("is-success");
+    challengeStatus.textContent =
+      "Mission: Hit the target at 100m. Adjust speed or angle, then press Play.";
+  }
+
+  const canvasManager = new CanvasManager(canvas, {
+    maxDpr: 2,
+    onResize: function () {
+      if (engine) engine.renderNow();
+    }
+  });
+
+  engine = new SimulationEngine({
+    maxDelta: 0.05,
+    update: updateSimulation,
+    render: draw,
+    onReset: function () {
+      simulationTime = 0;
+      trail = [];
+      resetChallengeStatus();
+    },
+    onStateChange: function (state) {
+      playBtn.textContent = state.running ? "Pause" : "Play";
+    },
+    onError: function (error) {
+      playBtn.textContent = "Play";
+      challengeStatus.textContent =
+        "Simulation error: " + (error && error.message
+          ? error.message
+          : "An unexpected error occurred.");
+      if (window.console && typeof window.console.error === "function") {
+        window.console.error("Projectile simulation failed:", error);
+      }
+    }
+  });
+
+  syncControls();
+  playBtn.disabled = true;
+  engine.reset();
+
+  startButton.addEventListener("click", function () {
+    if (hasStarted) return;
+
+    hasStarted = true;
+    playBtn.disabled = false;
+    startScreen.classList.add("is-dismissed");
+    startScreen.setAttribute("aria-hidden", "true");
+    startButton.setAttribute("tabindex", "-1");
+
+    // The first animation frame is scheduled only after this user action.
+    engine.start();
+  });
+
+  playBtn.addEventListener("click", function () {
+    if (!hasStarted) return;
+
+    if (engine.isRunning) {
+      engine.pause();
+      return;
+    }
+
+    const physics = ProjectilePhysics.calculate(
+      getProjectileParameters()
+    );
+
+    if (simulationTime >= physics.flightTime) {
+      engine.reset();
+    }
+
+    engine.start();
+  });
+
+  resetBtn.addEventListener("click", function () {
+    engine.reset();
+  });
+
+  challengeBtn.addEventListener("click", function () {
+    challengeActive = !challengeActive;
+    challengePanel.hidden = !challengeActive;
+    challengeBtn.textContent = challengeActive
+      ? "Exit Challenge"
+      : "Challenge Mode";
+    challengeBtn.classList.toggle("primary", challengeActive);
+    engine.reset();
+  });
+
+  function handleParameterChange() {
+    syncControls();
+
+    if (!engine.isRunning) {
+      simulationTime = 0;
+      trail = [];
+    }
+
+    engine.renderNow();
+  }
+
+  uEl.addEventListener("input", handleParameterChange);
+  thEl.addEventListener("input", handleParameterChange);
+  gEl.addEventListener("input", handleParameterChange);
+
+  window.addEventListener("pagehide", function () {
+    engine.destroy();
+    canvasManager.destroy();
+  }, { once: true });
+})();
 </script>
 
 <script id="projectile-ui-runtime">
-(function(){
+(function () {
   "use strict";
-  var startScreen=document.getElementById("simulationStartScreen");
-  var startButton=document.getElementById("startSimulationBtn");
-  var validThemes=["holographic","constellation","control-room","terminal"];
-  function syncTheme(){
-    try{
-      var theme=localStorage.getItem("vsh-interface-theme-v2");
-      if(validThemes.indexOf(theme)>=0)document.body.setAttribute("data-theme",theme);
-    }catch(error){}
+
+  const validThemes = [
+    "holographic",
+    "constellation",
+    "control-room",
+    "terminal"
+  ];
+
+  function syncTheme() {
+    try {
+      const theme = localStorage.getItem("vsh-interface-theme-v2");
+      if (validThemes.indexOf(theme) >= 0) {
+        document.body.setAttribute("data-theme", theme);
+      }
+    } catch (error) {
+      // Theme storage may be unavailable in private browsing contexts.
+    }
   }
+
   syncTheme();
-  window.addEventListener("storage",function(event){
-    if(!event.key||event.key==="vsh-interface-theme-v2")syncTheme();
+
+  window.addEventListener("storage", function (event) {
+    if (!event.key || event.key === "vsh-interface-theme-v2") {
+      syncTheme();
+    }
   });
-  if(startButton&&startScreen){
-    startButton.addEventListener("click",function(){
-      startScreen.classList.add("is-dismissed");
-      startScreen.setAttribute("aria-hidden","true");
-      startButton.setAttribute("tabindex","-1");
-    });
-  }
 })();
 </script>
 
