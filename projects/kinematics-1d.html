@@ -436,10 +436,11 @@ canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
     engine.reset();
   });
 
-  window.addEventListener("pagehide", function () {
+  window.addEventListener("pagehide", function (event) {
+    if (event.persisted) return;
     engine.destroy();
     canvasManager.destroy();
-  }, { once: true });
+  });
 })();
 </script>
 <script src="../lab-theme.js?v=3"></script>
