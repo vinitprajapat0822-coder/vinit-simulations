@@ -67,6 +67,7 @@ body[data-theme="terminal"] .btn.primary,body[data-theme="terminal"] .liquid-btn
 body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-canvas-stage{border-radius:13px}body[data-theme="control-room"] .liquid-start-card{border-radius:13px}
 @media(max-width:600px){.liquid-start-card{padding:20px 16px}.liquid-start-screen{padding:10px}.liquid-canvas-stage{padding:8px!important}.liquid-start-screen{inset:8px}}
 @media(prefers-reduced-motion:reduce){.liquid-start-screen,.liquid-btn,.btn,button{transition:none!important}.liquid-start-screen.is-dismissed{transform:none}}</style>
+<style id="core-engine-layout">.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}</style>
 </head>
 <body>
 <canvas id="fluid-bg" aria-hidden="true"></canvas>
@@ -94,49 +95,25 @@ Always define which direction is positive for a. This lab takes m₁ downward po
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const m1El=document.getElementById('m1'),m2El=document.getElementById('m2');
+"use strict";
+const canvas=document.getElementById('c'),m1El=document.getElementById('m1'),m2El=document.getElementById('m2'),m1V=document.getElementById('m1V'),m2V=document.getElementById('m2V');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-let playing=true,y=0,v=0,last=0;
-function sync(){m1V.textContent=m1El.value+' kg';m2V.textContent=m2El.value+' kg';}
-function phys(){const m1=+m1El.value,m2=+m2El.value,g=9.8;
-  const a=(m1-m2)*g/(m1+m2); const T=2*m1*m2*g/(m1+m2);
-  return {m1,m2,a,T,g};
-}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-function draw(){
-  const [W,H]=size();const p=phys();
-  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-  const cx=W/2,cy=55;
-  // pulley
-  ctx.strokeStyle='#94a3b8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,22,0,6.28);ctx.stroke();
-  ctx.fillStyle='#334155';ctx.beginPath();ctx.arc(cx,cy,8,0,6.28);ctx.fill();
-  const y1=130+y, y2=130-y;
-  ctx.strokeStyle='#64748b';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(cx-22,cy);ctx.lineTo(cx-50,y1);ctx.moveTo(cx+22,cy);ctx.lineTo(cx+50,y2);ctx.stroke();
-  // masses
-  const s1=20+p.m1*3,s2=20+p.m2*3;
-  ctx.fillStyle='#63e6ff';ctx.fillRect(cx-50-s1/2,y1,s1,s1);
-  ctx.fillStyle='#a78bfa';ctx.fillRect(cx+50-s2/2,y2,s2,s2);
-  ctx.fillStyle='#0a1220';ctx.font='12px system-ui';ctx.textAlign='center';
-  ctx.fillText('m1',cx-50,y1+s1/2+4);ctx.fillText('m2',cx+50,y2+s2/2+4);
-  ctx.textAlign='left';
-  res.innerHTML='<div class="result"><span>Acceleration a</span><strong>'+p.a.toFixed(2)+' m/s²</strong></div>'+
-    '<div class="result"><span>Tension T</span><strong>'+p.T.toFixed(1)+' N</strong></div>'+
-    '<div class="result"><span>Direction</span><strong>'+(p.a>0.01?'m1 down':p.a<-0.01?'m2 down':'balanced')+'</strong></div>';
-}
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;
-  const p=phys();v+=p.a*dt;y+=v*dt*25; if(y>80){y=80;v=0;} if(y<-80){y=-80;v=0;}
-  draw();requestAnimationFrame(loop);}
-function reset(){playing=false;y=0;v=0;last=0;playBtn.textContent='Play';sync();draw();}
-m1El.oninput=m2El.oninput=function(){sync();y=0;v=0;draw();};
-playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
+let y=0,v=0,started=false,engine=null;
+function sync(){m1V.textContent=m1El.value+' kg';m2V.textContent=m2El.value+' kg';if(started)engine.renderNow();}
+function phys(){const m1=+m1El.value,m2=+m2El.value,g=9.8;const a=(m1-m2)*g/(m1+m2);const T=2*m1*m2*g/(m1+m2);return{m1,m2,a,T,g};}
+function draw(){const W=canvasManager.width,H=canvasManager.height,ctx=canvasManager.context,p=phys();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);const cx=W/2,cy=55;ctx.strokeStyle='#94a3b8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,22,0,6.28);ctx.stroke();ctx.fillStyle='#334155';ctx.beginPath();ctx.arc(cx,cy,8,0,6.28);ctx.fill();const y1=130+y,y2=130-y;ctx.strokeStyle='#64748b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-22,cy);ctx.lineTo(cx-50,y1);ctx.moveTo(cx+22,cy);ctx.lineTo(cx+50,y2);ctx.stroke();const s1=20+p.m1*3,s2=20+p.m2*3;ctx.fillStyle='#63e6ff';ctx.fillRect(cx-50-s1/2,y1,s1,s1);ctx.fillStyle='#a78bfa';ctx.fillRect(cx+50-s2/2,y2,s2,s2);ctx.fillStyle='#0a1220';ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText('m1',cx-50,y1+s1/2+4);ctx.fillText('m2',cx+50,y2+s2/2+4);ctx.textAlign='left';res.innerHTML='<div class="result"><span>Acceleration a</span><strong>'+p.a.toFixed(2)+' m/s²</strong></div>'+'<div class="result"><span>Tension T</span><strong>'+p.T.toFixed(1)+' N</strong></div>'+'<div class="result"><span>Direction</span><strong>'+(p.a>0.01?'m1 down':p.a<-0.01?'m2 down':'balanced')+'</strong></div>';}
+const canvasManager=new CanvasManager(canvas,{onResize:function(){if(started&&engine)engine.renderNow();}});
+engine=new SimulationEngine({maxDelta:0.04,update:function(dt){const p=phys();v+=p.a*dt;y+=v*dt*25;if(y>80){y=80;v=0;}if(y<-80){y=-80;v=0;}},render:draw,onReset:function(){y=0;v=0;sync();},onStateChange:function(s){playBtn.textContent=s.running?'Pause':'Play';}});
+m1El.oninput=m2El.oninput=function(){y=0;v=0;sync();};playBtn.onclick=function(){if(!started)return;if(engine.isRunning)engine.pause();else engine.resume();};
+resetBtn.onclick=function(){if(started)engine.reset();else{y=0;v=0;sync();}};
+const overlay=document.getElementById('liquidStartScreen'),startButton=document.getElementById('liquidStartButton');
+startButton.addEventListener('click',function(){if(started)return;started=true;overlay.classList.add('is-dismissed');overlay.setAttribute('aria-hidden','true');startButton.setAttribute('tabindex','-1');engine.start();});
+window.addEventListener('pagehide',function(){engine.destroy();canvasManager.destroy();},{once:true});sync();
 })();
-
 </script>
 <script id="liquid-flow-runtime">(function(){"use strict";var canvas=document.getElementById("fluid-bg");if(!canvas)return;var ctx=canvas.getContext("2d");if(!ctx){canvas.hidden=true;return;}var key="vsh-interface-theme-v2",themes=["holographic","constellation","control-room","terminal"],motion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");var lowCore=(Number(navigator.hardwareConcurrency)||4)<4,lowMemory=Number(navigator.deviceMemory)>0&&Number(navigator.deviceMemory)<=2,staticMode=lowCore||lowMemory||!!(motion&&motion.matches);var w=0,h=0,dpr=1,t=0,last=0,raf=0,running=false,mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches,count=mobile?2:3;function syncTheme(){try{var v=localStorage.getItem(key);if(themes.indexOf(v)>=0)document.body.setAttribute("data-theme",v)}catch(e){}}function palette(){var s=getComputedStyle(document.body);return[s.getPropertyValue("--cyan").trim()||"#62e7ff",s.getPropertyValue("--purple").trim()||"#a78bfa"]}function paint(){ctx.clearRect(0,0,w,h);var colors=palette(),n=staticMode?2:count;for(var i=0;i<n;i++){var x=w/2+Math.sin(t+i)*w*(mobile?.24:.32),y=h/2+Math.cos(t*1.5+i)*h*(mobile?.22:.30),base=mobile?108:154,r=staticMode?base:base+Math.sin(t*2+i)*(mobile?22:42),g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,i%2===0?colors[0]:colors[1]);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}}function resize(){mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches;count=mobile?2:3;dpr=Math.min(devicePixelRatio||1,mobile?1:1.25);w=Math.max(1,innerWidth);h=Math.max(1,innerHeight);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);paint()}function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=0}function frame(now){if(!running||document.hidden){stop();return}if(now-last>=33){var dt=last?Math.min((now-last)/1000,.06):.033;last=now;t+=dt*2.8;paint()}raf=requestAnimationFrame(frame)}function start(){if(staticMode){paint();return}if(running||document.hidden)return;running=true;last=0;raf=requestAnimationFrame(frame)}syncTheme();resize();if(staticMode)paint();else start();addEventListener("resize",resize,{passive:true});document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});addEventListener("storage",function(e){if(!e.key||e.key===key){syncTheme();paint()}});document.addEventListener("vsh-theme-change",function(e){if(e.detail&&themes.indexOf(e.detail.theme)>=0){document.body.setAttribute("data-theme",e.detail.theme);paint()}});if(motion&&motion.addEventListener)motion.addEventListener("change",function(e){staticMode=lowCore||lowMemory||e.matches;stop();if(staticMode)paint();else start()});var overlay=document.getElementById("liquidStartScreen"),button=document.getElementById("liquidStartButton");if(overlay&&button)button.addEventListener("click",function(){overlay.classList.add("is-dismissed");overlay.setAttribute("aria-hidden","true");button.setAttribute("tabindex","-1")})})();</script>
 </body>
