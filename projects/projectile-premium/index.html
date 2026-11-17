@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#040813">
+  <meta name="description" content="Interactive projectile motion control panel with accessible premium scientific UI components.">
+  <title>Projectile Motion · Premium Simulation Panel</title>
+  <link rel="stylesheet" href="../../components/premium-ui/premium-ui.css">
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ice-white);
+      background:
+        radial-gradient(ellipse at 12% 0%, rgba(34,211,238,.12), transparent 35rem),
+        radial-gradient(ellipse at 90% 18%, rgba(57,135,255,.12), transparent 32rem),
+        linear-gradient(145deg, var(--bg-midnight), var(--bg-navy));
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input { font: inherit; }
+    .app-shell { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 34px 0 56px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .eyebrow { margin: 0 0 8px; color: var(--cyan); font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.7rem); line-height: 1.08; letter-spacing: -.045em; }
+    .subheading { max-width: 62ch; margin: 12px 0 0; color: rgba(230,244,255,.63); line-height: 1.65; }
+    .topbar-mark { display: grid; width: 46px; height: 46px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(34,211,238,.26); border-radius: 14px; color: var(--cyan); background: rgba(34,211,238,.08); box-shadow: var(--glow-cyan); font-size: 1.3rem; }
+    .panel-grid { display: grid; grid-template-columns: minmax(0, 1.03fr) minmax(0, .97fr); gap: 18px; align-items: start; }
+    .panel { padding: 20px; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+    .section-heading h2 { margin: 0; font-size: 1rem; letter-spacing: -.01em; }
+    .field { display: grid; gap: 8px; margin: 0 0 22px; }
+    .field-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .field label { color: rgba(230,244,255,.83); font-size: .88rem; font-weight: 650; }
+    .field-value { color: var(--cyan); font-size: .82rem; font-weight: 750; font-variant-numeric: tabular-nums; }
+    .field small { color: rgba(230,244,255,.48); font-size: .75rem; }
+    .gravity-wrap { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+    .unit { color: rgba(230,244,255,.48); font-size: .82rem; white-space: nowrap; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+    .secondary-note { color: rgba(230,244,255,.46); font-size: .75rem; line-height: 1.5; }
+    .calculation-status { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 18px; min-height: 28px; }
+    .thinking-copy { color: rgba(230,244,255,.7); font-size: .82rem; }
+    .results-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .result-card { min-height: 150px; }
+    .result-card .pui-glass-card__header { padding: 13px 14px; color: rgba(230,244,255,.65); font-size: .76rem; font-weight: 700; }
+    .result-card .pui-glass-card__body { padding: 15px 14px 12px; }
+    .result-value { display: block; overflow-wrap: anywhere; color: var(--ice-white); font-size: clamp(1.3rem, 2.7vw, 1.85rem); font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .result-unit { color: var(--cyan); font-size: .73rem; font-weight: 700; }
+    .result-card .pui-glass-card__footer { padding: 10px 14px; font-size: .69rem; }
+    .formula-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+    .formula { padding: 11px; border: 1px solid rgba(196,224,255,.08); border-radius: 10px; color: rgba(230,244,255,.54); background: rgba(3,10,21,.36); font-size: .72rem; text-align: center; }
+    .formula strong { display: block; margin-bottom: 4px; color: rgba(230,244,255,.83); font-size: .8rem; }
+    .reset-area { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(196,224,255,.09); }
+    .reset-copy { max-width: 42ch; color: rgba(230,244,255,.5); font-size: .76rem; line-height: 1.5; }
+    .notice { min-height: 1.2em; margin: 12px 0 0; color: var(--error); font-size: .82rem; }
+    .footnote { margin-top: 24px; color: rgba(230,244,255,.35); font-size: .72rem; line-height: 1.6; text-align: center; }
+    @media (max-width: 760px) {
+      .app-shell { width: min(100% - 22px, 560px); padding-top: 24px; }
+      .panel-grid { grid-template-columns: 1fr; }
+      .panel { padding: 16px; }
+      .results-grid { grid-template-columns: 1fr; }
+      .result-card { min-height: auto; }
+      .result-card .pui-glass-card__body { padding: 12px 14px; }
+      .result-value { font-size: 1.6rem; }
+      .formula-strip { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 420px) {
+      .topbar-mark { width: 40px; height: 40px; }
+      .actions { align-items: stretch; flex-direction: column; }
+      .actions button { width: 100%; }
+      .reset-area { align-items: stretch; flex-direction: column; }
+      .reset-area button { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Vinit Simulation Hub · Physics Lab</p>
+        <h1>Projectile Motion</h1>
+        <p class="subheading">Explore the path of a launched object. Adjust the launch conditions, calculate the motion, and inspect the key results.</p>
+      </div>
+      <div class="topbar-mark" aria-hidden="true">↗</div>
+    </header>
+
+    <div class="panel-grid">
+      <section class="panel pui-glass-simulation-card" data-card-root aria-labelledby="controls-title">
+        <div class="section-heading pui-glass-card__header" data-card-header>
+          <h2 id="controls-title">Launch parameters</h2>
+          <span class="pui-status-badge" id="statusBadge" data-state="ready">Ready</span>
+        </div>
+        <div class="pui-glass-card__body" data-card-body>
+          <div class="field">
+            <div class="field-top">
+              <label for="angleInput">Launch angle</label>
+              <output class="field-value" id="angleValue">45°</output>
+            </div>
+            <div class="pui-slider" data-pui-slider>
+              <input id="angleInput" type="range" min="0" max="90" step="1" value="45" aria-label="Launch angle in degrees" data-value-output="#angleValue">
+              <output class="pui-slider__tooltip" data-slider-tooltip aria-hidden="true">45°</output>
+            </div>
+            <small>Choose an angle from 0° to 90°.</small>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="velocityInput">Initial velocity</label>
+              <output class="field-value" id="velocityValue">25 m/s</output>
+            </div>
+            <div class="pui-slider" data-pui-slider>
+              <input id="velocityInput" type="range" min="1" max="100" step="1" value="25" aria-label="Initial velocity in metres per second" data-value-output="#velocityValue">
+              <output class="pui-slider__tooltip" data-slider-tooltip aria-hidden="true">25 m/s</output>
+            </div>
+            <small>Set the launch speed from 1 to 100 m/s.</small>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="gravityInput">Gravitational acceleration</label>
+            </div>
+            <div class="gravity-wrap">
+              <input class="pui-focus-glow-input" id="gravityInput" type="number" inputmode="decimal" min="0.1" max="30" step="0.1" value="9.8" aria-describedby="gravityHelp">
+              <span class="unit">m/s²</span>
+            </div>
+            <small id="gravityHelp">Enter a value greater than 0 and up to 30 m/s².</small>
+          </div>
+
+          <div class="actions">
+            <button class="pui-magnetic-glow-button" id="calculateButton" type="button">
+              <span>Calculate motion</span>
+            </button>
+            <span class="secondary-note">Calculation uses ideal projectile motion with no air resistance.</span>
+          </div>
+          <div class="calculation-status">
+            <div id="thinkingState" class="pui-thinking-state" hidden>
+              <span class="pui-thinking-state__ring" aria-hidden="true"></span>
+              <span class="thinking-copy" data-thinking-text>Calculating trajectory…</span>
+              <span class="pui-thinking-state__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+            </div>
+          </div>
+          <p class="notice" id="errorMessage" role="alert" aria-live="assertive"></p>
+        </div>
+        <div class="pui-glass-card__footer" data-card-footer>Inputs are independent of the main simulation engine.</div>
+      </section>
+
+      <section class="panel pui-glass-simulation-card" aria-labelledby="results-title">
+        <div class="section-heading pui-glass-card__header" data-card-header>
+          <h2 id="results-title">Calculated results</h2>
+          <span class="secondary-note">Ideal trajectory</span>
+        </div>
+        <div class="pui-glass-card__body" data-card-body>
+          <div class="results-grid" aria-live="polite" aria-atomic="false">
+            <article class="result-card pui-glass-simulation-card" data-result-card>
+              <div class="pui-glass-card__header" data-card-header>Horizontal range</div>
+              <div class="pui-glass-card__body" data-card-body>
+                <output class="result-value" id="rangeResult">—</output>
+                <span class="result-unit">metres</span>
+              </div>
+              <div class="pui-glass-card__footer" data-card-footer>Horizontal distance</div>
+            </article>
+            <article class="result-card pui-glass-simulation-card" data-result-card>
+              <div class="pui-glass-card__header" data-card-header>Time of flight</div>
+              <div class="pui-glass-card__body" data-card-body>
+                <output class="result-value" id="timeResult">—</output>
+                <span class="result-unit">seconds</span>
+              </div>
+              <div class="pui-glass-card__footer" data-card-footer>Total flight duration</div>
+            </article>
+            <article class="result-card pui-glass-simulation-card" data-result-card>
+              <div class="pui-glass-card__header" data-card-header>Maximum height</div>
+              <div class="pui-glass-card__body" data-card-body>
+                <output class="result-value" id="heightResult">—</output>
+                <span class="result-unit">metres</span>
+              </div>
+              <div class="pui-glass-card__footer" data-card-footer>Peak vertical displacement</div>
+            </article>
+          </div>
+          <div class="formula-strip" aria-label="Projectile motion equations">
+            <div class="formula"><strong>Range</strong>u² sin(2θ) / g</div>
+            <div class="formula"><strong>Flight time</strong>2u sin(θ) / g</div>
+            <div class="formula"><strong>Max height</strong>u² sin²(θ) / 2g</div>
+          </div>
+        </div>
+        <div class="pui-glass-card__footer">Results are rounded to three decimal places.</div>
+      </section>
+    </div>
+
+    <section class="pui-glass-simulation-card" style="margin-top:18px;padding:18px 20px" aria-labelledby="reset-title">
+      <div class="reset-area" style="margin:0;padding:0;border:0">
+        <div>
+          <h2 id="reset-title" style="margin:0 0 5px;font-size:.95rem">Reset the experiment</h2>
+          <div class="reset-copy">Press and hold the reset control until its progress ring completes. Releasing early cancels the reset.</div>
+        </div>
+        <button class="pui-hold-to-confirm-button" id="resetButton" type="button" aria-label="Press and hold to reset the experiment">Hold to reset</button>
+      </div>
+    </section>
+
+    <p class="footnote">Model assumptions: launch and landing heights are equal, gravity is constant, and air resistance is ignored.</p>
+  </main>
+
+  <script src="../../components/premium-ui/magnetic-glow-button.js"></script>
+  <script src="../../components/premium-ui/glass-simulation-card.js"></script>
+  <script src="../../components/premium-ui/advanced-parameter-slider.js"></script>
+  <script src="../../components/premium-ui/thinking-state.js"></script>
+  <script src="../../components/premium-ui/success-state-button.js"></script>
+  <script src="../../components/premium-ui/status-badge.js"></script>
+  <script src="../../components/premium-ui/focus-glow-input.js"></script>
+  <script src="../../components/premium-ui/hold-to-confirm-button.js"></script>
+  <script src="../../components/premium-ui/index.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var $ = function (selector) { return document.querySelector(selector); };
+      var angleInput = $("#angleInput");
+      var velocityInput = $("#velocityInput");
+      var gravityInput = $("#gravityInput");
+      var calculateButton = $("#calculateButton");
+      var resetButton = $("#resetButton");
+      var errorMessage = $("#errorMessage");
+      var rangeResult = $("#rangeResult");
+      var timeResult = $("#timeResult");
+      var heightResult = $("#heightResult");
+
+      var angleSlider = new PremiumUI.AdvancedParameterSlider(angleInput, {
+        format: function (value) { return Math.round(value) + "°"; }
+      });
+      var velocitySlider = new PremiumUI.AdvancedParameterSlider(velocityInput, {
+        format: function (value) { return Math.round(value) + " m/s"; }
+      });
+      var gravityField = new PremiumUI.FocusGlowInput(gravityInput);
+      var magneticButton = new PremiumUI.MagneticGlowButton(calculateButton);
+      var successButton = new PremiumUI.SuccessStateButton(calculateButton, { successLabel: "Calculated", resetAfter: 2200 });
+      var thinking = new PremiumUI.ThinkingState($("#thinkingState"));
+      var badge = new PremiumUI.StatusBadge($("#statusBadge"), "ready");
+      var holdReset = new PremiumUI.HoldToConfirmButton(resetButton, { duration: 1400 });
+
+      document.querySelectorAll("[data-card-root], [data-result-card]").forEach(function (card) {
+        new PremiumUI.GlassSimulationCard(card);
+      });
+
+      function showError(message) {
+        errorMessage.textContent = message;
+        badge.setState("error");
+        thinking.hide();
+        magneticButton.setLoading(false);
+      }
+      function formatNumber(value) {
+        if (!Number.isFinite(value)) return "—";
+        return value.toFixed(3);
+      }
+      function calculate() {
+        var angleDegrees = Number(angleInput.value);
+        var speed = Number(velocityInput.value);
+        var gravity = Number(gravityInput.value);
+        errorMessage.textContent = "";
+
+        if (!Number.isFinite(gravity) || gravity <= 0 || gravity > 30) {
+          showError("Enter a valid gravity value greater than 0 and no more than 30 m/s².");
+          gravityInput.focus();
+          return;
+        }
+        if (!Number.isFinite(angleDegrees) || angleDegrees < 0 || angleDegrees > 90 ||
+            !Number.isFinite(speed) || speed <= 0) {
+          showError("Check the angle and initial velocity values.");
+          return;
+        }
+
+        successButton.reset();
+        magneticButton.setLoading(true);
+        badge.setState("calculating");
+        thinking.show("Calculating trajectory…");
+
+        window.setTimeout(function () {
+          var theta = angleDegrees * Math.PI / 180;
+          var velocityX = speed * Math.cos(theta);
+          var velocityY = speed * Math.sin(theta);
+          var flightTime = (2 * velocityY) / gravity;
+          var horizontalRange = velocityX * flightTime;
+          var maximumHeight = (velocityY * velocityY) / (2 * gravity);
+
+          rangeResult.textContent = formatNumber(horizontalRange);
+          timeResult.textContent = formatNumber(flightTime);
+          heightResult.textContent = formatNumber(maximumHeight);
+          thinking.hide();
+          magneticButton.setLoading(false);
+          badge.setState("success");
+          successButton.showSuccess("Calculated", 2200);
+        }, 620);
+      }
+
+      calculateButton.addEventListener("click", calculate);
+      gravityInput.addEventListener("input", function () {
+        if (errorMessage.textContent) errorMessage.textContent = "";
+        if (badge.element.getAttribute("data-state") === "error") badge.setState("ready");
+      });
+
+      resetButton.addEventListener("holdconfirm", function () {
+        successButton.reset();
+        magneticButton.setLoading(false);
+        thinking.hide();
+        angleSlider.setValue(45);
+        velocitySlider.setValue(25);
+        gravityInput.value = "9.8";
+        rangeResult.textContent = "—";
+        timeResult.textContent = "—";
+        heightResult.textContent = "—";
+        errorMessage.textContent = "";
+        badge.setState("ready");
+        resetButton.textContent = "Reset complete";
+        window.setTimeout(function () { resetButton.textContent = "Hold to reset"; }, 1300);
+      });
+    })();
+  </script>
+</body>
+</html>
