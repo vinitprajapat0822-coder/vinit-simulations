@@ -38,19 +38,43 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 .qbtn{text-align:left;border:1px solid #34425e;background:#121a2e;color:var(--text);border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:600}
 .qbtn:hover{border-color:var(--violet)}.qbtn.ok{border-color:var(--green);background:rgba(124,240,189,.1)}.qbtn.bad{border-color:var(--red);background:rgba(255,142,156,.1)}
 .feedback{font-size:13px;color:var(--muted);min-height:1.2em;margin-top:8px}
+
+/* Batch 10 · Liquid Flow UI */
+body{position:relative;isolation:isolate}
+#fluid-bg{position:fixed!important;inset:0!important;z-index:-1!important;display:block!important;width:100vw!important;height:100vh!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;opacity:.88;pointer-events:none!important;touch-action:none!important}
+.wrap{width:100%;max-width:1600px;margin-inline:auto;padding-inline:12px}
+.control-panel{position:relative;border:1px solid rgba(98,231,255,.24)!important;background:linear-gradient(145deg,rgba(16,24,48,.72),rgba(8,14,28,.68))!important;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);box-shadow:0 16px 42px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(98,231,255,.05)}
+.control-panel .ph,.control-panel .panel-head{border-bottom-color:rgba(255,255,255,.12)}
+input[type=range]{accent-color:#00f0ff;filter:drop-shadow(0 0 5px rgba(0,240,255,.35))}
+input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+input[type=range]::-moz-range-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+.simulation-stage{position:relative;isolation:isolate;width:100%;min-width:0;border-radius:16px;overflow:hidden}
+.simulation-stage>canvas{position:relative;z-index:0;display:block;width:100%;max-width:100%}
+.start-overlay{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at 50% 42%,rgba(14,30,52,.52),rgba(3,7,16,.78));-webkit-backdrop-filter:blur(13px) saturate(145%);backdrop-filter:blur(13px) saturate(145%)}
+.start-overlay[hidden]{display:none!important}
+.start-card{width:min(100%,360px);padding:24px 22px;text-align:center;border:1px solid rgba(255,255,255,.2);border-top-color:rgba(255,255,255,.52);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(12,21,38,.62));box-shadow:0 22px 55px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,240,255,.08)}
+.start-kicker{display:block;margin-bottom:9px;color:#00f0ff;font-size:10px;font-weight:850;letter-spacing:.18em}
+.start-card h2{margin:0 0 7px;color:#f2f7ff;font-size:clamp(18px,3vw,23px)}
+.start-card p{margin:0 0 17px;color:#c0cce0;font-size:12px;line-height:1.6}
+.start-cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:46px;padding:11px 16px;border:1px solid rgba(255,255,255,.55);border-radius:13px;color:#041018;background:linear-gradient(120deg,#a5f4ff,#00f0ff 55%,#aaa0ff);box-shadow:0 10px 26px rgba(0,240,255,.22),inset 0 1px 0 rgba(255,255,255,.7);font-weight:900;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease}
+.start-cta:hover{transform:translateY(-1px);box-shadow:0 13px 32px rgba(0,240,255,.3),inset 0 1px 0 rgba(255,255,255,.8)}
+.start-cta:active{transform:scale(.97)}
+@media(max-width:600px){.start-card{padding:20px 17px}.simulation-stage{border-radius:12px}}
+
 </style>
 </head>
 <body>
+<canvas id="fluid-bg" aria-hidden="true"></canvas>
 <header><div class="wrap nav"><a class="brand" href="organic-home.html"><span class="logo">V</span>ORGANIC</a><div style="display:flex;gap:12px;align-items:center"><a href="organic-home.html" style="color:var(--violet);font-weight:700">GOC Home</a><a href="../index.html" style="color:var(--cyan);font-weight:700">Hub</a></div></div></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">GOC · ELECTRONIC EFFECTS</div><h1>Inductive Effect — Deep Lab</h1><p class="lead">See how −I / +I substituents shift electron density through a σ-bonded chain, and how the effect dies with distance. This is a teaching model for ranking and reasoning — not a computed electrostatic map.</p></section>
 <div class="layout">
 <aside>
-<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Substituent <b id="gV">NO2</b></label>
+<div class="panel control-panel"><div class="ph">Controls</div><div class="pb"><label class="row">Substituent <b id="gV">NO2</b></label>
 <select id="group"><option>NO2</option><option>F</option><option>Cl</option><option>Br</option><option>CH3</option><option>C2H5</option><option>H</option></select>
 <label class="row">Attach at carbon <b id="dV">1</b></label><input type="range" id="dist" min="1" max="5" step="1" value="1">
 <label class="row">Probe carbon <b id="pV">1</b></label><input type="range" id="probe" min="1" max="5" step="1" value="1"><button class="btn" id="resetBtn">Reset</button></div></div>
-<div class="panel"><div class="ph">Notice while you explore</div><div class="pb explain"><div class="tip">Move the probe away from the substituent. The bar shrinks — that is the distance dependence of the inductive effect.</div>
+<div class="panel control-panel"><div class="ph">Notice while you explore</div><div class="pb explain"><div class="tip">Move the probe away from the substituent. The bar shrinks — that is the distance dependence of the inductive effect.</div>
 <ul>
 <li>−I (NO₂, F, Cl, Br): withdraw density → carbons look “more positive” in this schematic.</li>
 <li>+I (CH₃, C₂H₅): weak donation relative to H.</li>
@@ -58,7 +82,7 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 </ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="920" height="400"></canvas></div></div>
+<div class="panel"><div class="pb"><div class="simulation-stage" id="simulation-stage"><canvas id="c" width="920" height="400"></canvas><div class="start-overlay" id="startOverlay"><div class="start-card"><span class="start-kicker">VSH · CORE ENGINE</span><h2>Ready to explore?</h2><p>Start the lab to open the interactive visualization and controls.</p><button type="button" class="start-cta" id="startSimulationBtn">Start Simulation <span aria-hidden="true">→</span></button></div></div></div></div></div>
 <div class="panel"><div class="ph">Live readout</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Deep theory · exceptions · JEE traps</div><div class="pb explain"><h3>Definition (JEE style)</h3>
 Permanent polarity shift transmitted along a chain through σ bonds due to electronegativity / electron-donating differences.
@@ -74,10 +98,16 @@ Bars are a pedagogical scale, not Mulliken charges from quantum software.</div><
 <div class="panel"><div class="ph">Quick check</div><div class="pb"><div class="quiz" id="quiz"></div><div class="feedback" id="fb"></div></div></div>
 </div></div>
 </main>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
 
+
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const canvas=document.getElementById('c');
+let engine=null;
+const canvasManager=new CanvasManager(canvas,{onResize(){if(engine)engine.renderNow();}});
+const ctx=canvasManager.context;
 const group=document.getElementById('group'),dist=document.getElementById('dist'),probe=document.getElementById('probe');
 const resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
 const G={
@@ -89,14 +119,13 @@ const G={
   C2H5:{type:'+I',s:1.7,note:'Slightly stronger +I than methyl'},
   H:{type:'ref',s:0,note:'Reference (no substituent effect)'}
 };
-function sync(){gV.textContent=group.value;dV.textContent=dist.value;pV.textContent=probe.value;draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||900,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function sync(){gV.textContent=group.value;dV.textContent=dist.value;pV.textContent=probe.value;if(engine)engine.renderNow();}
 function effectAt(attach, at, strength, sign){
   const d=Math.abs(at-attach)+1; // 1 at attachment
   return sign*strength/Math.pow(d,1.25);
 }
 function draw(){
-  const [W,H]=size();const g=G[group.value];const att=+dist.value;const pr=+probe.value;
+  const W=canvasManager.width,H=canvasManager.height;const g=G[group.value];const att=+dist.value;const pr=+probe.value;
   const sign=g.type==='−I'?-1:g.type==='+I'?1:0;
   const dens=[];
   for(let i=1;i<=5;i++) dens.push(effectAt(att,i,g.s,sign));
@@ -137,12 +166,25 @@ function quiz(){
     box.appendChild(b);
   });
 }
+engine=new SimulationEngine({update(){return false;},render:draw});
 group.onchange=dist.oninput=probe.oninput=sync;
+document.getElementById('startSimulationBtn').addEventListener('click',function(){document.getElementById('startOverlay').hidden=true;engine.start();});
 resetBtn.onclick=function(){group.value='NO2';dist.value=1;probe.value=1;sync();};
 sync();quiz();
 })();
 
+
 </script>
 <script src="../lab-theme.js?v=5"></script>
+<script id="liquid-flow-runtime">
+(function(){
+  const canvas=document.getElementById('fluid-bg');if(!canvas)return;
+  const ctx=canvas.getContext('2d');let width=0,height=0,dpr=1,lastFrame=0,phase=0,rafId=0;
+  function resize(){dpr=Math.min(window.devicePixelRatio||1,1.5);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.max(1,Math.round(width*dpr));canvas.height=Math.max(1,Math.round(height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);}
+  function frame(timestamp){rafId=requestAnimationFrame(frame);if(timestamp-lastFrame<1000/30)return;const dt=lastFrame?Math.min(.05,(timestamp-lastFrame)/1000):0;lastFrame=timestamp;phase+=dt*.22;ctx.clearRect(0,0,width,height);let g=ctx.createRadialGradient(width*(.16+.025*Math.sin(phase)),height*.22,0,width*.16,height*.22,Math.max(width,height)*.72);g.addColorStop(0,'rgba(0,240,255,.12)');g.addColorStop(1,'rgba(0,240,255,0)');ctx.fillStyle=g;ctx.fillRect(0,0,width,height);g=ctx.createRadialGradient(width*(.84+.02*Math.cos(phase*.8)),height*.74,0,width*.84,height*.74,Math.max(width,height)*.62);g.addColorStop(0,'rgba(130,105,255,.11)');g.addColorStop(1,'rgba(130,105,255,0)');ctx.fillStyle=g;ctx.fillRect(0,0,width,height);}
+  function stop(){if(rafId)cancelAnimationFrame(rafId);window.removeEventListener('resize',resize);}
+  resize();window.addEventListener('resize',resize,{passive:true});rafId=requestAnimationFrame(frame);window.addEventListener('pagehide',stop,{once:true});
+})();
+</script>
 </body>
 </html>
