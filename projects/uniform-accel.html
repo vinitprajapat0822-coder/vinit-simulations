@@ -31,14 +31,38 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
 .explain ul{padding-left:18px}
 </style>
+<style id="batch14-liquid-template">
+body{isolation:isolate;background:radial-gradient(ellipse at 14% 0%,rgba(0,240,255,.075),transparent 42%),radial-gradient(ellipse at 90% 100%,rgba(130,105,255,.07),transparent 44%),#020408}
+.wrap,main.wrap{width:100%;max-width:1600px;margin-inline:auto;padding-inline:12px}
+#fluid-bg{position:fixed!important;inset:0!important;z-index:-1!important;display:block!important;width:100vw!important;height:100vh!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;opacity:.82;pointer-events:none!important;touch-action:none!important}
+.control-panel{position:relative;min-width:0;border:1px solid rgba(0,240,255,.22)!important;border-radius:18px;background:linear-gradient(145deg,rgba(16,24,48,.74),rgba(8,14,28,.68))!important;-webkit-backdrop-filter:blur(24px) saturate(165%);backdrop-filter:blur(24px) saturate(165%);box-shadow:0 18px 44px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,240,255,.06)}
+.control-panel .ph{border-bottom-color:rgba(255,255,255,.12)}
+input[type=range]{accent-color:#00f0ff;filter:drop-shadow(0 0 5px rgba(0,240,255,.36));touch-action:pan-y}
+input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+input[type=range]::-moz-range-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+.simulation-stage{position:relative;isolation:isolate;width:100%;min-width:0;border-radius:16px;overflow:hidden}
+.simulation-stage>canvas{position:relative;z-index:0;display:block;width:100%;max-width:100%;height:min(430px,54vh)}
+.start-overlay{position:absolute;z-index:3;inset:0;display:grid;place-items:center;padding:clamp(12px,3vw,24px);border:1px solid rgba(255,255,255,.1);border-radius:14px;background:linear-gradient(145deg,rgba(2,6,16,.63),rgba(2,6,16,.46));-webkit-backdrop-filter:blur(12px) saturate(145%);backdrop-filter:blur(12px) saturate(145%);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1)}
+.start-overlay[hidden]{display:none!important}
+.start-card{width:min(440px,100%);padding:clamp(20px,4vw,34px);border:1px solid transparent;border-radius:20px;background:linear-gradient(145deg,rgba(16,25,45,.96),rgba(8,14,28,.96)) padding-box,linear-gradient(135deg,rgba(0,240,255,.52),rgba(130,105,255,.4),rgba(255,255,255,.1)) border-box;box-shadow:0 22px 55px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.12);text-align:center}
+.start-kicker{color:#00f0ff;font-size:9px;font-weight:900;letter-spacing:.16em}
+.start-card h2{margin:9px 0 8px;color:var(--text,#f2f6ff);font-size:clamp(22px,4vw,31px);letter-spacing:-.04em}
+.start-card p{max-width:38ch;margin:0 auto 18px;color:var(--muted,#9cabc8);font-size:13px;line-height:1.65}
+.start-cta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:54px;padding:14px 18px;border:1px solid transparent;border-radius:14px;background:linear-gradient(110deg,#00f0ff,#8270ff);color:#020408;font:inherit;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 10px 28px rgba(0,240,255,.2);transition:transform .22s ease,box-shadow .22s ease}
+.start-cta:active{transform:scale(.97);box-shadow:0 0 26px rgba(0,240,255,.28)}
+button:disabled{opacity:.48;cursor:not-allowed}
+@media(max-width:600px){.start-card{padding:20px 17px}.simulation-stage{border-radius:12px}.start-overlay{padding:10px}}
+@media(prefers-reduced-motion:reduce){.start-overlay,.start-cta{transition:none!important}}
+</style>
 </head>
 <body>
+<canvas id="fluid-bg" aria-hidden="true"></canvas>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>KINEMATICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">1D ACCELERATION</div><h1>Uniform Acceleration Laboratory</h1><p class="lead">Constant acceleration along a straight line. Connect the SUVAT equations to a moving object and its velocity–time graph (area = displacement).</p></section>
 <div class="layout">
 <aside>
-<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Initial velocity u <b id="uV">5 m/s</b></label><input type="range" id="u" min="-15" max="20" step="0.5" value="5">
+<div class="panel control-panel"><div class="ph">Controls</div><div class="pb"><label class="row">Initial velocity u <b id="uV">5 m/s</b></label><input type="range" id="u" min="-15" max="20" step="0.5" value="5">
 <label class="row">Acceleration a <b id="aV">2 m/s²</b></label><input type="range" id="a" min="-6" max="6" step="0.1" value="2">
 <label class="row">Duration T <b id="TV">6 s</b></label><input type="range" id="T" min="1" max="15" step="0.5" value="6"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
 <div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">On a <b style="color:#fff">v–t graph</b>, slope is acceleration and area under the curve is displacement.</div>
@@ -46,7 +70,7 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 <li>s = ut + ½at² still holds with signed quantities.</li></ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="pb"><div class="simulation-stage" id="simulation-stage"><canvas id="c" width="900" height="400"></canvas><div class="start-overlay" id="startOverlay" role="region" aria-label="Start simulation"><div class="start-card"><span class="start-kicker">VSH · CORE ENGINE</span><h2>Ready to simulate?</h2><p>Start the lab to open the interactive visualization and controls.</p><button type="button" class="start-cta" id="startSimulationBtn">Start Simulation <span aria-hidden="true">→</span></button></div></div></div></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>SUVAT (constant a)</h3>
 <code>v = u + at</code><br>
@@ -58,18 +82,16 @@ Pick a positive direction once. Then every quantity in the formula is a signed n
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
-(function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const uEl=document.getElementById('u'),aEl=document.getElementById('a'),TEl=document.getElementById('T');
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-let playing=false,t=0,last=0,trail=[];
-function sync(){uV.textContent=uEl.value+' m/s';aV.textContent=aEl.value+' m/s²';TV.textContent=TEl.value+' s';}
+(function(){"use strict";
+const canvas=document.getElementById("c"),uEl=document.getElementById("u"),aEl=document.getElementById("a"),TEl=document.getElementById("T");
+const uV=document.getElementById("uV"),aV=document.getElementById("aV"),TV=document.getElementById("TV"),playBtn=document.getElementById("playBtn"),resetBtn=document.getElementById("resetBtn"),res=document.getElementById("res");
+let t=0,hasStarted=false,engine=null;const canvasManager=new CanvasManager(canvas,{maxDpr:2,onResize(){if(engine)engine.renderNow();}}),ctx=canvasManager.context;
 function phys(){const u=+uEl.value,a=+aEl.value,Tm=+TEl.value;const v=u+a*Tm;const s=u*Tm+0.5*a*Tm*Tm;return{u,a,Tm,v,s};}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();const p=phys();const pad=50;
+  const W=canvasManager.width,H=canvasManager.height;const p=phys();const pad=50;
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
   // split: motion track top, v-t graph bottom
   const mid=H*0.42;
@@ -104,14 +126,15 @@ function draw(){
     '<div class="result"><span>v now</span><strong>'+vNow.toFixed(2)+' m/s</strong></div>'+
     '<div class="result"><span>s now</span><strong>'+sNow.toFixed(2)+' m</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;t+=dt;
-  const p=phys();if(t>=p.Tm){t=p.Tm;playing=false;playBtn.textContent='Play';}draw();if(playing)requestAnimationFrame(loop);}
-function reset(){playing=false;t=0;last=0;playBtn.textContent='Play';sync();draw();}
-uEl.oninput=aEl.oninput=TEl.oninput=function(){sync();if(!playing){t=0;draw();}};
-playBtn.onclick=function(){const p=phys();if(t>=p.Tm)t=0;playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=reset;reset();
+function sync(){uV.textContent=uEl.value+" m/s";aV.textContent=aEl.value+" m/s²";TV.textContent=TEl.value+" s";if(engine&&!engine.isRunning)engine.renderNow();}
+engine=new SimulationEngine({maxDelta:.04,update(dt){t+=dt;const p=phys();if(t>=p.Tm){t=p.Tm;return false;}return true;},render:draw,onReset(){t=0;},onStateChange({running}){playBtn.textContent=running?"Pause":"Play";}});
+[uEl,aEl,TEl].forEach(function(el){el.addEventListener("input",function(){sync();if(!engine.isRunning){t=0;engine.renderNow();}});});
+playBtn.disabled=true;playBtn.addEventListener("click",function(){if(!hasStarted)return;if(engine.isRunning)engine.pause();else{if(t>=phys().Tm)engine.reset();engine.start();}});
+resetBtn.addEventListener("click",function(){engine.reset();});
+document.getElementById("startSimulationBtn").addEventListener("click",function(){if(hasStarted)return;hasStarted=true;playBtn.disabled=false;document.getElementById("startOverlay").hidden=true;engine.start();});
+sync();engine.renderNow();window.addEventListener("pagehide",function(){engine.destroy();canvasManager.destroy();},{once:true});
 })();
-
 </script>
+<script id="liquid-flow-background">(function(){"use strict";const canvas=document.getElementById("fluid-bg");if(!canvas)return;const ctx=canvas.getContext("2d");if(!ctx)return;let width=0,height=0,dpr=1,lastFrame=0,phase=0,rafId=0,running=true;function resize(){dpr=Math.min(window.devicePixelRatio||1,1.5);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.max(1,Math.round(width*dpr));canvas.height=Math.max(1,Math.round(height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);paint();}function paint(){ctx.clearRect(0,0,width,height);let g=ctx.createRadialGradient(width*(.16+.025*Math.sin(phase)),height*.22,0,width*.16,height*.22,Math.max(width,height)*.72);g.addColorStop(0,"rgba(0,240,255,.12)");g.addColorStop(1,"rgba(0,240,255,0)");ctx.fillStyle=g;ctx.fillRect(0,0,width,height);g=ctx.createRadialGradient(width*(.84+.02*Math.cos(phase*.8)),height*.74,0,width*.84,height*.74,Math.max(width,height)*.62);g.addColorStop(0,"rgba(130,105,255,.11)");g.addColorStop(1,"rgba(130,105,255,0)");ctx.fillStyle=g;ctx.fillRect(0,0,width,height);}function frame(timestamp){if(!running||document.hidden)return;rafId=requestAnimationFrame(frame);if(timestamp-lastFrame<1000/30)return;const dt=lastFrame?Math.min(.05,(timestamp-lastFrame)/1000):0;lastFrame=timestamp;phase+=dt*.22;paint();}function stop(){running=false;if(rafId)cancelAnimationFrame(rafId);rafId=0;}function resume(){if(running||document.hidden)return;running=true;lastFrame=0;rafId=requestAnimationFrame(frame);}resize();window.addEventListener("resize",resize,{passive:true});document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else resume();});rafId=requestAnimationFrame(frame);window.addEventListener("pagehide",function(){stop();window.removeEventListener("resize",resize);},{once:true});})();</script>
 </body>
 </html>
