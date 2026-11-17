@@ -30,36 +30,64 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 .explain{font-size:13.5px;color:var(--muted);line-height:1.7}.explain h3{color:var(--text);margin:12px 0 6px;font-size:14px}
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
 .explain ul{padding-left:18px}
+
+/* Batch 9 · Liquid Flow UI */
+body{position:relative;isolation:isolate}
+#fluid-bg{position:fixed!important;inset:0!important;z-index:-1!important;display:block!important;width:100vw!important;height:100vh!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;opacity:.88;pointer-events:none!important;touch-action:none!important}
+.wrap{width:100%;max-width:1600px;margin-inline:auto;padding-inline:12px}
+.control-panel{position:relative;border:1px solid rgba(98,231,255,.24)!important;background:linear-gradient(145deg,rgba(16,24,48,.72),rgba(8,14,28,.68))!important;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);box-shadow:0 16px 42px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(98,231,255,.05)}
+.control-panel .ph,.control-panel .panel-head{border-bottom-color:rgba(255,255,255,.12)}
+input[type=range]{accent-color:#00f0ff;filter:drop-shadow(0 0 5px rgba(0,240,255,.35))}
+input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+input[type=range]::-moz-range-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+.simulation-stage{position:relative;isolation:isolate;width:100%;min-width:0;border-radius:16px;overflow:hidden}
+.simulation-stage>canvas{position:relative;z-index:0;display:block;width:100%;max-width:100%}
+.start-overlay{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at 50% 42%,rgba(14,30,52,.52),rgba(3,7,16,.78));-webkit-backdrop-filter:blur(13px) saturate(145%);backdrop-filter:blur(13px) saturate(145%)}
+.start-overlay[hidden]{display:none!important}
+.start-card{width:min(100%,360px);padding:24px 22px;text-align:center;border:1px solid rgba(255,255,255,.2);border-top-color:rgba(255,255,255,.52);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(12,21,38,.62));box-shadow:0 22px 55px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,240,255,.08)}
+.start-kicker{display:block;margin-bottom:9px;color:#00f0ff;font-size:10px;font-weight:850;letter-spacing:.18em}
+.start-card h2{margin:0 0 7px;color:#f2f7ff;font-size:clamp(18px,3vw,23px)}
+.start-card p{margin:0 0 17px;color:#c0cce0;font-size:12px;line-height:1.6}
+.start-cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:46px;padding:11px 16px;border:1px solid rgba(255,255,255,.55);border-radius:13px;color:#041018;background:linear-gradient(120deg,#a5f4ff,#00f0ff 55%,#aaa0ff);box-shadow:0 10px 26px rgba(0,240,255,.22),inset 0 1px 0 rgba(255,255,255,.7);font-weight:900;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease}
+.start-cta:hover{transform:translateY(-1px);box-shadow:0 13px 32px rgba(0,240,255,.3),inset 0 1px 0 rgba(255,255,255,.8)}
+.start-cta:active{transform:scale(.97)}
+@media(max-width:600px){.start-card{padding:20px 17px}.simulation-stage{border-radius:12px}}
+
 </style>
 </head>
 <body>
+<canvas id="fluid-bg" aria-hidden="true"></canvas>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>OPTICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">MIRROR FORMULA</div><h1>Mirror Formula Laboratory</h1><p class="lead">Concave mirror: 1/f = 1/v + 1/u. Image type changes with object distance.</p></section>
 <div class="layout">
 <aside>
-<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">f <b id="fV">15 cm</b></label><input type="range" id="f" min="8" max="35" step="1" value="15">
+<div class="panel control-panel"><div class="ph">Controls</div><div class="pb"><label class="row">f <b id="fV">15 cm</b></label><input type="range" id="f" min="8" max="35" step="1" value="15">
 <label class="row">|u| <b id="uV">40 cm</b></label><input type="range" id="u" min="12" max="90" step="1" value="40"><div class="actions"><button class="btn primary" id="playBtn" style="display:none">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
-<div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">|u| = f → rays emerge parallel (image at infinity). |u| &lt; f → virtual erect image.</div></div></div>
+<div class="panel control-panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">|u| = f → rays emerge parallel (image at infinity). |u| &lt; f → virtual erect image.</div></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="pb"><div class="simulation-stage" id="simulation-stage"><canvas id="c" width="900" height="400"></canvas><div class="start-overlay" id="startOverlay"><div class="start-card"><span class="start-kicker">VSH · CORE ENGINE</span><h2>Ready to simulate?</h2><p>Launch the lab to begin the interactive canvas experience.</p><button type="button" class="start-cta" id="startSimulationBtn">Start Simulation <span aria-hidden="true">→</span></button></div></div></div></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Mirror formula</h3><code>1/f = 1/v + 1/u</code><br><code>m = −v/u</code></div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const canvas=document.getElementById('c');
+let engine=null;
+const canvasManager=new CanvasManager(canvas,{onResize(){if(engine)engine.renderNow();}});
+const ctx=canvasManager.context;
 const fEl=document.getElementById('f'),uEl=document.getElementById('u');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
 playBtn.style.display='none';
-function sync(){fV.textContent=fEl.value+' cm';uV.textContent=uEl.value+' cm';draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+function sync(){fV.textContent=fEl.value+' cm';uV.textContent=uEl.value+' cm';if(engine)engine.renderNow();}
 function draw(){
-  const [W,H]=size();const f=+fEl.value,u=-Math.abs(+uEl.value);const inv=1/f-1/u;const v=1/inv;const m=-v/u;
+  const W=canvasManager.width,H=canvasManager.height;
+  const f=+fEl.value,u=-Math.abs(+uEl.value);const inv=1/f-1/u;const v=1/inv;const m=-v/u;
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
   const cx=W*0.55,cy=H/2,sc=2;
   ctx.strokeStyle='#64748b';ctx.beginPath();ctx.moveTo(20,cy);ctx.lineTo(W-20,cy);ctx.stroke();
@@ -70,9 +98,22 @@ function draw(){
   res.innerHTML='<div class="result"><span>v</span><strong>'+(isFinite(v)?v.toFixed(1)+' cm':'∞')+'</strong></div>'+
     '<div class="result"><span>m</span><strong>'+(isFinite(m)?m.toFixed(2):'—')+'</strong></div>';
 }
-fEl.oninput=uEl.oninput=sync;resetBtn.onclick=function(){fEl.value=15;uEl.value=40;sync();};sync();
+engine=new SimulationEngine({update(){return false;},render:draw});
+fEl.oninput=uEl.oninput=sync;
+resetBtn.onclick=function(){fEl.value=15;uEl.value=40;sync();};
+document.getElementById('startSimulationBtn').addEventListener('click',function(){document.getElementById('startOverlay').hidden=true;engine.start();});
+sync();engine.renderNow();
 })();
-
+</script>
+<script id="liquid-flow-runtime">
+(function(){
+  const canvas=document.getElementById('fluid-bg');if(!canvas)return;
+  const ctx=canvas.getContext('2d');let width=0,height=0,dpr=1,lastFrame=0,phase=0,rafId=0;
+  function resize(){dpr=Math.min(window.devicePixelRatio||1,1.5);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.max(1,Math.round(width*dpr));canvas.height=Math.max(1,Math.round(height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);}
+  function frame(timestamp){rafId=requestAnimationFrame(frame);if(timestamp-lastFrame<1000/30)return;const dt=lastFrame?Math.min(0.05,(timestamp-lastFrame)/1000):0;lastFrame=timestamp;phase+=dt*0.22;ctx.clearRect(0,0,width,height);let g=ctx.createRadialGradient(width*(0.16+0.025*Math.sin(phase)),height*0.22,0,width*0.16,height*0.22,Math.max(width,height)*0.72);g.addColorStop(0,'rgba(0,240,255,.12)');g.addColorStop(1,'rgba(0,240,255,0)');ctx.fillStyle=g;ctx.fillRect(0,0,width,height);g=ctx.createRadialGradient(width*(0.84+0.02*Math.cos(phase*.8)),height*.74,0,width*.84,height*.74,Math.max(width,height)*.62);g.addColorStop(0,'rgba(130,105,255,.11)');g.addColorStop(1,'rgba(130,105,255,0)');ctx.fillStyle=g;ctx.fillRect(0,0,width,height);}
+  function stop(){if(rafId)cancelAnimationFrame(rafId);window.removeEventListener('resize',resize);}
+  resize();window.addEventListener('resize',resize,{passive:true});rafId=requestAnimationFrame(frame);window.addEventListener('pagehide',stop,{once:true});
+})();
 </script>
 </body>
 </html>
