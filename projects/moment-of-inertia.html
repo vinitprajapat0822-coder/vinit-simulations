@@ -31,6 +31,7 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
 .explain ul{padding-left:18px}
 </style>
+<style id="core-engine-layout">.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}.batch5-canvas-stage{position:relative;isolation:isolate}.batch5-start-screen{position:absolute;z-index:4;inset:0;display:grid;place-items:center;padding:20px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:linear-gradient(145deg,rgba(5,10,22,.72),rgba(5,10,22,.52));backdrop-filter:blur(12px) saturate(140%);-webkit-backdrop-filter:blur(12px) saturate(140%);transition:opacity .4s ease,visibility .4s ease}.batch5-start-screen.is-dismissed{opacity:0;visibility:hidden;pointer-events:none}.batch5-start-card{width:min(420px,100%);padding:clamp(20px,4vw,32px);border:1px solid rgba(255,255,255,.16);border-radius:18px;background:linear-gradient(145deg,rgba(16,25,45,.97),rgba(8,14,28,.97));box-shadow:0 22px 55px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);text-align:center}.batch5-start-kicker{color:var(--cyan);font-size:9px;font-weight:900;letter-spacing:.14em}.batch5-start-card h2{margin:10px 0;color:var(--text)}.batch5-start-card p{color:var(--muted);font-size:13px;line-height:1.6}.batch5-start-btn{width:100%;min-height:52px;padding:12px 16px;border:0;border-radius:12px;background:linear-gradient(110deg,var(--cyan),var(--violet));color:#07111b;font:inherit;font-weight:900;cursor:pointer}.batch5-start-card small{display:block;margin-top:12px;color:var(--muted);font-size:10px}@media(prefers-reduced-motion:reduce){.batch5-start-screen,.batch5-start-btn{transition:none!important}}</style>
 </head>
 <body>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>ROTATION</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
@@ -45,7 +46,7 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 <li>Extended bodies: integrate r² dm (standard results for rod, disc, sphere).</li></ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="pb batch5-canvas-stage"><canvas id="c" width="900" height="400"></canvas><div class="batch5-start-screen" id="batch5StartScreen" role="region" aria-labelledby="batch5StartTitle"><div class="batch5-start-card"><span class="batch5-start-kicker">VINIT SIMULATION HUB · CORE ENGINE</span><h2 id="batch5StartTitle">Moment of Inertia Laboratory</h2><p>Explore I = mr² by changing the point mass and its distance from the axis.</p><button class="batch5-start-btn" id="batch5StartButton" type="button">Start Simulation →</button><small>Adjust the controls after entering the lab.</small></div></div></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Point mass</h3>
 <code>I = m r²</code>
@@ -56,17 +57,18 @@ Use parallel-axis theorem when the axis is not through the CM: I = I_cm + Md².<
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const m=document.getElementById('m'),r=document.getElementById('r');
+"use strict";
+const canvas=document.getElementById('c'),m=document.getElementById('m'),r=document.getElementById('r');
+const mV=document.getElementById('mV'),rV=document.getElementById('rV');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-playBtn.style.display='none';
-function sync(){mV.textContent=m.value+' kg';rV.textContent=r.value+' m';draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+let started=false,engine=null;
+function sync(){mV.textContent=m.value+' kg';rV.textContent=r.value+' m';if(started)engine.renderNow();}
 function draw(){
-  const [W,H]=size();
+  const W=canvasManager.width,H=canvasManager.height,ctx=canvasManager.context;
   const mm=+m.value,rr=+r.value,I=mm*rr*rr;
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
   const cx=W/2,cy=H/2;
@@ -78,11 +80,14 @@ function draw(){
     '<div class="result"><span>m</span><strong>'+mm+' kg</strong></div>'+
     '<div class="result"><span>r</span><strong>'+rr.toFixed(2)+' m</strong></div>';
 }
-m.oninput=r.oninput=sync;
-resetBtn.onclick=function(){m.value=2;r.value=0.8;sync();};
-sync();
+const canvasManager=new CanvasManager(canvas,{onResize:function(){if(started&&engine)engine.renderNow();}});
+engine=new SimulationEngine({update:function(){return false;},render:draw,onReset:function(){m.value=2;r.value=0.8;sync();}});
+m.oninput=r.oninput=sync;playBtn.style.display='none';playBtn.onclick=function(){if(started)engine.resume();};
+resetBtn.onclick=function(){if(started)engine.reset();else{m.value=2;r.value=0.8;sync();}};
+const overlay=document.getElementById('batch5StartScreen'),startButton=document.getElementById('batch5StartButton');
+startButton.addEventListener('click',function(){if(started)return;started=true;overlay.classList.add('is-dismissed');overlay.setAttribute('aria-hidden','true');startButton.setAttribute('tabindex','-1');engine.start();});
+window.addEventListener('pagehide',function(){engine.destroy();canvasManager.destroy();},{once:true});sync();
 })();
-
 </script>
 </body>
 </html>
