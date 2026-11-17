@@ -31,6 +31,7 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
 .explain ul{padding-left:18px}
 </style>
+<style id="core-engine-layout">.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}.batch5-canvas-stage{position:relative;isolation:isolate}.batch5-start-screen{position:absolute;z-index:4;inset:0;display:grid;place-items:center;padding:20px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:linear-gradient(145deg,rgba(5,10,22,.72),rgba(5,10,22,.52));backdrop-filter:blur(12px) saturate(140%);-webkit-backdrop-filter:blur(12px) saturate(140%);transition:opacity .4s ease,visibility .4s ease}.batch5-start-screen.is-dismissed{opacity:0;visibility:hidden;pointer-events:none}.batch5-start-card{width:min(420px,100%);padding:clamp(20px,4vw,32px);border:1px solid rgba(255,255,255,.16);border-radius:18px;background:linear-gradient(145deg,rgba(16,25,45,.97),rgba(8,14,28,.97));box-shadow:0 22px 55px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);text-align:center}.batch5-start-kicker{color:var(--cyan);font-size:9px;font-weight:900;letter-spacing:.14em}.batch5-start-card h2{margin:10px 0;color:var(--text)}.batch5-start-card p{color:var(--muted);font-size:13px;line-height:1.6}.batch5-start-btn{width:100%;min-height:52px;padding:12px 16px;border:0;border-radius:12px;background:linear-gradient(110deg,var(--cyan),var(--violet));color:#07111b;font:inherit;font-weight:900;cursor:pointer}.batch5-start-card small{display:block;margin-top:12px;color:var(--muted);font-size:10px}@media(prefers-reduced-motion:reduce){.batch5-start-screen,.batch5-start-btn{transition:none!important}}</style>
 </head>
 <body>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>ROTATION</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
@@ -45,7 +46,7 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 <li>For a disc I = ½mr² → KE = ¾mv².</li></ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="pb batch5-canvas-stage"><canvas id="c" width="900" height="400"></canvas><div class="batch5-start-screen" id="batch5StartScreen" role="region" aria-labelledby="batch5StartTitle"><div class="batch5-start-card"><span class="batch5-start-kicker">VINIT SIMULATION HUB · CORE ENGINE</span><h2 id="batch5StartTitle">Rolling Motion Laboratory</h2><p>Explore pure rolling and the relation ω = v/r by changing speed and radius.</p><button class="batch5-start-btn" id="batch5StartButton" type="button">Start Simulation →</button><small>Adjust the controls after entering the lab.</small></div></div></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Pure rolling</h3>
 <code>v = ω r</code>
@@ -56,24 +57,23 @@ When friction is enough for pure rolling, use energy + v = ωr; friction may do 
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const vEl=document.getElementById('v'),rEl=document.getElementById('r');
+"use strict";
+const canvas=document.getElementById('c'),vEl=document.getElementById('v'),rEl=document.getElementById('r');
+const vV=document.getElementById('vV'),rV=document.getElementById('rV');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-let playing=true,x=80,phi=0,last=0;
-function sync(){vV.textContent=vEl.value+' m/s';rV.textContent=rEl.value+' m';}
+let x=80,phi=0,started=false,engine=null;
+function sync(){vV.textContent=vEl.value+' m/s';rV.textContent=rEl.value+' m';if(started)engine.renderNow();}
 function phys(){const v=+vEl.value,r=+rEl.value;return{v,r,w:v/r};}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
 function draw(){
-  const [W,H]=size();const p=phys();
+  const W=canvasManager.width,H=canvasManager.height,ctx=canvasManager.context,p=phys();
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#1e293b';ctx.fillRect(0,H-60,W,60);
-  const R=Math.min(55,p.r*80);
-  const cx=x, cy=H-60-R;
+  const R=Math.min(55,p.r*80),cx=x,cy=H-60-R;
   ctx.strokeStyle='#63e6ff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,R,0,6.28);ctx.stroke();
-  // spoke to show rotation
   ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(phi),cy+R*Math.sin(phi));ctx.stroke();
   ctx.fillStyle='#a78bfa';ctx.beginPath();ctx.arc(cx,cy,5,0,6.28);ctx.fill();
   res.innerHTML='<div class="result"><span>ω = v/r</span><strong>'+p.w.toFixed(2)+' rad/s</strong></div>'+
@@ -81,16 +81,15 @@ function draw(){
     '<div class="result"><span>r</span><strong>'+p.r.toFixed(2)+' m</strong></div>'+
     '<div class="result"><span>condition</span><strong>pure rolling</strong></div>';
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.04,(ts-last)/1000);last=ts;
-  const p=phys();x+=p.v*dt*40;phi+=p.w*dt;
-  if(x>canvas.clientWidth-60)x=60;
-  draw();requestAnimationFrame(loop);}
-function reset(){playing=false;x=80;phi=0;last=0;playBtn.textContent='Play';sync();draw();}
-vEl.oninput=rEl.oninput=function(){sync();draw();};
-playBtn.onclick=function(){playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=reset;sync();requestAnimationFrame(loop);
+const canvasManager=new CanvasManager(canvas,{onResize:function(){if(started&&engine)engine.renderNow();}});
+engine=new SimulationEngine({maxDelta:0.04,update:function(dt){const p=phys();x+=p.v*dt*40;phi+=p.w*dt;if(x>canvasManager.width-60)x=60;},render:draw,onReset:function(){x=80;phi=0;sync();},onStateChange:function(s){playBtn.textContent=s.running?'Pause':'Play';}});
+vEl.oninput=rEl.oninput=sync;
+playBtn.onclick=function(){if(!started)return;if(engine.isRunning)engine.pause();else engine.resume();};
+resetBtn.onclick=function(){if(started)engine.reset();else{x=80;phi=0;sync();}};
+const overlay=document.getElementById('batch5StartScreen'),startButton=document.getElementById('batch5StartButton');
+startButton.addEventListener('click',function(){if(started)return;started=true;overlay.classList.add('is-dismissed');overlay.setAttribute('aria-hidden','true');startButton.setAttribute('tabindex','-1');engine.start();});
+window.addEventListener('pagehide',function(){engine.destroy();canvasManager.destroy();},{once:true});sync();
 })();
-
 </script>
 </body>
 </html>
