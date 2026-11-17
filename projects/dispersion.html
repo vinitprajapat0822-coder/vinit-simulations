@@ -31,51 +31,121 @@ canvas{display:block;width:100%;height:min(400px,52vh);background:#0a1220;border
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
 .explain ul{padding-left:18px}
 </style>
+<style id="golden-liquid-flow">
+body{isolation:isolate}
+#fluid-bg{position:fixed;inset:0;z-index:-1;width:100%;height:100%;display:block;pointer-events:none;opacity:.82}
+.wrap{width:100%;max-width:1600px;margin:0 auto;padding-left:14px;padding-right:14px}
+.control-panel{position:relative;background:linear-gradient(145deg,rgba(18,29,50,.78),rgba(8,15,29,.72));border:1px solid rgba(145,190,230,.2);box-shadow:0 18px 42px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.09);backdrop-filter:blur(20px) saturate(145%);-webkit-backdrop-filter:blur(20px) saturate(145%)}
+.control-panel .ph,.control-panel .panel-head{font-weight:800;letter-spacing:.06em}
+.control-panel input[type=range]{appearance:none;-webkit-appearance:none;width:100%;height:7px;border-radius:999px;background:linear-gradient(90deg,rgba(99,230,255,.72),rgba(167,139,250,.72));box-shadow:0 0 14px rgba(99,230,255,.16);outline:none}
+.control-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#e8fbff;border:2px solid #63e6ff;box-shadow:0 0 0 4px rgba(99,230,255,.13),0 0 16px rgba(99,230,255,.55)}
+.control-panel input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#e8fbff;border:2px solid #63e6ff;box-shadow:0 0 0 4px rgba(99,230,255,.13),0 0 16px rgba(99,230,255,.55)}
+.liquid-canvas-stage{position:relative;isolation:isolate;overflow:hidden;border-radius:16px}
+.liquid-canvas-stage>canvas:not(#fluid-bg){display:block;width:100%;height:clamp(300px,54vh,620px);max-width:100%}
+.liquid-start-screen{position:absolute;z-index:5;inset:0;display:grid;place-items:center;padding:clamp(12px,3vw,28px);background:linear-gradient(145deg,rgba(3,9,20,.78),rgba(6,12,27,.58));backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);opacity:1;visibility:visible;transition:opacity .42s ease,visibility .42s ease}
+.liquid-start-screen.is-dismissed{opacity:0;visibility:hidden;pointer-events:none}
+.liquid-start-card{width:min(440px,100%);padding:clamp(20px,4vw,34px);border:1px solid rgba(185,220,255,.2);border-radius:22px;background:linear-gradient(145deg,rgba(19,31,55,.94),rgba(7,14,28,.96));box-shadow:0 26px 70px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.13);text-align:center}
+.liquid-start-kicker{color:#63e6ff;font-size:9px;font-weight:900;letter-spacing:.16em}
+.liquid-start-card h2{margin:11px 0 8px;color:#f2f7ff;font-size:clamp(20px,3vw,27px);line-height:1.15}
+.liquid-start-card p{margin:0 0 18px;color:#aebbd1;font-size:13px;line-height:1.65}
+.liquid-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:12px 18px;border:1px solid rgba(255,255,255,.32);border-radius:14px;background:linear-gradient(105deg,#63e6ff,#a78bfa);color:#081322;font:inherit;font-weight:900;letter-spacing:.02em;cursor:pointer;box-shadow:0 10px 30px rgba(99,230,255,.18),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .25s ease,box-shadow .25s ease}
+.liquid-btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(99,230,255,.27),inset 0 1px 0 rgba(255,255,255,.58)}
+.liquid-btn:active{transform:scale(.98)}
+.liquid-start-card small{display:block;margin-top:12px;color:#8898b3;font-size:10px}
+@media(max-width:700px){.wrap{padding-left:12px;padding-right:12px}.liquid-start-card{padding:20px 16px}.liquid-canvas-stage>canvas:not(#fluid-bg){height:min(430px,52vh);min-height:260px}}
+@media(prefers-reduced-motion:reduce){.liquid-start-screen,.liquid-btn{transition:none!important}}
+</style>
 </head>
 <body>
+<canvas id="fluid-bg" aria-hidden="true"></canvas>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>OPTICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">DISPERSION</div><h1>Dispersion of Light</h1><p class="lead">Different colours bend differently in a prism. Violet deviates more than red.</p></section>
 <div class="layout">
 <aside>
-<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">Prism A <b id="AV">60°</b></label><input type="range" id="A" min="40" max="70" step="1" value="60">
+<div class="panel control-panel"><div class="ph">Controls</div><div class="pb"><label class="row">Prism A <b id="AV">60°</b></label><input type="range" id="A" min="40" max="70" step="1" value="60">
 <label class="row">n_violet <b id="nvV">1.532</b></label><input type="range" id="nv" min="1.4" max="1.7" step="0.001" value="1.532">
 <label class="row">n_red <b id="nrV">1.514</b></label><input type="range" id="nr" min="1.4" max="1.7" step="0.001" value="1.514"><div class="actions"><button class="btn primary" id="playBtn" style="display:none">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
 <div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Dispersive power ω ≈ (n_v − n_r)/(n − 1) with n = (n_v+n_r)/2.</div>
 <ul><li>Spectrum order: VIBGYOR from most to least deviation.</li></ul></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="900" height="400"></canvas></div></div>
+<div class="panel"><div class="pb"><div class="liquid-canvas-stage"><canvas id="c" width="900" height="400"></canvas><div class="liquid-start-screen" id="liquidStartScreen" role="region" aria-labelledby="liquidStartTitle"><div class="liquid-start-card"><span class="liquid-start-kicker">VINIT SIMULATION HUB · LIQUID FLOW</span><h2 id="liquidStartTitle">Dispersion of Light Laboratory</h2><p>Explore prism deviation and angular dispersion.</p><button class="liquid-btn" id="liquidStartButton" type="button">Start Simulation <span aria-hidden="true">→</span></button><small>Adjust the controls after entering the lab.</small></div></div></div></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Min deviation (approx)</h3><code>n = sin((A+δ_m)/2)/sin(A/2)</code>
 <h3>Dispersion</h3><code>δ_v − δ_r</code></div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const A=document.getElementById('A'),nv=document.getElementById('nv'),nr=document.getElementById('nr');
+"use strict";
+const canvas=document.getElementById('c'),A=document.getElementById('A'),nv=document.getElementById('nv'),nr=document.getElementById('nr');
+const AV=document.getElementById('AV'),nvV=document.getElementById('nvV'),nrV=document.getElementById('nrV');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-playBtn.style.display='none';
-function sync(){AV.textContent=A.value+'°';nvV.textContent=(+nv.value).toFixed(3);nrV.textContent=(+nr.value).toFixed(3);draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-function dm(n,AA){return 2*Math.asin(Math.min(1,n*Math.sin(AA/2)))*180/Math.PI - AA*180/Math.PI;}
+let started=false,engine=null;
+function sync(){AV.textContent=A.value+'°';nvV.textContent=(+nv.value).toFixed(3);nrV.textContent=(+nr.value).toFixed(3);if(started)engine.renderNow();}
+function dm(n,AA){return 2*Math.asin(Math.min(1,n*Math.sin(AA/2)))*180/Math.PI-AA*180/Math.PI;}
 function draw(){
-  const [W,H]=size();const AA=+A.value*Math.PI/180;const dv=dm(+nv.value,AA),dr=dm(+nr.value,AA);
-  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.3,H*0.75);ctx.lineTo(W*0.5,H*0.25);ctx.lineTo(W*0.7,H*0.75);ctx.closePath();ctx.stroke();
-  // spectrum fan
+  const W=canvasManager.width,H=canvasManager.height,ctx=canvasManager.context,AA=+A.value*Math.PI/180,dv=dm(+nv.value,AA),dr=dm(+nr.value,AA);
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.3,H*0.75);ctx.lineTo(W*0.5,H*0.25);ctx.lineTo(W*0.7,H*0.75);ctx.closePath();ctx.stroke();
   const colors=['#8b5cf6','#3b82f6','#22c55e','#eab308','#f97316','#ef4444'];
   colors.forEach((c,k)=>{ctx.strokeStyle=c;ctx.beginPath();ctx.moveTo(W*0.55,H*0.5);ctx.lineTo(W*0.85,H*0.35+k*12);ctx.stroke();});
   res.innerHTML='<div class="result"><span>δ_v</span><strong>'+dv.toFixed(2)+'°</strong></div>'+
     '<div class="result"><span>δ_r</span><strong>'+dr.toFixed(2)+'°</strong></div>'+
     '<div class="result"><span>angular dispersion</span><strong>'+(dv-dr).toFixed(2)+'°</strong></div>';
 }
-A.oninput=nv.oninput=nr.oninput=sync;resetBtn.onclick=function(){A.value=60;nv.value=1.532;nr.value=1.514;sync();};sync();
+const canvasManager=new CanvasManager(canvas,{onResize:function(){if(started&&engine)engine.renderNow();}});
+engine=new SimulationEngine({update:function(){return false;},render:draw,onReset:function(){A.value=60;nv.value=1.532;nr.value=1.514;sync();}});
+A.oninput=nv.oninput=nr.oninput=sync;playBtn.style.display='none';playBtn.onclick=function(){if(started)engine.resume();};
+resetBtn.onclick=function(){if(started)engine.reset();else{A.value=60;nv.value=1.532;nr.value=1.514;sync();}};
+const overlay=document.getElementById('liquidStartScreen'),startButton=document.getElementById('liquidStartButton');
+startButton.addEventListener('click',function(){if(started)return;started=true;overlay.classList.add('is-dismissed');overlay.setAttribute('aria-hidden','true');startButton.setAttribute('tabindex','-1');engine.start();});
+window.addEventListener('pagehide',function(){engine.destroy();canvasManager.destroy();},{once:true});sync();
 })();
-
+</script>
+<script id="liquid-flow-runtime">
+(function(){
+"use strict";
+const canvas=document.getElementById('fluid-bg');
+if(!canvas)return;
+const ctx=canvas.getContext('2d');
+let width=0,height=0,dpr=1,lastFrame=0,rafId=0,phase=0;
+function resize(){
+  dpr=Math.min(window.devicePixelRatio||1,1.5);
+  width=window.innerWidth;height=window.innerHeight;
+  canvas.width=Math.max(1,Math.round(width*dpr));
+  canvas.height=Math.max(1,Math.round(height*dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+function frame(now){
+  rafId=window.requestAnimationFrame(frame);
+  if(now-lastFrame<1000/30)return;
+  lastFrame=now;phase=now*0.00018;
+  ctx.clearRect(0,0,width,height);
+  const wash=ctx.createLinearGradient(0,0,width,height);
+  wash.addColorStop(0,'rgba(20,58,86,0.12)');
+  wash.addColorStop(0.5,'rgba(30,24,70,0.08)');
+  wash.addColorStop(1,'rgba(5,22,38,0.1)');
+  ctx.fillStyle=wash;ctx.fillRect(0,0,width,height);
+  const hues=['rgba(55,210,235,0.10)','rgba(110,125,255,0.085)','rgba(90,235,190,0.06)'];
+  for(let layer=0;layer<3;layer++){
+    ctx.beginPath();
+    for(let x=-30;x<=width+30;x+=24){
+      const y=height*(0.22+layer*0.27)+Math.sin(x*0.0022+phase+layer*1.7)*26+
+        Math.cos(x*0.0011-phase*0.8+layer)*18;
+      if(x===-30)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=hues[layer];ctx.lineWidth=72;ctx.lineCap='round';ctx.stroke();
+  }
+}
+function handlePageHide(){window.cancelAnimationFrame(rafId);window.removeEventListener('resize',resize);}
+window.addEventListener('resize',resize,{passive:true});
+window.addEventListener('pagehide',handlePageHide,{once:true});
+resize();rafId=window.requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>
