@@ -31,55 +31,54 @@ canvas{display:block;width:100%;height:min(430px,54vh);background:#0a1220;border
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
 .explain ul{padding-left:18px}
 </style>
+<style id="batch13-liquid-template">
+:root{--liquid-cyan-rgb:0,240,255;--liquid-purple-rgb:130,105,255}
+body{isolation:isolate;background:radial-gradient(ellipse at 14% 0%,rgba(0,240,255,.075),transparent 42%),radial-gradient(ellipse at 90% 100%,rgba(130,105,255,.07),transparent 44%),#020408;color:var(--text,#f2f6ff)}
+.wrap,main.wrap{width:100%;max-width:1600px;margin-inline:auto;padding-inline:12px}
+#fluid-bg{position:fixed!important;inset:0!important;z-index:-1!important;display:block!important;width:100vw!important;height:100vh!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;opacity:.82;pointer-events:none!important;touch-action:none!important}
+.control-panel{position:relative;min-width:0;border:1px solid rgba(0,240,255,.22)!important;border-radius:18px;background:linear-gradient(145deg,rgba(16,24,48,.74),rgba(8,14,28,.68))!important;-webkit-backdrop-filter:blur(24px) saturate(165%);backdrop-filter:blur(24px) saturate(165%);box-shadow:0 18px 44px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,240,255,.06)}
+.control-panel .ph{border-bottom-color:rgba(255,255,255,.12)}
+input[type=range]{accent-color:#00f0ff;filter:drop-shadow(0 0 5px rgba(0,240,255,.36));touch-action:pan-y}
+input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+input[type=range]::-moz-range-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+.simulation-stage{position:relative;isolation:isolate;width:100%;min-width:0;border-radius:16px;overflow:hidden}
+.simulation-stage>canvas{position:relative;z-index:0;display:block;width:100%;max-width:100%;height:min(430px,54vh)}
+.start-overlay{position:absolute;z-index:3;inset:0;display:grid;place-items:center;padding:clamp(12px,3vw,24px);border:1px solid rgba(255,255,255,.1);border-radius:14px;background:linear-gradient(145deg,rgba(2,6,16,.63),rgba(2,6,16,.46));-webkit-backdrop-filter:blur(12px) saturate(145%);backdrop-filter:blur(12px) saturate(145%);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1)}
+.start-overlay[hidden]{display:none!important}
+.start-card{width:min(440px,100%);padding:clamp(20px,4vw,34px);border:1px solid transparent;border-radius:20px;background:linear-gradient(145deg,rgba(16,25,45,.96),rgba(8,14,28,.96)) padding-box,linear-gradient(135deg,rgba(0,240,255,.52),rgba(130,105,255,.4),rgba(255,255,255,.1)) border-box;box-shadow:0 22px 55px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.12);text-align:center}
+.start-kicker{color:#00f0ff;font-size:9px;font-weight:900;letter-spacing:.16em}.start-card h2{margin:9px 0 8px;color:var(--text,#f2f6ff);font-size:clamp(22px,4vw,31px);letter-spacing:-.04em}
+.start-card p{max-width:38ch;margin:0 auto 18px;color:var(--muted,#9cabc8);font-size:13px;line-height:1.65}
+.start-cta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:54px;padding:14px 18px;border:1px solid transparent;border-radius:14px;background:linear-gradient(110deg,#00f0ff,#8270ff);color:#020408;font:inherit;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 10px 28px rgba(0,240,255,.2);transition:transform .22s ease,box-shadow .22s ease}
+.start-cta:active{transform:scale(.97);box-shadow:0 0 26px rgba(0,240,255,.28)}button:disabled{opacity:.48;cursor:not-allowed}
+@media(max-width:600px){.start-card{padding:20px 17px}.simulation-stage{border-radius:12px}.start-overlay{padding:10px}}
+@media(prefers-reduced-motion:reduce){.start-overlay,.start-cta{transition:none!important}}
+</style>
 </head>
 <body>
+<canvas id="fluid-bg" aria-hidden="true"></canvas>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span>OPTICS</a><a href="../index.html" style="color:var(--cyan);font-weight:700">← Hub</a></div></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">REFRACTION</div><h1>Snell's Law Laboratory</h1><p class="lead">Refraction at a plane interface: n₁ sin i = n₂ sin r. When light goes denser→rarer beyond critical angle, TIR occurs.</p></section>
 <div class="layout">
 <aside>
-<div class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">n₁ <b id="n1V">1.00</b></label><input type="range" id="n1" min="1" max="1.8" step="0.01" value="1">
+<div class="panel control-panel"><div class="ph">Controls</div><div class="pb"><label class="row">n₁ <b id="n1V">1.00</b></label><input type="range" id="n1" min="1" max="1.8" step="0.01" value="1">
 <label class="row">n₂ <b id="n2V">1.50</b></label><input type="range" id="n2" min="1" max="1.8" step="0.01" value="1.5">
 <label class="row">Incidence i <b id="iV">35°</b></label><input type="range" id="i" min="0" max="85" step="1" value="35"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
 <div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Going into higher n bends the ray toward the normal. Try n₁ &gt; n₂ and large i to see TIR (red reflected ray).</div></div></div>
 </aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="960" height="430"></canvas></div></div>
+<div class="panel"><div class="pb"><div class="simulation-stage" id="simulation-stage"><canvas id="c" width="960" height="430"></canvas><div class="start-overlay" id="startOverlay" role="region" aria-label="Start simulation"><div class="start-card"><span class="start-kicker">VSH · CORE ENGINE</span><h2>Ready to simulate?</h2><p>Start the lab to open the interactive visualization and controls.</p><button type="button" class="start-cta" id="startSimulationBtn">Start Simulation <span aria-hidden="true">→</span></button></div></div></div></div></div>
 <div class="panel"><div class="ph">Live measurements</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory · problem links</div><div class="pb explain"><h3>Snell</h3><code>n₁ sin i = n₂ sin r</code>
 <h3>Critical</h3><code>sin i_c = n₂/n₁</code> (n₁&gt;n₂)</div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
-(function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const n1=document.getElementById('n1'),n2=document.getElementById('n2'),iEl=document.getElementById('i');
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-playBtn.style.display='none';
-function sync(){n1V.textContent=(+n1.value).toFixed(2);n2V.textContent=(+n2.value).toFixed(2);iV.textContent=iEl.value+'°';draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||900,H=canvas.clientHeight||430;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-function draw(){
-  const [W,H]=size();const a=+n1.value,b=+n2.value,i=+iEl.value*Math.PI/180;
-  const s=a*Math.sin(i)/b; const tir=s>1; const r=tir?NaN:Math.asin(Math.min(1,s));
-  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H/2);
-  ctx.fillStyle='#0c4a6e';ctx.fillRect(0,H/2,W,H/2);
-  const ox=W*0.5,oy=H/2;
-  ctx.strokeStyle='#475569';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(ox,40);ctx.lineTo(ox,H-40);ctx.stroke();ctx.setLineDash([]);
-  ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ox-100*Math.sin(i),oy-100*Math.cos(i));ctx.lineTo(ox,oy);ctx.stroke();
-  if(!tir){ctx.strokeStyle='#63e6ff';ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+100*Math.sin(r),oy+100*Math.cos(r));ctx.stroke();}
-  else{ctx.strokeStyle='#ff8e9c';ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+100*Math.sin(i),oy-100*Math.cos(i));ctx.stroke();}
-  ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('n1',20,H/2-12);ctx.fillText('n2',20,H/2+20);
-  res.innerHTML=
-    '<div class="result"><span>i</span><strong>'+iEl.value+'°</strong></div>'+
-    '<div class="result"><span>r</span><strong>'+(isFinite(r)?(r*180/Math.PI).toFixed(1)+'°':'TIR')+'</strong></div>'+
-    '<div class="result"><span>n1 sin i</span><strong>'+(a*Math.sin(i)).toFixed(3)+'</strong></div>'+
-    '<div class="result"><span>n2 sin r</span><strong>'+(tir?'—':(b*Math.sin(r)).toFixed(3))+'</strong></div>';
-}
-n1.oninput=n2.oninput=iEl.oninput=sync;resetBtn.onclick=function(){n1.value=1;n2.value=1.5;iEl.value=35;sync();};sync();
-})();
-
+(function(){"use strict";const canvas=document.getElementById("c"),n1=document.getElementById("n1"),n2=document.getElementById("n2"),iEl=document.getElementById("i"),n1Value=document.getElementById("n1V"),n2Value=document.getElementById("n2V"),iValue=document.getElementById("iV"),playBtn=document.getElementById("playBtn"),resetBtn=document.getElementById("resetBtn"),res=document.getElementById("res");let engine=null;const canvasManager=new CanvasManager(canvas,{maxDpr:2,onResize(){if(engine)engine.renderNow();}}),ctx=canvasManager.context;function sync(){n1Value.textContent=(+n1.value).toFixed(2);n2Value.textContent=(+n2.value).toFixed(2);iValue.textContent=iEl.value+"°";if(engine)engine.renderNow();}function draw(){const W=canvasManager.width,H=canvasManager.height,a=+n1.value,b=+n2.value,i=+iEl.value*Math.PI/180;const s=a*Math.sin(i)/b;const tir=s>1;const r=tir?NaN:Math.asin(Math.min(1,s));ctx.fillStyle="#0a1220";ctx.fillRect(0,0,W,H/2);ctx.fillStyle="#0c4a6e";ctx.fillRect(0,H/2,W,H/2);const ox=W*.5,oy=H/2;ctx.strokeStyle="#475569";ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(ox,40);ctx.lineTo(ox,H-40);ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle="#fbbf24";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ox-100*Math.sin(i),oy-100*Math.cos(i));ctx.lineTo(ox,oy);ctx.stroke();if(!tir){ctx.strokeStyle="#63e6ff";ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+100*Math.sin(r),oy+100*Math.cos(r));ctx.stroke();}else{ctx.strokeStyle="#ff8e9c";ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+100*Math.sin(i),oy-100*Math.cos(i));ctx.stroke();}ctx.fillStyle="#94a3b8";ctx.font="12px system-ui";ctx.fillText("n1",20,H/2-12);ctx.fillText("n2",20,H/2+20);res.innerHTML='<div class="result"><span>i</span><strong>'+iEl.value+'°</strong></div>'+'<div class="result"><span>r</span><strong>'+(isFinite(r)?(r*180/Math.PI).toFixed(1)+'°':'TIR')+'</strong></div>'+'<div class="result"><span>n1 sin i</span><strong>'+(a*Math.sin(i)).toFixed(3)+'</strong></div>'+'<div class="result"><span>n2 sin r</span><strong>'+(tir?'—':(b*Math.sin(r)).toFixed(3))+'</strong></div>';}engine=new SimulationEngine({update(){return false;},render:draw});playBtn.style.display="none";n1.addEventListener("input",sync);n2.addEventListener("input",sync);iEl.addEventListener("input",sync);resetBtn.addEventListener("click",function(){n1.value=1;n2.value=1.5;iEl.value=35;sync();});document.getElementById("startSimulationBtn").addEventListener("click",function(){document.getElementById("startOverlay").hidden=true;engine.start();});sync();engine.renderNow();window.addEventListener("pagehide",function(){engine.destroy();canvasManager.destroy();},{once:true});})();
 </script>
+<script id="liquid-flow-background">(function(){"use strict";const canvas=document.getElementById("fluid-bg");if(!canvas)return;const ctx=canvas.getContext("2d");if(!ctx)return;let width=0,height=0,dpr=1,lastFrame=0,phase=0,rafId=0,running=true;function resize(){dpr=Math.min(window.devicePixelRatio||1,1.5);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.max(1,Math.round(width*dpr));canvas.height=Math.max(1,Math.round(height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);paint();}function paint(){ctx.clearRect(0,0,width,height);let g=ctx.createRadialGradient(width*(.16+.025*Math.sin(phase)),height*.22,0,width*.16,height*.22,Math.max(width,height)*.72);g.addColorStop(0,"rgba(0,240,255,.12)");g.addColorStop(1,"rgba(0,240,255,0)");ctx.fillStyle=g;ctx.fillRect(0,0,width,height);g=ctx.createRadialGradient(width*(.84+.02*Math.cos(phase*.8)),height*.74,0,width*.84,height*.74,Math.max(width,height)*.62);g.addColorStop(0,"rgba(130,105,255,.11)");g.addColorStop(1,"rgba(130,105,255,0)");ctx.fillStyle=g;ctx.fillRect(0,0,width,height);}function frame(timestamp){if(!running||document.hidden)return;rafId=requestAnimationFrame(frame);if(timestamp-lastFrame<1000/30)return;const dt=lastFrame?Math.min(.05,(timestamp-lastFrame)/1000):0;lastFrame=timestamp;phase+=dt*.22;paint();}function stop(){running=false;if(rafId)cancelAnimationFrame(rafId);rafId=0;}function resume(){if(running||document.hidden)return;running=true;lastFrame=0;rafId=requestAnimationFrame(frame);}resize();window.addEventListener("resize",resize,{passive:true});document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else resume();});rafId=requestAnimationFrame(frame);window.addEventListener("pagehide",function(){stop();window.removeEventListener("resize",resize);},{once:true});})();</script>
 </body>
 </html>
