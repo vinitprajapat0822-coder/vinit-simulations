@@ -114,7 +114,7 @@ function draw(){
 }
 engine=new SimulationEngine({update(){},render:draw,onStateChange({running}){playBtn.textContent=running?'Pause':'Play';}});
 u.oninput=ang.oninput=k.oninput=sync;playBtn.onclick=function(){if(!started)return;if(engine.isRunning)engine.pause();else engine.resume();};
-resetBtn.onclick=function(){engine.pause();u.value=22;ang.value=40;k.value=0.05;sync();};
+resetBtn.onclick=function(){engine.pause();playBtn.textContent='Play';sync();};
 document.getElementById('startSimulationBtn').addEventListener('click',function(){started=true;document.getElementById('startOverlay').hidden=true;engine.start();});sync();engine.renderNow();
 })();
 
