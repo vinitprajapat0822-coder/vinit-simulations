@@ -147,11 +147,11 @@ input[type=range]::-moz-range-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0
 <script src="../core/SimulationEngine.js"></script>
 <script>
 (function(){
+  const $ = id => document.getElementById(id);
   const canvas=$('canvas');
   let engine=null;
   const canvasManager=new CanvasManager(canvas,{onResize(){if(engine)engine.renderNow();}});
   const ctx=canvasManager.context;
-  const $ = id => document.getElementById(id);
 
   const thickness = $('thickness'), thicknessNum = $('thicknessNum');
   const iceDensity = $('iceDensity'), iceDensityNum = $('iceDensityNum');
