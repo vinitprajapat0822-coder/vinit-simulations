@@ -98,7 +98,7 @@ function draw(){
   ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.beginPath();
   for(let i=0;i<W;i++){const tt=i/100+t*0.25;const y=Math.sin(2*Math.PI*(a/60)*tt)+Math.sin(2*Math.PI*(b/60)*tt);if(i===0)ctx.moveTo(i,H/2+y*28);else ctx.lineTo(i,H/2+y*28);}
   ctx.stroke();ctx.strokeStyle='rgba(251,191,36,0.35)';ctx.setLineDash([4,4]);ctx.beginPath();
-  for(let i=0;i<W;i++){const tt=i/100+t*0.25;const env=2*Math.abs(Math.cos(Math.PI*((a-b)/60)*tt));if(i===0)ctx.moveTo(i,H/2-env*28);else ctx.lineTo(i,H/2+env*28);}
+  for(let i=0;i<W;i++){const tt=i/100+t*0.25;const env=2*Math.abs(Math.cos(Math.PI*((a-b)/60)*tt));if(i===0)ctx.moveTo(i,H/2-env*28);else ctx.lineTo(i,H/2-env*28);}
   ctx.stroke();ctx.setLineDash([]);
   res.innerHTML='<div class="result"><span>f_beat</span><strong>'+fb+' Hz</strong></div>'+
     '<div class="result"><span>beat period</span><strong>'+(fb?(1/fb).toFixed(3)+' s':'—')+'</strong></div>'+
