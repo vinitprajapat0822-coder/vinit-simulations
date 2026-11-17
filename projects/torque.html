@@ -67,6 +67,7 @@ body[data-theme="terminal"] .btn.primary,body[data-theme="terminal"] .liquid-btn
 body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-canvas-stage{border-radius:13px}body[data-theme="control-room"] .liquid-start-card{border-radius:13px}
 @media(max-width:600px){.liquid-start-card{padding:20px 16px}.liquid-start-screen{padding:10px}.liquid-canvas-stage{padding:8px!important}.liquid-start-screen{inset:8px}}
 @media(prefers-reduced-motion:reduce){.liquid-start-screen,.liquid-btn,.btn,button{transition:none!important}.liquid-start-screen.is-dismissed{transform:none}}</style>
+<style id="core-engine-layout">.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}</style>
 </head>
 <body>
 <canvas id="fluid-bg" aria-hidden="true"></canvas>
@@ -94,39 +95,42 @@ Choose the pivot wisely so unknown forces produce zero torque when possible.</di
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+"use strict";
+const canvas=document.getElementById('c');
 const rEl=document.getElementById('r'),FEl=document.getElementById('F'),thEl=document.getElementById('th');
+const rV=document.getElementById('rV'),FV=document.getElementById('FV'),thV=document.getElementById('thV');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-playBtn.style.display='none';
-function sync(){rV.textContent=rEl.value+' m';FV.textContent=FEl.value+' N';thV.textContent=thEl.value+'°';draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+let started=false,engine=null;
+function sync(){rV.textContent=rEl.value+' m';FV.textContent=FEl.value+' N';thV.textContent=thEl.value+'°';if(started)engine.renderNow();}
 function draw(){
-  const [W,H]=size();
+  const W=canvasManager.width,H=canvasManager.height,ctx=canvasManager.context;
   const r=+rEl.value,F=+FEl.value,th=+thEl.value*Math.PI/180;
   const tau=r*F*Math.sin(th);
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
   const cx=W*0.35,cy=H/2,sc=90;
   ctx.fillStyle='#64748b';ctx.beginPath();ctx.arc(cx,cy,8,0,6.28);ctx.fill();
   ctx.strokeStyle='#94a3b8';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*sc,cy);ctx.stroke();
-  // force
-  const fx=cx+r*sc, fy=cy;
-  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx+F*3*Math.cos(th-Math.PI/2),fy-F*3*Math.sin(th-Math.PI/2));ctx.stroke();
-  // angle arc
+  const fx=cx+r*sc,fy=cy;
+  ctx.strokeStyle='#a78bfa';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx+F*3*Math.cos(th-Math.PI/2),fy-F*3*Math.sin(th-Math.PI/2));ctx.stroke();
   ctx.strokeStyle='rgba(251,191,36,0.5)';ctx.beginPath();ctx.arc(fx,fy,28,-Math.PI/2,-Math.PI/2+th);ctx.stroke();
   ctx.fillStyle='#94a3b8';ctx.font='12px system-ui';ctx.fillText('pivot',cx-14,cy+24);ctx.fillText('θ',fx+20,fy-10);
   res.innerHTML='<div class="result"><span>τ</span><strong>'+tau.toFixed(2)+' N·m</strong></div>'+
     '<div class="result"><span>r⊥ = r sinθ</span><strong>'+(r*Math.sin(th)).toFixed(2)+' m</strong></div>'+
     '<div class="result"><span>sinθ</span><strong>'+Math.sin(th).toFixed(2)+'</strong></div>';
 }
+const canvasManager=new CanvasManager(canvas,{onResize:function(){if(started&&engine)engine.renderNow();}});
+engine=new SimulationEngine({update:function(){return false;},render:draw,onReset:function(){rEl.value=1;FEl.value=15;thEl.value=90;sync();}});
 rEl.oninput=FEl.oninput=thEl.oninput=sync;
-resetBtn.onclick=function(){rEl.value=1;FEl.value=15;thEl.value=90;sync();};
-sync();
+playBtn.style.display='none';playBtn.onclick=function(){if(started)engine.resume();};
+resetBtn.onclick=function(){if(started)engine.reset();else{rEl.value=1;FEl.value=15;thEl.value=90;sync();}};
+const overlay=document.getElementById('liquidStartScreen'),startButton=document.getElementById('liquidStartButton');
+startButton.addEventListener('click',function(){if(started)return;started=true;overlay.classList.add('is-dismissed');overlay.setAttribute('aria-hidden','true');startButton.setAttribute('tabindex','-1');engine.start();});
+window.addEventListener('pagehide',function(){engine.destroy();canvasManager.destroy();},{once:true});sync();
 })();
-
 </script>
 <script id="liquid-flow-runtime">(function(){"use strict";var canvas=document.getElementById("fluid-bg");if(!canvas)return;var ctx=canvas.getContext("2d");if(!ctx){canvas.hidden=true;return;}var key="vsh-interface-theme-v2",themes=["holographic","constellation","control-room","terminal"],motion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");var lowCore=(Number(navigator.hardwareConcurrency)||4)<4,lowMemory=Number(navigator.deviceMemory)>0&&Number(navigator.deviceMemory)<=2,staticMode=lowCore||lowMemory||!!(motion&&motion.matches);var w=0,h=0,dpr=1,t=0,last=0,raf=0,running=false,mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches,count=mobile?2:3;function syncTheme(){try{var v=localStorage.getItem(key);if(themes.indexOf(v)>=0)document.body.setAttribute("data-theme",v)}catch(e){}}function palette(){var s=getComputedStyle(document.body);return[s.getPropertyValue("--cyan").trim()||"#62e7ff",s.getPropertyValue("--purple").trim()||"#a78bfa"]}function paint(){ctx.clearRect(0,0,w,h);var colors=palette(),n=staticMode?2:count;for(var i=0;i<n;i++){var x=w/2+Math.sin(t+i)*w*(mobile?.24:.32),y=h/2+Math.cos(t*1.5+i)*h*(mobile?.22:.30),base=mobile?108:154,r=staticMode?base:base+Math.sin(t*2+i)*(mobile?22:42),g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,i%2===0?colors[0]:colors[1]);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}}function resize(){mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches;count=mobile?2:3;dpr=Math.min(devicePixelRatio||1,mobile?1:1.25);w=Math.max(1,innerWidth);h=Math.max(1,innerHeight);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);paint()}function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=0}function frame(now){if(!running||document.hidden){stop();return}if(now-last>=33){var dt=last?Math.min((now-last)/1000,.06):.033;last=now;t+=dt*2.8;paint()}raf=requestAnimationFrame(frame)}function start(){if(staticMode){paint();return}if(running||document.hidden)return;running=true;last=0;raf=requestAnimationFrame(frame)}syncTheme();resize();if(staticMode)paint();else start();addEventListener("resize",resize,{passive:true});document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});addEventListener("storage",function(e){if(!e.key||e.key===key){syncTheme();paint()}});document.addEventListener("vsh-theme-change",function(e){if(e.detail&&themes.indexOf(e.detail.theme)>=0){document.body.setAttribute("data-theme",e.detail.theme);paint()}});if(motion&&motion.addEventListener)motion.addEventListener("change",function(e){staticMode=lowCore||lowMemory||e.matches;stop();if(staticMode)paint();else start()});var overlay=document.getElementById("liquidStartScreen"),button=document.getElementById("liquidStartButton");if(overlay&&button)button.addEventListener("click",function(){overlay.classList.add("is-dismissed");overlay.setAttribute("aria-hidden","true");button.setAttribute("tabindex","-1")})})();</script>
 </body>
