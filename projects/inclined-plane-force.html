@@ -22,53 +22,118 @@ label.row{display:flex;justify-content:space-between;font-size:12px;margin:8px 0
 .actions{display:flex;gap:8px;margin-top:10px}canvas{display:block;width:100%;height:340px;border-radius:12px;background:#0a1220;border:1px solid #24314b}
 .results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:10px;padding:8px}.result span{display:block;font-size:10px;color:var(--muted)}.result strong{font-size:13px}
 .formulas{font-size:12px;color:var(--muted);line-height:1.7}code{color:var(--cyan)}
+
+/* Batch 8 · Liquid Flow UI layer */
+body{position:relative;isolation:isolate}
+#fluid-bg{position:fixed!important;inset:0!important;z-index:-1!important;display:block!important;width:100vw!important;height:100vh!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;opacity:.88;pointer-events:none!important;touch-action:none!important}
+.wrap{width:100%;max-width:1600px;margin-inline:auto;padding-inline:12px}
+.control-panel{position:relative;border:1px solid rgba(98,231,255,.24)!important;background:linear-gradient(145deg,rgba(16,24,48,.72),rgba(8,14,28,.68))!important;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);box-shadow:0 16px 42px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(98,231,255,.05)}
+.control-panel .ph,.control-panel .panel-head{border-bottom-color:rgba(255,255,255,.12)}
+input[type=range]{accent-color:#00f0ff;filter:drop-shadow(0 0 5px rgba(0,240,255,.35))}
+input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+input[type=range]::-moz-range-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 17px rgba(0,240,255,.72),inset 0 1px 2px rgba(255,255,255,.9)}
+.simulation-stage,.liquid-canvas-stage{position:relative;isolation:isolate;width:100%;min-width:0;border-radius:16px;overflow:hidden}
+.simulation-stage>canvas:not(#fluid-bg),.liquid-canvas-stage>canvas:not(#fluid-bg){position:relative;z-index:0;display:block;width:100%;max-width:100%}
+.start-overlay{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at 50% 42%,rgba(14,30,52,.52),rgba(3,7,16,.78));-webkit-backdrop-filter:blur(13px) saturate(145%);backdrop-filter:blur(13px) saturate(145%)}
+.start-overlay[hidden]{display:none!important}
+.start-card{width:min(100%,360px);padding:24px 22px;text-align:center;border:1px solid rgba(255,255,255,.2);border-top-color:rgba(255,255,255,.52);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(12,21,38,.62));box-shadow:0 22px 55px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,240,255,.08)}
+.start-kicker{display:block;margin-bottom:9px;color:#00f0ff;font-size:10px;font-weight:850;letter-spacing:.18em}
+.start-card h2{margin:0 0 7px;color:#f2f7ff;font-size:clamp(18px,3vw,23px)}
+.start-card p{margin:0 0 17px;color:#c0cce0;font-size:12px;line-height:1.6}
+.start-cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:46px;padding:11px 16px;border:1px solid rgba(255,255,255,.55);border-radius:13px;color:#041018;background:linear-gradient(120deg,#a5f4ff,#00f0ff 55%,#aaa0ff);box-shadow:0 10px 26px rgba(0,240,255,.22),inset 0 1px 0 rgba(255,255,255,.7);font-weight:900;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease}
+.start-cta:hover{transform:translateY(-1px);box-shadow:0 13px 32px rgba(0,240,255,.3),inset 0 1px 0 rgba(255,255,255,.8)}
+.start-cta:active{transform:scale(.97)}
+@media(max-width:600px){.start-card{padding:20px 17px}.simulation-stage,.liquid-canvas-stage{border-radius:12px}}
+
 </style>
 </head>
 <body>
+<canvas id="fluid-bg" aria-hidden="true"></canvas>
 <header><div class="wrap nav"><a class="brand" href="../index.html"><span class="logo">V</span><span>FORCES</span></a><a href="../index.html" style="color:var(--cyan)">← Hub</a></div></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">FORCES</div><h1>Forces on Incline</h1><p class="lead">Component of gravity on a rough incline.</p></section>
 <div class="layout">
-<aside class="panel"><div class="ph">Controls</div><div class="pb"><label class="row">m (kg) <span id="mV">3</span></label><input type="range" id="m" min="1" max="10" step="0.5" value="3">
+<aside class="panel control-panel"><div class="ph">Controls</div><div class="pb"><label class="row">m (kg) <span id="mV">3</span></label><input type="range" id="m" min="1" max="10" step="0.5" value="3">
 <label class="row">θ (°) <span id="thV">30</span></label><input type="range" id="th" min="10" max="55" step="1" value="30">
 <label class="row">μ <span id="muV">0.2</span></label><input type="range" id="mu" min="0" max="0.6" step="0.02" value="0.2"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></aside>
 <div>
-<div class="panel"><div class="pb"><canvas id="c" width="800" height="340"></canvas></div></div>
+<div class="panel"><div class="pb"><div class="simulation-stage" id="simulation-stage"><canvas id="c" width="800" height="340"></canvas><div class="start-overlay" id="startOverlay"><div class="start-card"><span class="start-kicker">VSH · CORE ENGINE</span><h2>Ready to simulate?</h2><p>Launch the lab to begin the interactive canvas experience.</p><button type="button" class="start-cta" id="startSimulationBtn">Start Simulation <span aria-hidden="true">→</span></button></div></div></div></div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Formulas</div><div class="pb formulas"><code>a = g(sinθ − μ cosθ)</code></div></div>
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-const m=document.getElementById('m');
-const th=document.getElementById('th');
-const mu=document.getElementById('mu');
-let playing=true,t=0,last=0;
-function sync(){document.getElementById('mV').textContent=m.value;document.getElementById('thV').textContent=th.value;document.getElementById('muV').textContent=mu.value;draw();}
-m.oninput=sync;
-th.oninput=sync;
-mu.oninput=sync;
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||720,H=340;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
-function draw(){
-  const [W,H]=size();ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
-
-const th=+th.value*Math.PI/180,g=9.8,mu=+mu.value,m=+m.value;
-const a=g*(Math.sin(th)-mu*Math.cos(th));
-ctx.strokeStyle='#64748b';ctx.beginPath();ctx.moveTo(40,H-40);ctx.lineTo(W-40,H-40);ctx.lineTo(W-40,H-40-(W-80)*Math.tan(th));ctx.closePath();ctx.stroke();
-const bx=W*0.45,by=H-100;
-ctx.fillStyle='#63e6ff';ctx.fillRect(bx,by,36,24);
-res.innerHTML=`<div class="result"><span>a</span><strong>${a.toFixed(2)} m/s²</strong></div><div class="result"><span>N</span><strong>${(m*g*Math.cos(th)).toFixed(1)} N</strong></div>`;
-
+const canvas=document.getElementById('c');
+let engine=null,started=false,t=0;
+const canvasManager=new CanvasManager(canvas,{onResize(){if(engine)engine.renderNow();}});
+const ctx=canvasManager.context;
+const m=document.getElementById('m'),th=document.getElementById('th'),mu=document.getElementById('mu');
+const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
+function sync(){
+  document.getElementById('mV').textContent=m.value;
+  document.getElementById('thV').textContent=th.value;
+  document.getElementById('muV').textContent=mu.value;
+  if(engine&&!engine.isRunning)engine.renderNow();
 }
-function loop(ts){if(!playing){draw();return;}if(!last)last=ts;const dt=Math.min(0.033,(ts-last)/1000);last=ts;t+=dt;draw();requestAnimationFrame(loop);}
-const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn');
-playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'Pause':'Play';last=0;if(playing)requestAnimationFrame(loop);};
-resetBtn.onclick=()=>{playing=false;t=0;last=0;m.value=3;th.value=30;mu.value=0.2;sync();playBtn.textContent='Play';draw();};
-sync();requestAnimationFrame(loop);
+function draw(){
+  const W=canvasManager.width,H=canvasManager.height;
+  ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
+  const theta=+th.value*Math.PI/180,g=9.8,muValue=+mu.value,mass=+m.value;
+  const a=g*(Math.sin(theta)-muValue*Math.cos(theta));
+  ctx.strokeStyle='#64748b';ctx.beginPath();ctx.moveTo(40,H-40);ctx.lineTo(W-40,H-40);ctx.lineTo(W-40,H-40-(W-80)*Math.tan(theta));ctx.closePath();ctx.stroke();
+  const bx=W*0.45,by=H-100;
+  ctx.fillStyle='#63e6ff';ctx.fillRect(bx,by,36,24);
+  res.innerHTML='<div class="result"><span>a</span><strong>'+a.toFixed(2)+' m/s²</strong></div><div class="result"><span>N</span><strong>'+(mass*g*Math.cos(theta)).toFixed(1)+' N</strong></div>';
+}
+engine=new SimulationEngine({
+  maxDelta:0.033,
+  update(dt){t+=dt;},
+  render:draw,
+  onReset(){t=0;},
+  onStateChange({running}){playBtn.textContent=running?'Pause':'Play';}
+});
+m.oninput=th.oninput=mu.oninput=sync;
+playBtn.onclick=function(){if(!started)return;if(engine.isRunning)engine.pause();else engine.resume();};
+resetBtn.onclick=function(){engine.reset();m.value=3;th.value=30;mu.value=0.2;sync();};
+document.getElementById('startSimulationBtn').addEventListener('click',function(){
+  started=true;document.getElementById('startOverlay').hidden=true;engine.start();
+});
+sync();engine.renderNow();
 })();
-
+</script>
+<script id="liquid-flow-runtime">
+(function(){
+  const canvas=document.getElementById('fluid-bg');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let width=0,height=0,dpr=1,lastFrame=0,phase=0,rafId=0;
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,1.5);
+    width=window.innerWidth;height=window.innerHeight;
+    canvas.width=Math.max(1,Math.round(width*dpr));
+    canvas.height=Math.max(1,Math.round(height*dpr));
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function frame(timestamp){
+    rafId=requestAnimationFrame(frame);
+    if(timestamp-lastFrame<1000/30)return;
+    const dt=lastFrame?Math.min(0.05,(timestamp-lastFrame)/1000):0;
+    lastFrame=timestamp;phase+=dt*0.22;
+    ctx.clearRect(0,0,width,height);
+    let g=ctx.createRadialGradient(width*(0.16+0.025*Math.sin(phase)),height*0.22,0,width*0.16,height*0.22,Math.max(width,height)*0.72);
+    g.addColorStop(0,'rgba(0,240,255,.12)');g.addColorStop(1,'rgba(0,240,255,0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,width,height);
+    g=ctx.createRadialGradient(width*(0.84+0.02*Math.cos(phase*.8)),height*0.74,0,width*.84,height*.74,Math.max(width,height)*.62);
+    g.addColorStop(0,'rgba(130,105,255,.11)');g.addColorStop(1,'rgba(130,105,255,0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,width,height);
+  }
+  function stop(){if(rafId)cancelAnimationFrame(rafId);window.removeEventListener('resize',resize);}
+  resize();window.addEventListener('resize',resize,{passive:true});rafId=requestAnimationFrame(frame);
+  window.addEventListener('pagehide',stop,{once:true});
+})();
 </script>
 </body></html>
