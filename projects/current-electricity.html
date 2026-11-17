@@ -67,6 +67,7 @@ body[data-theme="terminal"] .btn.primary,body[data-theme="terminal"] .liquid-btn
 body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-canvas-stage{border-radius:13px}body[data-theme="control-room"] .liquid-start-card{border-radius:13px}
 @media(max-width:600px){.liquid-start-card{padding:20px 16px}.liquid-start-screen{padding:10px}.liquid-canvas-stage{padding:8px!important}.liquid-start-screen{inset:8px}}
 @media(prefers-reduced-motion:reduce){.liquid-start-screen,.liquid-btn,.btn,button{transition:none!important}.liquid-start-screen.is-dismissed{transform:none}}</style>
+<style id="core-engine-layout">.wrap{width:100%;max-width:1600px;margin:0 auto;padding:0 14px}</style>
 </head>
 <body>
 <canvas id="fluid-bg" aria-hidden="true"></canvas>
@@ -91,17 +92,19 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
 </div></div>
 </main>
 <script src="../lab-theme.js?v=3"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
 <script>
-
 (function(){
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+"use strict";
+const canvas=document.getElementById('c');
 const r1=document.getElementById('r1'),r2=document.getElementById('r2'),mode=document.getElementById('mode'),V=document.getElementById('V');
+const r1V=document.getElementById('r1V'),r2V=document.getElementById('r2V'),VV=document.getElementById('VV');
 const playBtn=document.getElementById('playBtn'),resetBtn=document.getElementById('resetBtn'),res=document.getElementById('res');
-playBtn.style.display='none';
-function sync(){r1V.textContent=r1.value+' Ω';r2V.textContent=r2.value+' Ω';VV.textContent=V.value+' V';draw();}
-function size(){const d=Math.min(devicePixelRatio||1,2);const W=canvas.clientWidth||800,H=canvas.clientHeight||400;canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);return [W,H];}
+let started=false,engine=null;
 function draw(){
-  const [W,H]=size();const a=+r1.value,b=+r2.value,v=+V.value,ser=mode.value==='series';
+  const W=canvasManager.width,H=canvasManager.height,ctx=canvasManager.context;
+  const a=+r1.value,b=+r2.value,v=+V.value,ser=mode.value==='series';
   const Req=ser?a+b:1/(1/a+1/b); const I=v/Req;
   ctx.fillStyle='#0a1220';ctx.fillRect(0,0,W,H);
   ctx.strokeStyle='#63e6ff';ctx.lineWidth=2;ctx.strokeRect(W*0.2,H*0.3,W*0.6,H*0.4);
@@ -111,9 +114,19 @@ function draw(){
     '<div class="result"><span>I total</span><strong>'+I.toFixed(3)+' A</strong></div>'+
     '<div class="result"><span>P = VI</span><strong>'+(v*I).toFixed(2)+' W</strong></div>';
 }
-r1.oninput=r2.oninput=mode.onchange=V.oninput=sync;resetBtn.onclick=function(){r1.value=4;r2.value=6;mode.value='series';V.value=12;sync();};sync();
+function updateLabels(){r1V.textContent=r1.value+' Ω';r2V.textContent=r2.value+' Ω';VV.textContent=V.value+' V';}
+function sync(){updateLabels();if(started)engine.renderNow();}
+const canvasManager=new CanvasManager(canvas,{onResize:function(){if(started&&engine)engine.renderNow();}});
+engine=new SimulationEngine({update:function(){return false;},render:draw,onReset:function(){r1.value=4;r2.value=6;mode.value='series';V.value=12;updateLabels();}});
+r1.oninput=r2.oninput=mode.onchange=V.oninput=sync;
+playBtn.style.display='none';
+playBtn.onclick=function(){if(started)engine.resume();};
+resetBtn.onclick=function(){if(started)engine.reset();else{r1.value=4;r2.value=6;mode.value='series';V.value=12;updateLabels();}};
+const overlay=document.getElementById('liquidStartScreen'),startButton=document.getElementById('liquidStartButton');
+startButton.addEventListener('click',function(){if(started)return;started=true;overlay.classList.add('is-dismissed');overlay.setAttribute('aria-hidden','true');startButton.setAttribute('tabindex','-1');engine.start();});
+window.addEventListener('pagehide',function(){engine.destroy();canvasManager.destroy();},{once:true});
+updateLabels();
 })();
-
 </script>
 <script id="liquid-flow-runtime">(function(){"use strict";var canvas=document.getElementById("fluid-bg");if(!canvas)return;var ctx=canvas.getContext("2d");if(!ctx){canvas.hidden=true;return;}var key="vsh-interface-theme-v2",themes=["holographic","constellation","control-room","terminal"],motion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");var lowCore=(Number(navigator.hardwareConcurrency)||4)<4,lowMemory=Number(navigator.deviceMemory)>0&&Number(navigator.deviceMemory)<=2,staticMode=lowCore||lowMemory||!!(motion&&motion.matches);var w=0,h=0,dpr=1,t=0,last=0,raf=0,running=false,mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches,count=mobile?2:3;function syncTheme(){try{var v=localStorage.getItem(key);if(themes.indexOf(v)>=0)document.body.setAttribute("data-theme",v)}catch(e){}}function palette(){var s=getComputedStyle(document.body);return[s.getPropertyValue("--cyan").trim()||"#62e7ff",s.getPropertyValue("--purple").trim()||"#a78bfa"]}function paint(){ctx.clearRect(0,0,w,h);var colors=palette(),n=staticMode?2:count;for(var i=0;i<n;i++){var x=w/2+Math.sin(t+i)*w*(mobile?.24:.32),y=h/2+Math.cos(t*1.5+i)*h*(mobile?.22:.30),base=mobile?108:154,r=staticMode?base:base+Math.sin(t*2+i)*(mobile?22:42),g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,i%2===0?colors[0]:colors[1]);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}}function resize(){mobile=window.matchMedia&&window.matchMedia("(max-width: 600px)").matches;count=mobile?2:3;dpr=Math.min(devicePixelRatio||1,mobile?1:1.25);w=Math.max(1,innerWidth);h=Math.max(1,innerHeight);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);paint()}function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=0}function frame(now){if(!running||document.hidden){stop();return}if(now-last>=33){var dt=last?Math.min((now-last)/1000,.06):.033;last=now;t+=dt*2.8;paint()}raf=requestAnimationFrame(frame)}function start(){if(staticMode){paint();return}if(running||document.hidden)return;running=true;last=0;raf=requestAnimationFrame(frame)}syncTheme();resize();if(staticMode)paint();else start();addEventListener("resize",resize,{passive:true});document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});addEventListener("storage",function(e){if(!e.key||e.key===key){syncTheme();paint()}});document.addEventListener("vsh-theme-change",function(e){if(e.detail&&themes.indexOf(e.detail.theme)>=0){document.body.setAttribute("data-theme",e.detail.theme);paint()}});if(motion&&motion.addEventListener)motion.addEventListener("change",function(e){staticMode=lowCore||lowMemory||e.matches;stop();if(staticMode)paint();else start()});var overlay=document.getElementById("liquidStartScreen"),button=document.getElementById("liquidStartButton");if(overlay&&button)button.addEventListener("click",function(){overlay.classList.add("is-dismissed");overlay.setAttribute("aria-hidden","true");button.setAttribute("tabindex","-1")})})();</script>
 </body>
