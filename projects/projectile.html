@@ -89,6 +89,24 @@ body[data-theme="control-room"] .simulation-start-card{border-radius:13px}
 @media(max-width:600px){.simulation-stage{padding:8px}.simulation-start-screen{inset:8px;padding:10px}.simulation-start-card{padding:20px 16px}.simulation-canvas{height: min(390px,48vh);min-height:240px}.layout{gap:10px}.control-panel .pb{padding:12px}.control-group{padding-bottom:10px}}
 @media(prefers-reduced-motion:reduce){.simulation-start-screen,.start-simulation-btn,.btn{transition:none!important}.simulation-start-screen.is-dismissed{transform:none}}
 
+
+/* Phase 3 educational vector controls and live insight panel. */
+.vector-toggle{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 0 2px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(135deg,rgba(98,231,255,.075),rgba(167,139,250,.055));cursor:pointer;user-select:none}
+.vector-toggle-copy{display:flex;flex-direction:column;gap:2px;color:var(--text);font-size:12px;font-weight:800}
+.vector-toggle-copy small{color:var(--muted);font-size:10px;font-weight:500}
+.vector-toggle input{position:absolute;width:1px;height:1px;opacity:0}
+.vector-switch{position:relative;flex:0 0 42px;width:42px;height:24px;border:1px solid rgba(255,255,255,.18);border-radius:99px;background:#27334a;box-shadow:inset 0 2px 5px rgba(0,0,0,.28);transition:background .2s ease,border-color .2s ease}
+.vector-switch:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#c4cde0;box-shadow:0 1px 5px rgba(0,0,0,.35);transition:transform .22s cubic-bezier(.2,.8,.2,1),background .2s ease}
+.vector-toggle input:checked+.vector-switch{border-color:rgba(98,231,255,.62);background:rgba(98,231,255,.28);box-shadow:0 0 16px rgba(98,231,255,.12),inset 0 1px 4px rgba(0,0,0,.2)}
+.vector-toggle input:checked+.vector-switch:after{transform:translateX(18px);background:var(--cyan);box-shadow:0 0 12px rgba(98,231,255,.65)}
+.vector-toggle input:focus-visible+.vector-switch{outline:2px solid var(--cyan);outline-offset:4px}
+.motion-insight{display:flex;align-items:flex-start;gap:12px;padding:13px;border:1px solid rgba(98,231,255,.2);border-radius:14px;background:linear-gradient(135deg,rgba(98,231,255,.075),rgba(167,139,250,.055));min-height:76px}
+.motion-insight .insight-indicator{flex:0 0 9px;width:9px;height:9px;margin-top:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 13px currentColor}
+.motion-insight[data-phase="descending"],.motion-insight[data-phase="away"]{border-color:rgba(167,139,250,.28)}
+.motion-insight[data-phase="descending"] .insight-indicator,.motion-insight[data-phase="away"] .insight-indicator{background:var(--purple)}
+.motion-insight-title{display:block;margin:0 0 3px;color:var(--text);font-size:13px;font-weight:850}
+.motion-insight-text{margin:0;color:var(--muted);font-size:12px;line-height:1.6}
+
 </style>
 </head>
 <body>
@@ -104,7 +122,13 @@ body[data-theme="control-room"] .simulation-start-card{border-radius:13px}
 <div class="challenge-panel" id="challengePanel" hidden>
   <p class="challenge-mission">Mission: Hit the target at 100m.</p>
   <p class="challenge-status" id="challengeStatus" role="status" aria-live="polite">Adjust launch speed or angle, then press Play.</p>
-</div></div></div></div>
+</div></div>
+<label class="vector-toggle">
+  <span class="vector-toggle-copy"><span>Show Vectors</span><small>Velocity and gravity arrows on the canvas</small></span>
+  <input id="showVectors" type="checkbox" checked aria-label="Show vectors">
+  <span class="vector-switch" aria-hidden="true"></span>
+</label>
+</div></div>
 <div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">Range is maximum near 45° (flat ground, no air). Complementary angles (30° and 60°) give the same range but different flight times and max heights.</div>
 <ul>
 <li>Gold arrow = instantaneous velocity; its vertical part shrinks, then grows downward.</li>
@@ -123,6 +147,13 @@ body[data-theme="control-room"] .simulation-start-card{border-radius:13px}
     <small>Adjust the launch parameters after entering the lab.</small>
   </div>
 </div>
+</div></div>
+<div class="panel"><div class="ph">Step-by-step physics insight</div><div class="pb">
+  <div class="motion-insight" id="motionInsight" data-phase="ascending" role="status" aria-live="polite">
+    <span class="insight-indicator" aria-hidden="true"></span>
+    <div><strong class="motion-insight-title" id="motionInsightTitle">Ascending</strong>
+    <p class="motion-insight-text" id="motionInsightText">Kinetic energy is converting to Potential energy.</p></div>
+  </div>
 </div></div>
 <div class="panel"><div class="ph">Live measurements</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory · problem links</div><div class="pb explain"><h3>Components</h3>
@@ -160,6 +191,10 @@ For a target (x,y), eliminate t to get the trajectory equation; solve for θ or 
   const challengeStatus = document.getElementById("challengeStatus");
   const startScreen = document.getElementById("simulationStartScreen");
   const startButton = document.getElementById("startSimulationBtn");
+  const showVectorsInput = document.getElementById("showVectors");
+  const motionInsight = document.getElementById("motionInsight");
+  const motionInsightTitle = document.getElementById("motionInsightTitle");
+  const motionInsightText = document.getElementById("motionInsightText");
   const targetRange = 100;
 
   if (!window.ProjectilePhysics ||
@@ -173,6 +208,7 @@ For a target (x,y), eliminate t to get the trajectory equation; solve for θ or 
   let simulationTime = 0;
   let trail = [];
   let engine = null;
+  let lastMotionPhase = "";
 
   function getProjectileParameters() {
     return {
@@ -187,6 +223,57 @@ For a target (x,y), eliminate t to get the trajectory equation; solve for θ or 
     uValue.textContent = uEl.value + " m/s";
     thValue.textContent = thEl.value + "°";
     gValue.textContent = gEl.value;
+  }
+
+  function updateMotionInsight(phase, title, message) {
+    if (phase === lastMotionPhase) return;
+    lastMotionPhase = phase;
+    motionInsight.dataset.phase = phase;
+    motionInsightTitle.textContent = title;
+    motionInsightText.textContent = message;
+  }
+
+  function drawVectorArrow(context, originX, originY, dx, dy, color, label, requestedLength, width, height) {
+    const magnitude = Math.hypot(dx, dy);
+    if (magnitude < 0.0001) return;
+    const unitX = dx / magnitude;
+    const unitY = dy / magnitude;
+    const margin = 18;
+    let length = requestedLength;
+    if (unitX > 0) length = Math.min(length, (width - margin - originX) / unitX);
+    else if (unitX < 0) length = Math.min(length, (margin - originX) / unitX);
+    if (unitY > 0) length = Math.min(length, (height - margin - originY) / unitY);
+    else if (unitY < 0) length = Math.min(length, (margin - originY) / unitY);
+    if (!Number.isFinite(length) || length < 12) return;
+
+    const endX = originX + unitX * length;
+    const endY = originY + unitY * length;
+    const angle = Math.atan2(endY - originY, endX - originX);
+    const head = Math.min(10, Math.max(7, length * 0.22));
+    context.save();
+    context.strokeStyle = color;
+    context.fillStyle = color;
+    context.lineWidth = 3;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.shadowColor = color;
+    context.shadowBlur = 10;
+    context.beginPath();
+    context.moveTo(originX, originY);
+    context.lineTo(endX, endY);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(endX, endY);
+    context.lineTo(endX - head * Math.cos(angle - Math.PI / 6), endY - head * Math.sin(angle - Math.PI / 6));
+    context.lineTo(endX - head * Math.cos(angle + Math.PI / 6), endY - head * Math.sin(angle + Math.PI / 6));
+    context.closePath();
+    context.fill();
+    context.shadowBlur = 0;
+    context.font = "700 11px system-ui";
+    const labelX = Math.min(width - 64, Math.max(8, endX + (unitX >= 0 ? 8 : -54)));
+    const labelY = Math.min(height - 8, Math.max(14, endY - 7));
+    context.fillText(label, labelX, labelY);
+    context.restore();
   }
 
   function world(physics, width, height) {
@@ -321,26 +408,26 @@ For a target (x,y), eliminate t to get the trajectory equation; solve for θ or 
     const pointX = mapping.X(position.x);
     const pointY = mapping.Y(visibleHeight);
 
-    context.strokeStyle = "#fbbf24";
-    context.lineWidth = 2;
-    context.beginPath();
-    context.moveTo(pointX, pointY);
-    context.lineTo(
-      pointX + velocity.vx * 1.2,
-      pointY - velocity.vy * 1.2
-    );
-    context.stroke();
+    const verticalTolerance = 0.5;
+    if (velocity.vy > verticalTolerance) {
+      updateMotionInsight("ascending", "Moving upward", "Kinetic energy is converting to Potential energy.");
+    } else if (velocity.vy < -verticalTolerance) {
+      updateMotionInsight("descending", "Moving downward", "Potential energy is converting back to Kinetic.");
+    } else {
+      updateMotionInsight("apex", "At the peak", "Vertical velocity is zero. Horizontal velocity is constant.");
+    }
 
-    context.fillStyle = "#94a3b8";
-    context.font = "11px system-ui";
-    context.fillText(
-      "v",
-      pointX + velocity.vx * 1.2 + 4,
-      pointY - velocity.vy * 1.2
-    );
+    if (showVectorsInput.checked) {
+      const styles = getComputedStyle(document.body);
+      const velocityColor = styles.getPropertyValue("--cyan").trim() || "#62e7ff";
+      const gravityColor = styles.getPropertyValue("--purple").trim() || "#a78bfa";
+      const velocityLength = Math.max(34, Math.min(88, velocity.speed * 2.1));
+      drawVectorArrow(context, pointX, pointY, velocity.vx, -velocity.vy, velocityColor, "Velocity", velocityLength, width, height);
+      drawVectorArrow(context, pointX + 9, pointY + 8, 0, 1, gravityColor, "g", 58, width, height);
+    }
 
     // Launch velocity components.
-    if (currentTime < 0.05) {
+    if (showVectorsInput.checked && currentTime < 0.05) {
       context.strokeStyle = "rgba(167,139,250,.8)";
       context.beginPath();
       context.moveTo(mapping.X(0), mapping.Y(0));
@@ -545,6 +632,9 @@ For a target (x,y), eliminate t to get the trajectory equation; solve for θ or 
   uEl.addEventListener("input", handleParameterChange);
   thEl.addEventListener("input", handleParameterChange);
   gEl.addEventListener("input", handleParameterChange);
+  showVectorsInput.addEventListener("change", function () {
+    engine.renderNow();
+  });
 
   window.addEventListener("pagehide", function () {
     engine.destroy();
