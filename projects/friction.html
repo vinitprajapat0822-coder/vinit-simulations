@@ -27,6 +27,24 @@ input[type=number],select{width:100%;padding:7px;border-radius:10px;border:1px s
 canvas{display:block;width:100%;height:360px;border-radius:14px;background:linear-gradient(180deg,#0c1426,#070f1c);border:1px solid #24314b}
 .results{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.result{background:rgba(8,14,28,.8);border:1px solid #2a3a58;border-radius:12px;padding:10px}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:15px}
 .formulas{font-size:13px;color:var(--muted);line-height:1.7}.formulas code{color:var(--cyan)}
+
+/* Phase 3 Batch 1 — vector toggle and live educational insight. */
+.vector-toggle{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 0 2px;padding:11px 12px;border:1px solid var(--line,rgba(255,255,255,.14));border-radius:13px;background:linear-gradient(135deg,rgba(98,231,255,.075),rgba(167,139,250,.055));cursor:pointer;user-select:none}
+.vector-toggle-copy{display:flex;flex-direction:column;gap:2px;color:var(--text,#f2f5ff);font-size:12px;font-weight:800}
+.vector-toggle-copy small{color:var(--muted,#9ba8c5);font-size:10px;font-weight:500}
+.vector-toggle input{position:absolute;width:1px;height:1px;opacity:0}
+.vector-switch{position:relative;flex:0 0 42px;width:42px;height:24px;border:1px solid rgba(255,255,255,.18);border-radius:99px;background:#27334a;box-shadow:inset 0 2px 5px rgba(0,0,0,.28);transition:background .2s ease,border-color .2s ease}
+.vector-switch:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#c4cde0;box-shadow:0 1px 5px rgba(0,0,0,.35);transition:transform .22s cubic-bezier(.2,.8,.2,1),background .2s ease}
+.vector-toggle input:checked+.vector-switch{border-color:rgba(98,231,255,.62);background:rgba(98,231,255,.28);box-shadow:0 0 16px rgba(98,231,255,.12),inset 0 1px 4px rgba(0,0,0,.2)}
+.vector-toggle input:checked+.vector-switch:after{transform:translateX(18px);background:var(--cyan,#62e7ff);box-shadow:0 0 12px rgba(98,231,255,.65)}
+.vector-toggle input:focus-visible+.vector-switch{outline:2px solid var(--cyan,#62e7ff);outline-offset:4px}
+.motion-insight{display:flex;align-items:flex-start;gap:12px;padding:13px;border:1px solid rgba(98,231,255,.2);border-radius:14px;background:linear-gradient(135deg,rgba(98,231,255,.075),rgba(167,139,250,.055));min-height:76px}
+.motion-insight .insight-indicator{flex:0 0 9px;width:9px;height:9px;margin-top:5px;border-radius:50%;background:var(--cyan,#62e7ff);box-shadow:0 0 13px currentColor}
+.motion-insight[data-phase="opposite"],.motion-insight[data-phase="sliding"],.motion-insight[data-phase="after"],.motion-insight[data-phase="decreasing"]{border-color:rgba(167,139,250,.3)}
+.motion-insight[data-phase="opposite"] .insight-indicator,.motion-insight[data-phase="sliding"] .insight-indicator,.motion-insight[data-phase="after"] .insight-indicator,.motion-insight[data-phase="decreasing"] .insight-indicator{background:var(--purple,#a78bfa)}
+.motion-insight-title{display:block;margin:0 0 3px;color:var(--text,#f2f5ff);font-size:13px;font-weight:850}
+.motion-insight-text{margin:0;color:var(--muted,#9ba8c5);font-size:12px;line-height:1.6}
+
 </style>
 <link rel="stylesheet" href="../lab-polish.css?v=2">
 <style id="liquid-flow-design-system">:root{--purple:var(--violet,#a78bfa);--liquid-cyan-rgb:98,231,255;--liquid-purple-rgb:167,139,250}
@@ -93,12 +111,13 @@ canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
 <div class="field"><label>μ<sub>k</sub> <span class="hint" id="ukV">0.30</span></label><input type="range" id="uk" min="0.05" max="1" step="0.01" value="0.3"></div>
 <div class="field"><label>Applied F (N) <span class="hint" id="fV">5</span></label><input type="range" id="F" min="0" max="25" step="0.5" value="5"></div>
 <div class="field"><label>Mass (kg) <span class="hint" id="mV">2</span></label><input type="range" id="m" min="0.5" max="10" step="0.5" value="2"></div>
-      <div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div>
+      <div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div><label class="vector-toggle"><span class="vector-toggle-copy"><span>Show Vectors</span><small>Applied force and opposing friction</small></span><input id="showVectors" type="checkbox" checked aria-label="Show vectors"><span class="vector-switch" aria-hidden="true"></span></label>
     </div></aside>
     <div>
       <div class="panel" style="margin-bottom:14px"><div class="panel-body liquid-canvas-stage"><canvas id="canvas" width="800" height="360"></canvas>
 <div class="liquid-start-screen" id="liquidStartScreen" role="region" aria-labelledby="liquidStartTitle"><div class="liquid-start-card"><span class="liquid-start-kicker">VINIT SIMULATION LAB · FORCES & ENERGY</span><h2 id="liquidStartTitle">Friction Lab</h2><p>Explore the controls and observe how the physical system responds.</p><button class="liquid-btn" id="liquidStartButton" type="button">Start Simulation <span aria-hidden="true">→</span></button><small>Adjust the controls after entering the lab.</small></div></div></div></div>
-      <div class="panel" style="margin-bottom:14px"><div class="panel-head">Results</div><div class="panel-body"><div class="results" id="results"></div></div></div>
+      <div class="panel phase3-insight-panel"><div class="ph">Step-by-step physics insight</div><div class="pb"><div class="motion-insight" id="motionInsight" data-phase="static" role="status" aria-live="polite"><span class="insight-indicator" aria-hidden="true"></span><div><strong class="motion-insight-title" id="motionInsightTitle">Static friction</strong><p class="motion-insight-text" id="motionInsightText">Static friction balances the applied force while the block stays at rest.</p></div></div></div></div>
+<div class="panel" style="margin-bottom:14px"><div class="panel-head">Results</div><div class="panel-body"><div class="results" id="results"></div></div></div>
       <div class="panel"><div class="panel-head">Formulas</div><div class="panel-body formulas"><div><code>f<sub>s,max</sub> = μ<sub>s</sub> N</code></div><div><code>f<sub>k</sub> = μ<sub>k</sub> N</code></div><div>N = mg (horizontal surface)</div></div></div>
     </div>
   </div>
@@ -117,6 +136,10 @@ canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
   const startScreen = document.getElementById("liquidStartScreen");
   const startButton = document.getElementById("liquidStartButton");
   const resultsElement = document.getElementById("results");
+  const showVectorsInput=document.getElementById("showVectors");
+  const motionInsight=document.getElementById("motionInsight");
+  const motionInsightTitle=document.getElementById("motionInsightTitle");
+  const motionInsightText=document.getElementById("motionInsightText");
 
   let x = 100;
   let velocity = 0;
@@ -176,7 +199,25 @@ canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
     results();
   }
 
-  function draw() {
+  
+  function drawVectorArrow(context,x,y,dx,dy,color,label,requestedLength,width,height){
+    const magnitude=Math.hypot(dx,dy);if(!Number.isFinite(magnitude)||magnitude<0.000001)return;
+    if(x<8||x>width-8||y<8||y>height-8)return;
+    const ux=dx/magnitude,uy=dy/magnitude,margin=22;let length=Math.min(110,Math.max(0,requestedLength));
+    if(ux>0)length=Math.min(length,(width-margin-x)/ux);else if(ux<0)length=Math.min(length,(margin-x)/ux);
+    if(uy>0)length=Math.min(length,(height-margin-y)/uy);else if(uy<0)length=Math.min(length,(margin-y)/uy);
+    if(!Number.isFinite(length)||length<13)return;
+    const ex=x+ux*length,ey=y+uy*length,angle=Math.atan2(ey-y,ex-x),head=Math.min(10,Math.max(7,length*.22));
+    context.save();context.strokeStyle=color;context.fillStyle=color;context.lineWidth=3;context.lineCap="round";context.lineJoin="round";context.shadowColor=color;context.shadowBlur=9;
+    context.beginPath();context.moveTo(x,y);context.lineTo(ex,ey);context.stroke();context.beginPath();context.moveTo(ex,ey);
+    context.lineTo(ex-head*Math.cos(angle-Math.PI/6),ey-head*Math.sin(angle-Math.PI/6));context.lineTo(ex-head*Math.cos(angle+Math.PI/6),ey-head*Math.sin(angle+Math.PI/6));context.closePath();context.fill();
+    context.shadowBlur=0;context.font="700 10px system-ui";const lx=Math.min(width-60,Math.max(8,ex+(ux>=0?7:-52))),ly=Math.min(height-8,Math.max(14,ey-7));context.fillText(label,lx,ly);context.restore();
+  }
+  function updateMotionInsight(phase,title,message){
+    if(motionInsight.dataset.phase===phase&&motionInsightText.textContent===message)return;
+    motionInsight.dataset.phase=phase;motionInsightTitle.textContent=title;motionInsightText.textContent=message;
+  }
+function draw() {
     const width = canvasManager.width;
     const height = canvasManager.height;
     ctx.fillStyle = "#0a1220";
@@ -189,6 +230,11 @@ canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
 
     ctx.fillStyle = "#63e6ff";
     ctx.fillRect(x, y, 50, 40);
+    if(showVectorsInput.checked){const css=getComputedStyle(document.body),cyan=css.getPropertyValue("--cyan").trim()||"#62e7ff",purple=css.getPropertyValue("--purple").trim()||"#a78bfa",frictionDirection=velocity>0.02?-1:(velocity< -0.02?1:-1);
+      drawVectorArrow(ctx,x+50,y+12,Math.sign(state.applied),0,cyan,"Applied F",Math.min(82,state.applied*3),width,height);drawVectorArrow(ctx,x,y+30,frictionDirection,0,purple,"Friction",Math.min(72,state.fr*3),width,height);}
+    if(Math.abs(velocity)>0.05)updateMotionInsight("sliding","Object is sliding","Kinetic friction is active and acts opposite the direction of motion.");
+    else if(state.applied<=maximumStaticFriction())updateMotionInsight("static","Static friction holds the block","Static friction balances the applied force; the block remains at rest.");
+    else updateMotionInsight("threshold","Static friction limit exceeded","The applied force exceeds maximum static friction, so the block starts moving and kinetic friction takes over.");
 
     ctx.strokeStyle = "#a78bfa";
     ctx.lineWidth = 3;
@@ -278,6 +324,8 @@ canvas:not(#fluid-bg){height:clamp(360px,62vh,720px);min-height:320px}
       engine.renderNow();
     });
   });
+
+  showVectorsInput.addEventListener("change",function(){engine.renderNow();});
 
   window.addEventListener("pagehide", function (event) {
     if (event.persisted) return;
