@@ -31,6 +31,24 @@ canvas{display:block;width:100%;height:clamp(360px,62vh,720px);min-height:320px;
 .explain code{color:var(--cyan)}.tip{border-left:3px solid var(--cyan);padding:8px 12px;background:rgba(99,230,255,.06);border-radius:0 10px 10px 0;margin:10px 0}
 .explain ul{padding-left:18px}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* Phase 3 educational vector controls and live insight panel. */
+.vector-toggle{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 0 2px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(135deg,rgba(98,231,255,.075),rgba(167,139,250,.055));cursor:pointer;user-select:none}
+.vector-toggle-copy{display:flex;flex-direction:column;gap:2px;color:var(--text);font-size:12px;font-weight:800}
+.vector-toggle-copy small{color:var(--muted);font-size:10px;font-weight:500}
+.vector-toggle input{position:absolute;width:1px;height:1px;opacity:0}
+.vector-switch{position:relative;flex:0 0 42px;width:42px;height:24px;border:1px solid rgba(255,255,255,.18);border-radius:99px;background:#27334a;box-shadow:inset 0 2px 5px rgba(0,0,0,.28);transition:background .2s ease,border-color .2s ease}
+.vector-switch:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#c4cde0;box-shadow:0 1px 5px rgba(0,0,0,.35);transition:transform .22s cubic-bezier(.2,.8,.2,1),background .2s ease}
+.vector-toggle input:checked+.vector-switch{border-color:rgba(98,231,255,.62);background:rgba(98,231,255,.28);box-shadow:0 0 16px rgba(98,231,255,.12),inset 0 1px 4px rgba(0,0,0,.2)}
+.vector-toggle input:checked+.vector-switch:after{transform:translateX(18px);background:var(--cyan);box-shadow:0 0 12px rgba(98,231,255,.65)}
+.vector-toggle input:focus-visible+.vector-switch{outline:2px solid var(--cyan);outline-offset:4px}
+.motion-insight{display:flex;align-items:flex-start;gap:12px;padding:13px;border:1px solid rgba(98,231,255,.2);border-radius:14px;background:linear-gradient(135deg,rgba(98,231,255,.075),rgba(167,139,250,.055));min-height:76px}
+.motion-insight .insight-indicator{flex:0 0 9px;width:9px;height:9px;margin-top:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 13px currentColor}
+.motion-insight[data-phase="descending"],.motion-insight[data-phase="away"]{border-color:rgba(167,139,250,.28)}
+.motion-insight[data-phase="descending"] .insight-indicator,.motion-insight[data-phase="away"] .insight-indicator{background:var(--purple)}
+.motion-insight-title{display:block;margin:0 0 3px;color:var(--text);font-size:13px;font-weight:850}
+.motion-insight-text{margin:0;color:var(--muted);font-size:12px;line-height:1.6}
+
 </style>
 <style id="liquid-flow-design-system">:root{--purple:var(--violet,#a78bfa);--liquid-cyan-rgb:98,231,255;--liquid-purple-rgb:167,139,250}
 body{isolation:isolate;background:radial-gradient(ellipse at 50% 0%,rgba(var(--liquid-cyan-rgb),.07),transparent 44%),var(--bg);color:var(--text)}
@@ -78,7 +96,11 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
 <aside>
 <div class="panel control-panel"><div class="ph">Controls</div><div class="pb"><div class="control-group-title">CONTROL PARAMETERS</div><label class="row">Length L <b id="LV">1.0 m</b></label><input type="range" id="L" min="0.3" max="2.5" step="0.05" value="1">
 <label class="row">Amplitude θ₀ <b id="th0V">15°</b></label><input type="range" id="th0" min="5" max="35" step="1" value="15">
-<label class="row">g <b id="gV">9.8 m/s²</b></label><input type="range" id="g" min="1.6" max="20" step="0.1" value="9.8"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div></div></div>
+<label class="row">g <b id="gV">9.8 m/s²</b></label><input type="range" id="g" min="1.6" max="20" step="0.1" value="9.8"><div class="actions"><button class="btn primary" id="playBtn">Play</button><button class="btn" id="resetBtn">Reset</button></div><label class="vector-toggle">
+  <span class="vector-toggle-copy"><span>Show Vectors</span><small>Tension and gravity force arrows on the canvas</small></span>
+  <input id="showVectors" type="checkbox" checked aria-label="Show vectors">
+  <span class="vector-switch" aria-hidden="true"></span>
+</label></div></div>
 <div class="panel"><div class="ph">What to notice</div><div class="pb explain"><div class="tip">For small angles (θ₀ ≲ 15°), motion is approximately SHM with <b style="color:#fff">T = 2π √(L/g)</b>.</div>
 <ul><li>Doubling L multiplies T by √2.</li>
 <li>Mass does not appear in T.</li>
@@ -86,6 +108,13 @@ body[data-theme="control-room"] .panel,body[data-theme="control-room"] .liquid-c
 </aside>
 <div>
 <div class="panel"><div class="pb liquid-canvas-stage"><canvas id="c" width="900" height="400"></canvas><div class="liquid-start-screen" id="liquidStartScreen" role="region" aria-labelledby="liquidStartTitle"><div class="liquid-start-card"><span class="liquid-start-kicker">VINIT SIMULATION HUB · OPTICS &amp; WAVES</span><h2 id="liquidStartTitle">Simple Pendulum Laboratory</h2><p>A mass on a light string swings with small amplitude. Period depends on length and g — not on mass. Match the SHM approximation used in class.</p><button class="liquid-btn" id="liquidStartButton" type="button">Start Simulation <span aria-hidden="true">→</span></button><small>Adjust the controls after entering the lab.</small></div></div></div></div>
+<div class="panel"><div class="ph">Step-by-step physics insight</div><div class="pb">
+  <div class="motion-insight" id="motionInsight" data-phase="extreme" role="status" aria-live="polite">
+    <span class="insight-indicator" aria-hidden="true"></span>
+    <div><strong class="motion-insight-title" id="motionInsightTitle">At an extreme</strong>
+    <p class="motion-insight-text" id="motionInsightText">Velocity is zero. All energy is potential.</p></div>
+  </div>
+</div></div>
 <div class="panel"><div class="ph">Live results</div><div class="pb"><div class="results" id="res"></div></div></div>
 <div class="panel"><div class="ph">Theory & formulas</div><div class="pb explain"><h3>Small-angle model</h3>
 <code>θ = θ₀ cos(ωt)</code> with <code>ω = √(g/L)</code><br>
@@ -116,6 +145,10 @@ If a question gives L and asks T, use the formula above. This lab shows the swin
   const results = document.getElementById("res");
   const startScreen = document.getElementById("liquidStartScreen");
   const startButton = document.getElementById("liquidStartButton");
+  const showVectorsInput = document.getElementById("showVectors");
+  const motionInsight = document.getElementById("motionInsight");
+  const motionInsightTitle = document.getElementById("motionInsightTitle");
+  const motionInsightText = document.getElementById("motionInsightText");
 
   if (!window.CanvasManager ||
       !window.SimulationEngine ||
@@ -126,6 +159,7 @@ If a question gives L and asks T, use the formula above. This lab shows the swin
   let simulationTime = 0;
   let hasStarted = false;
   let engine = null;
+  let lastMotionPhase = "";
 
   function readParameters() {
     return {
@@ -139,6 +173,57 @@ If a question gives L and asks T, use the formula above. This lab shows the swin
     lengthValue.textContent = lengthInput.value + " m";
     amplitudeValue.textContent = amplitudeInput.value + "°";
     gravityValue.textContent = gravityInput.value + " m/s²";
+  }
+
+  function updateMotionInsight(phase, title, message) {
+    if (phase === lastMotionPhase) return;
+    lastMotionPhase = phase;
+    motionInsight.dataset.phase = phase;
+    motionInsightTitle.textContent = title;
+    motionInsightText.textContent = message;
+  }
+
+  function drawVectorArrow(context, originX, originY, dx, dy, color, label, requestedLength, width, height) {
+    const magnitude = Math.hypot(dx, dy);
+    if (magnitude < 0.0001) return;
+    const unitX = dx / magnitude;
+    const unitY = dy / magnitude;
+    const margin = 18;
+    let length = requestedLength;
+    if (unitX > 0) length = Math.min(length, (width - margin - originX) / unitX);
+    else if (unitX < 0) length = Math.min(length, (margin - originX) / unitX);
+    if (unitY > 0) length = Math.min(length, (height - margin - originY) / unitY);
+    else if (unitY < 0) length = Math.min(length, (margin - originY) / unitY);
+    if (!Number.isFinite(length) || length < 12) return;
+
+    const endX = originX + unitX * length;
+    const endY = originY + unitY * length;
+    const angle = Math.atan2(endY - originY, endX - originX);
+    const head = Math.min(10, Math.max(7, length * 0.22));
+    context.save();
+    context.strokeStyle = color;
+    context.fillStyle = color;
+    context.lineWidth = 3;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.shadowColor = color;
+    context.shadowBlur = 10;
+    context.beginPath();
+    context.moveTo(originX, originY);
+    context.lineTo(endX, endY);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(endX, endY);
+    context.lineTo(endX - head * Math.cos(angle - Math.PI / 6), endY - head * Math.sin(angle - Math.PI / 6));
+    context.lineTo(endX - head * Math.cos(angle + Math.PI / 6), endY - head * Math.sin(angle + Math.PI / 6));
+    context.closePath();
+    context.fill();
+    context.shadowBlur = 0;
+    context.font = "700 11px system-ui";
+    const labelX = Math.min(width - 64, Math.max(8, endX + (unitX >= 0 ? 8 : -54)));
+    const labelY = Math.min(height - 8, Math.max(14, endY - 7));
+    context.fillText(label, labelX, labelY);
+    context.restore();
   }
 
   function draw() {
@@ -163,6 +248,18 @@ If a question gives L and asks T, use the formula above. This lab shows the swin
     const angle = PendulumPhysics.angleAt(parameters, simulationTime);
     const bobX = pivotX + Math.sin(angle) * parameters.L * scale;
     const bobY = pivotY + Math.cos(angle) * parameters.L * scale;
+    // Derivative of the existing small-angle model θ(t) = θ₀ cos(ωt).
+    const angularVelocity = -parameters.theta0 * parameters.w * Math.sin(parameters.w * simulationTime);
+    const extremeVelocityTolerance = Math.max(0.02, parameters.theta0 * parameters.w * 0.04);
+    if (Math.abs(angularVelocity) <= extremeVelocityTolerance && Math.abs(angle) >= parameters.theta0 * 0.88) {
+      updateMotionInsight("extreme", "At an extreme", "Velocity is zero. All energy is potential.");
+    } else if (angle * angularVelocity < -0.00001) {
+      updateMotionInsight("toward", "Moving towards equilibrium", "Gravity is accelerating the bob towards equilibrium.");
+    } else if (Math.abs(angle) <= parameters.theta0 * 0.035) {
+      updateMotionInsight("equilibrium", "Passing through equilibrium", "The bob is moving fastest here; kinetic energy is at its maximum.");
+    } else {
+      updateMotionInsight("away", "Moving away from equilibrium", "The bob slows as gravitational potential energy increases.");
+    }
 
     // Amplitude arc.
     context.strokeStyle = "rgba(255,255,255,0.08)";
@@ -199,6 +296,30 @@ If a question gives L and asks T, use the formula above. This lab shows the swin
     context.arc(bobX, bobY, 14, 0, Math.PI * 2);
     context.fill();
     context.shadowBlur = 0;
+
+    if (showVectorsInput.checked) {
+      const styles = getComputedStyle(document.body);
+      const tensionColor = styles.getPropertyValue("--cyan").trim() || "#62e7ff";
+      const gravityColor = styles.getPropertyValue("--purple").trim() || "#a78bfa";
+      const towardX = pivotX - bobX;
+      const towardY = pivotY - bobY;
+      const stringLength = Math.hypot(towardX, towardY);
+      if (stringLength > 24) {
+        drawVectorArrow(
+          context,
+          bobX + towardX / stringLength * 15,
+          bobY + towardY / stringLength * 15,
+          towardX,
+          towardY,
+          tensionColor,
+          "Tension",
+          Math.min(72, stringLength * 0.55),
+          width,
+          height
+        );
+      }
+      drawVectorArrow(context, bobX, bobY + 15, 0, 1, gravityColor, "Gravity", 66, width, height);
+    }
 
     // Current angular displacement.
     context.fillStyle = "#94a3b8";
@@ -290,6 +411,9 @@ If a question gives L and asks T, use the formula above. This lab shows the swin
   lengthInput.addEventListener("input", handleParameterChange);
   amplitudeInput.addEventListener("input", handleParameterChange);
   gravityInput.addEventListener("input", handleParameterChange);
+  showVectorsInput.addEventListener("change", function () {
+    engine.renderNow();
+  });
 
   window.addEventListener("pagehide", function () {
     engine.destroy();
