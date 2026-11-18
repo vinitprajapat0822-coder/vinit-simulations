@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020408">
+<title>Physics Sandbox | Vinit Simulation Hub</title>
+<meta name="description" content="Experiment with gravity, collisions, balls and boxes in the interactive Vinit Physics Sandbox.">
+<link rel="stylesheet" href="../lab-polish.css?v=2">
+<style>
+:root{color-scheme:dark;--bg:#020408;--panel:rgba(12,19,37,.72);--text:#f2f7ff;--muted:#97a9c5;--cyan:#00f0ff;--blue:#258bff;--violet:#8970ff;--line:rgba(255,255,255,.12);--green:#83f2cb}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{min-height:100vh;margin:0;isolation:isolate;overflow-x:hidden;background:radial-gradient(ellipse at 12% 0%,rgba(0,240,255,.08),transparent 42%),radial-gradient(ellipse at 88% 100%,rgba(115,93,255,.09),transparent 46%),#020408;color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{width:100%;max-width:1600px;margin-inline:auto;padding-inline:clamp(12px,2.4vw,28px)}
+#fluid-bg{position:fixed;inset:0;z-index:-1;display:block;width:100vw;height:100vh;pointer-events:none;touch-action:none;opacity:.85}
+.site-header{position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(255,255,255,.09);background:rgba(2,5,12,.72);-webkit-backdrop-filter:blur(22px) saturate(155%);backdrop-filter:blur(22px) saturate(155%)}
+.nav{display:flex;align-items:center;justify-content:space-between;min-height:62px;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:-.02em}
+.brand-mark{display:grid;width:36px;height:36px;place-items:center;border:1px solid rgba(0,240,255,.42);border-radius:12px;background:linear-gradient(145deg,rgba(0,240,255,.2),rgba(80,95,255,.18));box-shadow:0 0 24px rgba(0,220,255,.12),inset 0 1px rgba(255,255,255,.24);color:#bffaff;font-size:16px}
+.nav-link{color:var(--muted);font-size:13px;font-weight:700;transition:color .2s ease}
+.nav-link:hover{color:var(--cyan)}
+.hero{padding:clamp(24px,4vw,48px) 0 22px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 11px;border:1px solid rgba(0,240,255,.28);border-radius:99px;background:rgba(0,240,255,.06);color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.14em;text-transform:uppercase}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+h1{margin:12px 0 8px;font-size:clamp(29px,5vw,48px);line-height:1.06;letter-spacing:-.055em}
+.gradient-text{background:linear-gradient(100deg,#f4fbff 5%,#9cefff 46%,#9b8bff 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{max-width:72ch;margin:0;color:var(--muted);font-size:clamp(13px,1.5vw,15px)}
+.layout{display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);gap:16px;padding-bottom:42px;align-items:start}
+.control-stack{min-width:0}
+.glass-panel{position:relative;overflow:hidden;margin-bottom:13px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:linear-gradient(145deg,rgba(17,27,51,.76),rgba(6,12,25,.7));-webkit-backdrop-filter:blur(26px) saturate(160%);backdrop-filter:blur(26px) saturate(160%);box-shadow:0 18px 46px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(0,240,255,.06)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.09);font-size:12px;font-weight:850;letter-spacing:.04em}
+.panel-body{padding:15px 16px}
+.panel-note{margin:0 0 12px;color:var(--muted);font-size:12px}
+.button-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.action-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 12px;border:1px solid rgba(0,240,255,.22);border-radius:13px;background:linear-gradient(145deg,rgba(19,34,57,.85),rgba(9,17,32,.9));color:#eafaff;font:inherit;font-size:12px;font-weight:850;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 7px 20px rgba(0,0,0,.18);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.action-btn:hover:not(:disabled){transform:translateY(-2px);border-color:rgba(0,240,255,.65);box-shadow:0 0 22px rgba(0,240,255,.12),inset 0 1px 0 rgba(255,255,255,.15)}
+.action-btn:active:not(:disabled){transform:scale(.97)}
+.action-btn.primary{grid-column:1/-1;background:linear-gradient(105deg,#00dff4,#4c9dff 58%,#8c78ff);border-color:transparent;color:#03101a;box-shadow:0 9px 26px rgba(0,203,255,.18),inset 0 1px 0 rgba(255,255,255,.48)}
+.action-btn.danger{border-color:rgba(255,128,153,.22);color:#ffc0cd}
+.action-btn:disabled{opacity:.38;cursor:not-allowed;filter:saturate(.45)}
+.btn-icon{font-size:16px;line-height:1}
+.control-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;color:var(--muted);font-size:12px;font-weight:700}
+.control-row output{color:#dffaff;font-size:13px;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;margin:7px 0 2px;accent-color:var(--cyan);filter:drop-shadow(0 0 5px rgba(0,240,255,.38));touch-action:pan-y}
+input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 18px rgba(0,240,255,.75),inset 0 1px 2px rgba(255,255,255,.9)}
+input[type=range]::-moz-range-thumb{box-shadow:0 0 0 4px rgba(0,240,255,.13),0 0 18px rgba(0,240,255,.75),inset 0 1px 2px rgba(255,255,255,.9)}
+.range-ends{display:flex;justify-content:space-between;color:#70819e;font-size:10px}
+.hint{display:flex;gap:9px;align-items:flex-start;padding:11px 12px;border:1px solid rgba(0,240,255,.13);border-radius:13px;background:rgba(0,240,255,.045);color:var(--muted);font-size:11px;line-height:1.55}
+.hint strong{color:#c9faff}
+.stage-panel{min-width:0}
+.stage-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.live-state{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.live-state .state-dot{width:7px;height:7px;border-radius:50%;background:#66758e}
+.live-state[data-running="true"] .state-dot{background:var(--green);box-shadow:0 0 12px rgba(131,242,203,.9)}
+.stage-shell{position:relative;isolation:isolate;width:100%;height:clamp(380px,64vh,720px);min-height:360px;overflow:hidden;border-radius:0 0 20px 20px;background:radial-gradient(ellipse at 50% 0%,rgba(17,43,72,.4),transparent 65%),#050b16}
+#matter-canvas{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#matter-canvas:active{cursor:grabbing}
+.start-overlay{position:absolute;z-index:4;inset:0;display:grid;place-items:center;padding:clamp(14px,3vw,28px);background:linear-gradient(145deg,rgba(2,6,15,.66),rgba(2,6,15,.48));-webkit-backdrop-filter:blur(13px) saturate(145%);backdrop-filter:blur(13px) saturate(145%);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1)}
+.start-overlay[hidden]{display:none!important}
+.start-card{width:min(460px,100%);padding:clamp(22px,4vw,38px);border:1px solid transparent;border-radius:24px;background:linear-gradient(145deg,rgba(16,27,49,.96),rgba(5,12,25,.96)) padding-box,linear-gradient(135deg,rgba(0,240,255,.68),rgba(105,116,255,.48),rgba(255,255,255,.12)) border-box;box-shadow:0 25px 70px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.14);text-align:center}
+.start-icon{display:grid;width:54px;height:54px;margin:0 auto 14px;place-items:center;border:1px solid rgba(0,240,255,.35);border-radius:18px;background:linear-gradient(145deg,rgba(0,240,255,.18),rgba(94,110,255,.16));color:#b9faff;font-size:25px;box-shadow:0 0 28px rgba(0,240,255,.12)}
+.start-kicker{color:var(--cyan);font-size:9px;font-weight:900;letter-spacing:.18em}
+.start-card h2{margin:10px 0 8px;font-size:clamp(23px,4vw,32px);letter-spacing:-.04em}
+.start-card p{max-width:38ch;margin:0 auto 20px;color:var(--muted);font-size:13px;line-height:1.7}
+.start-card .action-btn{width:100%;min-height:54px;font-size:13px}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat-chip{padding:5px 9px;border:1px solid rgba(255,255,255,.1);border-radius:99px;background:rgba(255,255,255,.035);color:#a9bad4;font-size:10px;font-weight:750}
+.status-line{margin-top:12px;color:#7f90ab;font-size:11px}
+.footer-note{padding:0 0 34px;color:#71829d;font-size:11px;text-align:center}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.control-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control-stack .glass-panel{margin-bottom:0}.control-stack .hint{grid-column:1/-1}.stage-shell{height:min(62vh,620px)}}
+@media(max-width:580px){.control-stack{grid-template-columns:1fr}.nav{min-height:56px}.stage-shell{height:58vh;min-height:340px}.panel-body{padding:13px}.hero{padding-top:23px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="fluid-bg" aria-hidden="true"></canvas>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../index.html"><span class="brand-mark">V</span><span>Vinit Simulation Hub</span></a>
+    <a class="nav-link" href="../index.html">← Back to Hub</a>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <span class="eyebrow"><span class="pulse-dot"></span> Matter.js · Rigid Body Lab</span>
+    <h1><span class="gradient-text">Physics Sandbox</span></h1>
+    <p class="lead">Drop objects, explore gravity and collisions, and interact with a live 2D physics world. Drag any body with your mouse or finger.</p>
+  </section>
+
+  <section class="layout" aria-label="Physics sandbox controls and simulation">
+    <aside class="control-stack" aria-label="Sandbox controls">
+      <section class="glass-panel">
+        <div class="panel-head"><span>OBJECT BUILDER</span><span class="stat-chip" id="object-count">0 bodies</span></div>
+        <div class="panel-body">
+          <p class="panel-note">Add shapes to the simulation world.</p>
+          <div class="button-grid">
+            <button class="action-btn" id="add-ball" type="button" disabled><span class="btn-icon">●</span> Add Ball</button>
+            <button class="action-btn" id="add-box" type="button" disabled><span class="btn-icon">▧</span> Add Box</button>
+            <button class="action-btn danger" id="clear-screen" type="button" disabled><span class="btn-icon">⌫</span> Clear Screen</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass-panel">
+        <div class="panel-head"><span>WORLD PHYSICS</span><span class="stat-chip">LIVE CONTROL</span></div>
+        <div class="panel-body">
+          <label class="control-row" for="gravity"><span>Gravity strength</span><output id="gravity-value" for="gravity">1.0×</output></label>
+          <input id="gravity" type="range" min="0" max="2.5" step="0.1" value="1" disabled>
+          <div class="range-ends"><span>Zero gravity</span><span>Strong gravity</span></div>
+          <div class="status-line" id="gravity-description">Default Earth-like downward pull.</div>
+        </div>
+      </section>
+
+      <div class="hint"><span aria-hidden="true">✦</span><span><strong>Interaction tip:</strong> Once started, press and drag objects with a mouse or touch. Try dropping a ball onto a box and changing gravity while they collide.</span></div>
+    </aside>
+
+    <section class="glass-panel stage-panel" aria-label="Matter.js simulation canvas">
+      <div class="panel-head stage-head">
+        <span>SIMULATION WORLD</span>
+        <span class="live-state" id="live-state" data-running="false"><span class="state-dot"></span><span id="state-label">AWAITING START</span></span>
+      </div>
+      <div class="stage-shell" id="simulation-stage">
+        <canvas id="matter-canvas" aria-label="Interactive two-dimensional physics sandbox. Drag objects to move them." role="img"></canvas>
+        <div class="start-overlay" id="start-overlay">
+          <div class="start-card">
+            <div class="start-icon" aria-hidden="true">⚛</div>
+            <span class="start-kicker">VSH INTERACTIVE LAB</span>
+            <h2>Build your physics world</h2>
+            <p>Start the simulation to release the objects, activate gravity and begin experimenting with collisions.</p>
+            <button class="action-btn primary" id="start-simulation" type="button">▶ &nbsp; Start Simulation</button>
+            <div class="status-line">Matter.js rigid-body engine · Mouse & touch interaction</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+  <div class="footer-note">Physics Sandbox · Powered by Matter.js 0.19.0 and Vinit Simulation Hub Core Engine</div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script src="../core/CanvasManager.js"></script>
+<script src="../core/SimulationEngine.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  if (!window.Matter || !window.CanvasManager || !window.SimulationEngine) {
+    const label = document.getElementById("state-label");
+    if (label) label.textContent = "LIBRARY LOAD ERROR";
+    const startButton = document.getElementById("start-simulation");
+    if (startButton) {
+      startButton.disabled = true;
+      startButton.textContent = "Physics engine unavailable";
+    }
+    return;
+  }
+
+  const Matter = window.Matter;
+  const Engine = Matter.Engine;
+  const Render = Matter.Render;
+  const Bodies = Matter.Bodies;
+  const Composite = Matter.Composite;
+  const Mouse = Matter.Mouse;
+  const MouseConstraint = Matter.MouseConstraint;
+
+  const canvas = document.getElementById("matter-canvas");
+  const stage = document.getElementById("simulation-stage");
+  const startOverlay = document.getElementById("start-overlay");
+  const startButton = document.getElementById("start-simulation");
+  const addBallButton = document.getElementById("add-ball");
+  const addBoxButton = document.getElementById("add-box");
+  const clearButton = document.getElementById("clear-screen");
+  const gravitySlider = document.getElementById("gravity");
+  const gravityValue = document.getElementById("gravity-value");
+  const gravityDescription = document.getElementById("gravity-description");
+  const objectCount = document.getElementById("object-count");
+  const liveState = document.getElementById("live-state");
+  const stateLabel = document.getElementById("state-label");
+
+  const matterEngine = Engine.create({ enableSleeping: true });
+  matterEngine.gravity.x = 0;
+  matterEngine.gravity.y = 1;
+  matterEngine.gravity.scale = 0.001;
+
+  let render = null;
+  let simulation = null;
+  let walls = [];
+  let started = false;
+  let nextSpawnOffset = 0;
+
+  function rebuildWalls(width, height) {
+    if (!width || !height) return;
+
+    walls.forEach(function (wall) {
+      Composite.remove(matterEngine.world, wall);
+    });
+
+    const thickness = 90;
+    walls = [
+      Bodies.rectangle(width / 2, height + thickness / 2 - 2, width + thickness * 2, thickness, {
+        isStatic: true,
+        render: { fillStyle: "#14253b", strokeStyle: "#31516c", lineWidth: 1 }
+      }),
+      Bodies.rectangle(-thickness / 2 + 2, height / 2, thickness, height + thickness * 2, {
+        isStatic: true,
+        render: { fillStyle: "#14253b", strokeStyle: "#31516c", lineWidth: 1 }
+      }),
+      Bodies.rectangle(width + thickness / 2 - 2, height / 2, thickness, height + thickness * 2, {
+        isStatic: true,
+        render: { fillStyle: "#14253b", strokeStyle: "#31516c", lineWidth: 1 }
+      }),
+      Bodies.rectangle(width / 2, -thickness / 2 + 2, width + thickness * 2, thickness, {
+        isStatic: true,
+        render: { fillStyle: "#14253b", strokeStyle: "#31516c", lineWidth: 1 }
+      })
+    ];
+
+    Composite.add(matterEngine.world, walls);
+  }
+
+  const canvasManager = new CanvasManager(canvas, {
+    container: stage,
+    maxDpr: 1,
+    onResize: function (size) {
+      if (render) {
+        Render.setSize(render, size.width, size.height);
+      }
+      rebuildWalls(size.width, size.height);
+      if (simulation) simulation.renderNow();
+    }
+  });
+
+  render = Render.create({
+    canvas: canvas,
+    engine: matterEngine,
+    options: {
+      width: canvasManager.width,
+      height: canvasManager.height,
+      pixelRatio: 1,
+      wireframes: false,
+      background: "transparent",
+      hasBounds: false,
+      showAngleIndicator: false,
+      showVelocity: false,
+      showCollisions: false
+    }
+  });
+
+  const mouse = Mouse.create(render.canvas);
+  mouse.pixelRatio = 1;
+  const mouseConstraint = MouseConstraint.create(matterEngine, {
+    mouse: mouse,
+    constraint: {
+      stiffness: 0.18,
+      damping: 0.12,
+      render: { visible: false }
+    }
+  });
+  Composite.add(matterEngine.world, mouseConstraint);
+  render.mouse = mouse;
+
+  simulation = new SimulationEngine({
+    maxDelta: 0.05,
+    update: function (deltaTime) {
+      Engine.update(matterEngine, deltaTime * 1000);
+      return true;
+    },
+    render: function () {
+      Render.world(render);
+    },
+    onStateChange: function (state) {
+      liveState.dataset.running = state.running ? "true" : "false";
+      stateLabel.textContent = state.running ? "SIMULATION RUNNING" : (started ? "SIMULATION PAUSED" : "AWAITING START");
+      startButton.textContent = state.running ? "✓ Simulation Started" : "▶  Start Simulation";
+    }
+  });
+
+  function updateObjectCount() {
+    const count = Composite.allBodies(matterEngine.world).filter(function (body) {
+      return !body.isStatic;
+    }).length;
+    objectCount.textContent = count + (count === 1 ? " body" : " bodies");
+  }
+
+  function addBall() {
+    const width = canvasManager.width;
+    const x = width / 2 + nextSpawnOffset;
+    nextSpawnOffset = nextSpawnOffset >= 52 ? -52 : nextSpawnOffset + 26;
+
+    const ball = Bodies.circle(x, 52, 20, {
+      restitution: 0.72,
+      friction: 0.035,
+      frictionAir: 0.001,
+      density: 0.0018,
+      render: {
+        fillStyle: "#19bfe9",
+        strokeStyle: "#b6f8ff",
+        lineWidth: 1.5
+      }
+    });
+
+    Composite.add(matterEngine.world, ball);
+    updateObjectCount();
+    simulation.renderNow();
+  }
+
+  function addBox() {
+    const width = canvasManager.width;
+    const x = width / 2 - nextSpawnOffset;
+    nextSpawnOffset = nextSpawnOffset >= 52 ? -52 : nextSpawnOffset + 26;
+
+    const box = Bodies.rectangle(x, 48, 54, 54, {
+      restitution: 0.28,
+      friction: 0.48,
+      density: 0.0016,
+      chamfer: { radius: 7 },
+      render: {
+        fillStyle: "#806cff",
+        strokeStyle: "#d5ceff",
+        lineWidth: 1.5
+      }
+    });
+
+    Composite.add(matterEngine.world, box);
+    updateObjectCount();
+    simulation.renderNow();
+  }
+
+  function clearScreen() {
+    Composite.allBodies(matterEngine.world).forEach(function (body) {
+      if (!body.isStatic) {
+        Composite.remove(matterEngine.world, body);
+      }
+    });
+    nextSpawnOffset = 0;
+    updateObjectCount();
+    simulation.renderNow();
+  }
+
+  function setControlsEnabled(enabled) {
+    addBallButton.disabled = !enabled;
+    addBoxButton.disabled = !enabled;
+    clearButton.disabled = !enabled;
+    gravitySlider.disabled = !enabled;
+  }
+
+  function updateGravity() {
+    const value = Number(gravitySlider.value);
+    matterEngine.gravity.y = value;
+    gravityValue.textContent = value.toFixed(1) + "×";
+    gravityDescription.textContent = value === 0
+      ? "Zero gravity: objects float freely."
+      : value <= 1
+        ? "Gentle downward acceleration."
+        : "Strong downward acceleration.";
+  }
+
+  addBallButton.addEventListener("click", addBall);
+  addBoxButton.addEventListener("click", addBox);
+  clearButton.addEventListener("click", clearScreen);
+  gravitySlider.addEventListener("input", updateGravity);
+
+  startButton.addEventListener("click", function () {
+    if (started) return;
+
+    started = true;
+    startOverlay.hidden = true;
+    setControlsEnabled(true);
+
+    // Seed the world with two example bodies only after explicit user start.
+    addBall();
+    addBox();
+
+    simulation.start();
+    stateLabel.textContent = "SIMULATION RUNNING";
+    liveState.dataset.running = "true";
+  });
+
+  updateGravity();
+  setControlsEnabled(false);
+  updateObjectCount();
+  Render.world(render);
+
+  window.addEventListener("pagehide", function () {
+    simulation.destroy();
+    canvasManager.destroy();
+    Mouse.clearSourceEvents(mouse);
+  }, { once: true });
+})();
+</script>
+
+<script id="liquid-flow-background">(function () {
+  "use strict";
+  const canvas = document.getElementById("fluid-bg");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  let width = 0, height = 0, dpr = 1, phase = 0, lastFrame = 0, rafId = 0, active = true;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = Math.max(1, Math.round(width * dpr));
+    canvas.height = Math.max(1, Math.round(height * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    paint();
+  }
+
+  function paint() {
+    ctx.clearRect(0, 0, width, height);
+    let glow = ctx.createRadialGradient(width * (0.15 + 0.025 * Math.sin(phase)), height * 0.2, 0, width * 0.15, height * 0.2, Math.max(width, height) * 0.72);
+    glow.addColorStop(0, "rgba(0,240,255,.13)");
+    glow.addColorStop(1, "rgba(0,240,255,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, width, height);
+
+    glow = ctx.createRadialGradient(width * (0.87 + 0.02 * Math.cos(phase * 0.8)), height * 0.78, 0, width * 0.87, height * 0.78, Math.max(width, height) * 0.66);
+    glow.addColorStop(0, "rgba(121,101,255,.12)");
+    glow.addColorStop(1, "rgba(121,101,255,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  function frame(timestamp) {
+    if (!active || document.hidden) return;
+    rafId = requestAnimationFrame(frame);
+    if (timestamp - lastFrame < 1000 / 30) return;
+    const delta = lastFrame ? Math.min(0.05, (timestamp - lastFrame) / 1000) : 0;
+    lastFrame = timestamp;
+    phase += delta * 0.22;
+    paint();
+  }
+
+  function stop() {
+    active = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+
+  function resume() {
+    if (active || document.hidden) return;
+    active = true;
+    lastFrame = 0;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  resize();
+  window.addEventListener("resize", resize, { passive: true });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) stop();
+    else resume();
+  });
+  rafId = requestAnimationFrame(frame);
+  window.addEventListener("pagehide", function () {
+    stop();
+    window.removeEventListener("resize", resize);
+  }, { once: true });
+})();</script>
+</body>
+</html>
