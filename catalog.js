@@ -128,6 +128,9 @@ const CATALOG = [
   { id: "ray-draw", title: "Optical Ray Drawer", desc: "Sketch ray diagrams for mirrors and lenses.", category: "tools", tags: "ray diagram drawer optics", status: "live", url: "projects/ray-draw.html", icon: "🖊️" },
   { id: "unit-converter", title: "Physics Unit Converter", desc: "Common physics units conversion helper.", category: "tools", tags: "unit converter physics", status: "live", url: "projects/unit-converter.html", icon: "🔄" },
 
+  // MECHANICS SANDBOX
+  { id: "interactive-physics-sandbox", title: "Interactive Physics Sandbox", desc: "Drag, drop, and experiment with real-time Matter.js physics. Change gravity and play with balls and boxes!", category: "mechanics", tags: "sandbox, matter.js, gravity, drag, interactive", status: "live", url: "projects/sandbox-matter.html", icon: "🧪" },
+
   // FUN (8)
   { id: "solar-system", title: "Simple Solar System", desc: "Orbital motion visualization (lightweight).", category: "fun", tags: "solar system orbit planets", status: "live", url: "projects/solar-system.html", icon: "🪐" },
   { id: "pendulum-wave", title: "Pendulum Wave", desc: "Multiple pendulums creating wave pattern.", category: "fun", tags: "pendulum wave pattern", status: "live", icon: "🌊" , url: "projects/pendulum.html" },
@@ -161,6 +164,7 @@ const CATALOG = [
 const CATEGORIES = [
   { id: "all", label: "All" },
   { id: "kinematics", label: "Kinematics" },
+  { id: "mechanics", label: "Mechanics" },
   { id: "forces", label: "Forces" },
   { id: "conservation", label: "Energy & Momentum" },
   { id: "waves", label: "Waves" },
