@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0514">
+  <meta name="description" content="Compare the classical Bohr orbit with the quantum-mechanical probability cloud for hydrogen n = 1, 2 and 3.">
+  <title>Bohr vs Quantum | Atomic Structure — Vinit Simulation Hub</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    .compare-hero { padding: 28px 0 18px; }
+    .compare-hero h1 { margin: 12px 0 8px; font-size: clamp(28px, 4.5vw, 43px); letter-spacing: -.055em; }
+    .compare-hero h1 span { color: var(--accent-chem); }
+    .compare-hero p { max-width: 800px; margin: 0; color: var(--muted-chem); }
+    .compare-layout { display: grid; gap: 16px; padding-bottom: 42px; }
+    .glass-panel {
+      min-width: 0; overflow: hidden; border: 1px solid var(--line-chem);
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(42,26,67,.79), rgba(19,12,34,.84));
+      box-shadow: var(--shadow-chem), inset 0 1px 0 rgba(255,255,255,.075);
+      backdrop-filter: blur(20px) saturate(145%);
+      -webkit-backdrop-filter: blur(20px) saturate(145%);
+    }
+    .panel-heading {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 14px 16px; border-bottom: 1px solid var(--line-chem);
+      font-size: 12px; font-weight: 850; letter-spacing: .015em;
+    }
+    .panel-heading small { color: var(--muted-chem); font-size: 9px; font-weight: 750; letter-spacing: .08em; }
+    .control-body { display: grid; grid-template-columns: minmax(0,1fr) minmax(190px,.55fr); gap: 20px; padding: 17px; }
+    .control-label {
+      display: flex; justify-content: space-between; gap: 12px; margin: 0 0 9px;
+      color: var(--muted-chem); font-size: 10px; font-weight: 850;
+      letter-spacing: .10em; text-transform: uppercase;
+    }
+    .range-wrap { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
+    input[type="range"] {
+      width: 100%; min-height: 34px; margin: 0; accent-color: var(--accent-chem);
+      cursor: ew-resize; touch-action: pan-y;
+    }
+    .range-value {
+      min-width: 58px; padding: 6px 9px; border: 1px solid rgba(98,231,255,.28);
+      border-radius: 10px; background: rgba(98,231,255,.08); color: var(--accent-chem);
+      font-size: 12px; font-weight: 850; text-align: center;
+    }
+    .range-ends { display: flex; justify-content: space-between; color: rgba(170,160,197,.75); font-size: 9px; }
+    .control-hint { margin: 8px 0 0; color: var(--muted-chem); font-size: 10px; line-height: 1.55; }
+    .quantum-select {
+      width: 100%; min-height: 48px; padding: 0 12px;
+      border: 1px solid rgba(167,139,250,.35); border-radius: 13px;
+      background: rgba(10,5,20,.78); color: var(--text-chem);
+      font-size: 13px; font-weight: 750;
+    }
+    .stage-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+    .stage-card { min-width: 0; }
+    .stage-name { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .stage-mark { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--accent-chem); box-shadow: 0 0 12px rgba(98,231,255,.8); }
+    .stage-mark.quantum { background: var(--green-chem); box-shadow: 0 0 12px rgba(125,240,189,.8); }
+    .stage-canvas-wrap {
+      position: relative; min-width: 0; padding: 0;
+      background:
+        radial-gradient(ellipse at 50% 48%, rgba(98,231,255,.07), transparent 56%),
+        linear-gradient(145deg, rgba(12,8,25,.92), rgba(5,4,14,.98));
+    }
+    .stage-canvas-wrap.quantum-wrap {
+      background:
+        radial-gradient(ellipse at 50% 48%, rgba(125,240,189,.075), transparent 56%),
+        linear-gradient(145deg, rgba(10,12,24,.94), rgba(4,6,15,.98));
+    }
+    .stage-canvas { display: block; width: 100%; height: 360px; }
+    .stage-caption {
+      display: flex; justify-content: space-between; gap: 10px; padding: 10px 14px 13px;
+      border-top: 1px solid rgba(221,207,255,.08); color: var(--muted-chem);
+      font-size: 9px; line-height: 1.5;
+    }
+    .stage-caption strong { color: var(--text-chem); font-weight: 800; }
+    .comparison-body { padding: 15px; }
+    .comparison-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+    .metric-card {
+      min-width: 0; padding: 13px; border: 1px solid rgba(167,139,250,.16);
+      border-radius: 15px; background: rgba(167,139,250,.045);
+    }
+    .metric-title { display: block; margin-bottom: 10px; color: var(--muted-chem); font-size: 9px; font-weight: 850; letter-spacing: .10em; text-transform: uppercase; }
+    .metric-pair { display: grid; gap: 9px; }
+    .metric-value { min-width: 0; overflow-wrap: anywhere; }
+    .metric-value small { display: block; margin-bottom: 3px; color: rgba(170,160,197,.78); font-size: 9px; font-weight: 750; }
+    .metric-value strong { display: block; color: var(--text-chem); font-size: clamp(12px,1.5vw,15px); font-weight: 850; letter-spacing: -.025em; }
+    .metric-value.quantum strong { color: var(--green-chem); }
+    .metric-note { margin: 10px 0 0; color: var(--muted-chem); font-size: 9px; line-height: 1.55; }
+    .explain-panel { padding: 14px 16px; color: var(--muted-chem); font-size: 11px; line-height: 1.65; }
+    .explain-panel strong { color: var(--text-chem); }
+    .equation-row { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 7px; color: #ded5f2; }
+    .equation-row mjx-container { max-width: 100%; overflow-x: auto; }
+    .footer { gap: 10px; flex-wrap: wrap; }
+    @media (max-width: 760px) {
+      .stage-grid { grid-template-columns: 1fr; }
+      .stage-canvas { height: clamp(300px, 82vw, 370px); }
+      .control-body { grid-template-columns: 1fr; gap: 15px; }
+      .comparison-grid { grid-template-columns: 1fr; }
+      .metric-pair { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width: 420px) {
+      .compare-hero { padding-top: 21px; }
+      .stage-canvas { height: 310px; }
+      .panel-heading { padding: 13px; }
+      .comparison-body { padding: 11px; }
+      .metric-card { padding: 11px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+      startup: { typeset: false }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+  <script defer src="./bohr-vs-qm.js"></script>
+</head>
+<body>
+  <header class="chem-nav-wrap">
+    <nav class="chem-nav chem-shell" aria-label="Main navigation">
+      <a class="chem-brand" href="../../../index.html" aria-label="Vinit Simulation Hub home">
+        <span class="chem-logo" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="16" cy="16" rx="12" ry="5.2" stroke="currentColor" stroke-width="1.5" transform="rotate(38 16 16)"/>
+            <ellipse cx="16" cy="16" rx="12" ry="5.2" stroke="currentColor" stroke-width="1.5" transform="rotate(-38 16 16)"/>
+            <circle cx="16" cy="16" r="2.4" fill="#7df0bd"/>
+          </svg>
+        </span>
+        <span class="chem-brand-copy">Vinit Simulation Hub<small>Chemistry Laboratory</small></span>
+      </a>
+      <div class="chem-nav-actions">
+        <a class="back-link" href="./index.html" aria-label="Back to Atomic Structure dashboard">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12.5 4.5 7 10l5.5 5.5M7.5 10H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Atomic Structure
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="chem-shell">
+    <section class="compare-hero" aria-labelledby="page-title">
+      <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Atomic Structure · Hydrogen Atom</span>
+      <h1 id="page-title">Bohr <span>vs Quantum</span></h1>
+      <p>Compare a quantised circular orbit with the modern quantum description: an electron is not drawn along a known path, but described by a wavefunction whose squared magnitude gives probability density.</p>
+    </section>
+
+    <div class="compare-layout">
+      <section class="glass-panel" aria-labelledby="controls-title">
+        <div class="panel-heading"><span id="controls-title">Model controls</span><small>LIVE COMPARISON</small></div>
+        <div class="control-body">
+          <div>
+            <label class="control-label" for="uncertainty-slider">
+              <span>Heisenberg uncertainty</span><span>VISUAL SPREAD</span>
+            </label>
+            <div class="range-wrap">
+              <input id="uncertainty-slider" type="range" min="0" max="100" value="0" step="1" aria-describedby="uncertainty-help">
+              <output id="uncertainty-value" class="range-value" for="uncertainty-slider">0%</output>
+            </div>
+            <div class="range-ends"><span>Compact</span><span>Diffuse</span></div>
+            <p class="control-hint" id="uncertainty-help">This control widens the illustrative cloud and softens the classical marker. It is a visual aid, not a numerical measurement of Δx or Δp.</p>
+          </div>
+          <div>
+            <label class="control-label" for="quantum-number">Quantum number n</label>
+            <select id="quantum-number" class="quantum-select">
+              <option value="1" selected>n = 1 · 1s</option>
+              <option value="2">n = 2 · 2s</option>
+              <option value="3">n = 3 · 3s</option>
+            </select>
+            <p class="control-hint">Switch energy levels in both models. The quantum cloud includes the radial nodes of the selected s-state.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage-grid" aria-label="Side-by-side model visualisations">
+        <article class="glass-panel stage-card">
+          <div class="panel-heading">
+            <span class="stage-name"><i class="stage-mark" aria-hidden="true"></i> Bohr Model (Classical)</span>
+            <small id="bohr-level-label">n = 1</small>
+          </div>
+          <div class="stage-canvas-wrap">
+            <canvas id="bohr-canvas" class="stage-canvas" role="img" aria-label="A single electron travelling on a precise circular Bohr orbit around the nucleus">
+              Canvas is not supported by this browser.
+            </canvas>
+          </div>
+          <div class="stage-caption"><strong>Definite circular orbit</strong><span>One position at each instant</span></div>
+        </article>
+
+        <article class="glass-panel stage-card">
+          <div class="panel-heading">
+            <span class="stage-name"><i class="stage-mark quantum" aria-hidden="true"></i> Quantum Model (Probability Cloud)</span>
+            <small id="quantum-level-label">1s orbital</small>
+          </div>
+          <div class="stage-canvas-wrap quantum-wrap">
+            <canvas id="quantum-canvas" class="stage-canvas" role="img" aria-label="A sampled probability cloud for the hydrogen 1s orbital, with no definite electron path">
+              Canvas is not supported by this browser.
+            </canvas>
+          </div>
+          <div class="stage-caption"><strong>Probability distribution |ψ|²</strong><span>Brighter regions indicate greater density</span></div>
+        </article>
+      </section>
+
+      <section class="glass-panel" aria-labelledby="comparison-title">
+        <div class="panel-heading"><span id="comparison-title">Live comparison · Hydrogen</span><small id="comparison-n-label">n = 1</small></div>
+        <div class="comparison-body">
+          <div class="comparison-grid">
+            <article class="metric-card">
+              <span class="metric-title">Characteristic radius</span>
+              <div class="metric-pair">
+                <div class="metric-value"><small>Bohr radius rₙ</small><strong id="bohr-radius">52.9 pm</strong></div>
+                <div class="metric-value quantum"><small>Quantum ⟨r⟩ for ns</small><strong id="quantum-radius">79.4 pm</strong></div>
+              </div>
+              <p class="metric-note">Bohr gives one orbit radius. Quantum mechanics gives a distribution of possible distances.</p>
+            </article>
+            <article class="metric-card">
+              <span class="metric-title">Energy level</span>
+              <div class="metric-pair">
+                <div class="metric-value"><small>Bohr Eₙ</small><strong id="bohr-energy">−13.600 eV</strong></div>
+                <div class="metric-value quantum"><small>Quantum Eₙ</small><strong id="quantum-energy">−13.600 eV</strong></div>
+              </div>
+              <p class="metric-note">For hydrogen, both models give the same non-relativistic bound-state energy.</p>
+            </article>
+            <article class="metric-card">
+              <span class="metric-title">Electron path</span>
+              <div class="metric-pair">
+                <div class="metric-value"><small>Bohr</small><strong>Definite orbit</strong></div>
+                <div class="metric-value quantum"><small>Quantum</small><strong>Probabilistic</strong></div>
+              </div>
+              <p class="metric-note">A stationary orbital is not a tiny planet moving on a hidden circular track.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass-panel explain-panel" aria-label="Physics explanation">
+        <strong>What the pictures mean:</strong> Bohr assigns the electron a precise distance rₙ in a circular orbit. Quantum mechanics instead describes a probability of finding the electron at a position; the cloud is a visual sample of |ψ|², not a blurred classical path.
+        <div class="equation-row">
+          <span>Bohr: \(r_n=a_0n^2\)</span>
+          <span>Hydrogen: \(E_n=-\dfrac{13.6}{n^2}\,\text{eV}\)</span>
+          <span>Uncertainty: \(\Delta x\,\Delta p\geq\dfrac{\hbar}{2}\)</span>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <span><strong>Vinit Simulation Hub</strong> · Chemistry Learning Environment</span>
+      <span>Atomic Structure · Step 6 · Bohr vs Quantum</span>
+    </footer>
+  </main>
+</body>
+</html>
