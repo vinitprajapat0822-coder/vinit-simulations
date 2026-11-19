@@ -14,12 +14,18 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+function readChemistryColor(variableName, fallback) {
+  const styles = window.getComputedStyle(document.documentElement);
+  const cssValue = styles.getPropertyValue(variableName).trim();
+  return new THREE.Color(cssValue || fallback);
+}
+
 const CHEMISTRY = Object.freeze({
-  background: 0x0a0514,
-  positive: 0xa78bfa,
-  negative: 0x62e7ff,
-  node: 0xd9c7ff,
-  green: 0x7df0bd
+  background: readChemistryColor("--bg-chem", "#0a0514"),
+  positive: readChemistryColor("--primary-chem", "#a78bfa"),
+  negative: readChemistryColor("--accent-chem", "#62e7ff"),
+  node: readChemistryColor("--primary-chem", "#a78bfa"),
+  green: readChemistryColor("--green-chem", "#7df0bd")
 });
 
 const WORLD_SCALE = 0.28;
@@ -216,8 +222,8 @@ function createOrbitalPointCloud(orbital) {
   const cutoff = maxAmplitude * POINT_THRESHOLD;
   const positions = [];
   const colors = [];
-  const positiveColor = new THREE.Color(CHEMISTRY.positive);
-  const negativeColor = new THREE.Color(CHEMISTRY.negative);
+  const positiveColor = CHEMISTRY.positive;
+  const negativeColor = CHEMISTRY.negative;
 
   // Second pass: retain samples above the isovalue and color by wavefunction phase.
   for (let ix = 0; ix < GRID_STEPS; ix += 1) {
