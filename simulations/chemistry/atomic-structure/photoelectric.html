@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0514">
+  <meta name="description" content="Explore the photoelectric effect by changing light intensity, wavelength and metal work function in a live Rapier2D simulation.">
+  <title>Photoelectric Effect | Atomic Structure — Vinit Simulation Hub</title>
+  <link rel="stylesheet" href="./style.css">
+
+  <style>
+    .pe-hero { padding: 28px 0 20px; }
+    .pe-hero h1 {
+      margin: 12px 0 8px;
+      font-size: clamp(28px, 4.5vw, 43px);
+      letter-spacing: -.055em;
+    }
+    .pe-hero p { max-width: 780px; margin: 0; color: var(--muted-chem); }
+
+    .pe-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      align-items: start;
+      gap: 16px;
+      padding-bottom: 42px;
+    }
+
+    .pe-main, .pe-sidebar { display: grid; gap: 14px; min-width: 0; }
+
+    .pe-panel {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line-chem);
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(42,26,67,.79), rgba(19,12,34,.82));
+      box-shadow: var(--shadow-chem), inset 0 1px 0 rgba(255,255,255,.075);
+      backdrop-filter: blur(20px) saturate(145%);
+      -webkit-backdrop-filter: blur(20px) saturate(145%);
+    }
+
+    .pe-panel-heading {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line-chem);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .pe-panel-body { padding: 16px; }
+
+    .pe-scene {
+      position: relative;
+      min-width: 0;
+      min-height: 490px;
+      overflow: hidden;
+      border: 1px solid rgba(98,231,255,.18);
+      border-radius: 23px;
+      background:
+        radial-gradient(ellipse at 48% 12%, rgba(98,231,255,.10), transparent 36%),
+        radial-gradient(ellipse at 54% 88%, rgba(167,139,250,.12), transparent 42%),
+        #090515;
+      box-shadow: 0 20px 55px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.07);
+    }
+
+    #photoelectric-canvas {
+      display: block;
+      width: 100%;
+      height: 490px;
+      touch-action: pan-y;
+    }
+
+    .scene-topline, .scene-bottomline {
+      position: absolute;
+      z-index: 2;
+      right: 14px;
+      left: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .scene-topline { top: 13px; }
+    .scene-bottomline { bottom: 13px; }
+
+    .scene-chip {
+      display: inline-flex;
+      min-height: 29px;
+      align-items: center;
+      gap: 7px;
+      padding: 0 10px;
+      border: 1px solid rgba(221,207,255,.15);
+      border-radius: 99px;
+      background: rgba(10,5,20,.72);
+      color: #ded5f2;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+    .scene-chip::before {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green-chem);
+      box-shadow: 0 0 10px rgba(125,240,189,.8);
+      content: "";
+    }
+    .scene-hint {
+      max-width: 190px;
+      color: rgba(221,210,245,.68);
+      font-size: 9px;
+      text-align: right;
+    }
+    .scene-label {
+      padding: 7px 10px;
+      border: 1px solid rgba(221,207,255,.12);
+      border-radius: 10px;
+      background: rgba(10,5,20,.72);
+      color: #ded5f2;
+      font-size: 10px;
+      backdrop-filter: blur(10px);
+    }
+
+    .control-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      color: var(--muted-chem);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+    }
+    .control-value {
+      color: var(--accent-chem);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0;
+      text-transform: none;
+      white-space: nowrap;
+    }
+
+    .pe-range {
+      display: block;
+      width: 100%;
+      min-height: 48px;
+      margin: 0;
+      accent-color: var(--accent-chem);
+      cursor: pointer;
+      touch-action: pan-y;
+    }
+    .range-ends {
+      display: flex;
+      justify-content: space-between;
+      margin-top: -2px;
+      color: rgba(170,160,197,.78);
+      font-size: 9px;
+    }
+    .control-hint {
+      margin: 7px 0 0;
+      color: var(--muted-chem);
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .pe-select {
+      width: 100%;
+      min-height: 49px;
+      padding: 0 12px;
+      border: 1px solid rgba(167,139,250,.35);
+      border-radius: 13px;
+      background: rgba(10,5,20,.82);
+      color: var(--text-chem);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .pe-divider { height: 1px; margin: 16px 0; background: var(--line-chem); }
+
+    .pe-check {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 11px;
+      border: 1px solid rgba(98,231,255,.18);
+      border-radius: 12px;
+      background: rgba(98,231,255,.045);
+      color: var(--text-chem);
+      cursor: pointer;
+    }
+    .pe-check input {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      margin: 0;
+      accent-color: var(--accent-chem);
+    }
+    .pe-check span { font-size: 11px; font-weight: 750; }
+    .pe-check small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted-chem);
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    .metal-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 9px;
+      color: var(--muted-chem);
+      font-size: 10px;
+    }
+    .metal-meta strong { color: var(--primary-chem); }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 9px;
+    }
+    .data-card {
+      min-width: 0;
+      padding: 12px 11px;
+      border: 1px solid rgba(167,139,250,.18);
+      border-radius: 14px;
+      background: rgba(167,139,250,.055);
+    }
+    .data-card.accent {
+      border-color: rgba(98,231,255,.19);
+      background: rgba(98,231,255,.045);
+    }
+    .data-card.wide { grid-column: 1 / -1; }
+    .data-card-label {
+      display: block;
+      color: var(--muted-chem);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .data-card strong {
+      display: block;
+      overflow-wrap: anywhere;
+      margin-top: 5px;
+      color: var(--text-chem);
+      font-size: clamp(17px,2vw,21px);
+      font-weight: 850;
+      letter-spacing: -.035em;
+    }
+    .data-card.accent strong { color: var(--accent-chem); }
+    .data-card small {
+      display: block;
+      margin-top: 3px;
+      color: rgba(170,160,197,.78);
+      font-size: 9px;
+    }
+    .is-hidden { display: none !important; }
+
+    .pe-formulas {
+      display: grid;
+      gap: 10px;
+      color: var(--text-chem);
+      font-size: 14px;
+    }
+    .pe-formula-line {
+      overflow-x: auto;
+      padding: 9px 10px;
+      border: 1px solid rgba(221,207,255,.10);
+      border-radius: 11px;
+      background: rgba(255,255,255,.025);
+    }
+    .pe-formula-line mjx-container { max-width: 100%; overflow-x: auto; }
+    .pe-explain {
+      margin: 11px 0 0;
+      color: var(--muted-chem);
+      font-size: 10px;
+      line-height: 1.65;
+    }
+    .pe-status {
+      min-height: 34px;
+      margin: 11px 0 0;
+      color: var(--muted-chem);
+      font-size: 10px;
+      line-height: 1.6;
+    }
+    .threshold-pill {
+      display: inline-flex;
+      min-height: 25px;
+      align-items: center;
+      padding: 0 9px;
+      border: 1px solid rgba(221,207,255,.14);
+      border-radius: 99px;
+      background: rgba(255,255,255,.035);
+      color: #c9bddc;
+      font-size: 9px;
+      font-weight: 850;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+    .threshold-pill.emission {
+      border-color: rgba(125,240,189,.26);
+      background: rgba(125,240,189,.08);
+      color: var(--green-chem);
+    }
+    .threshold-pill.no-emission {
+      border-color: rgba(244,114,208,.26);
+      background: rgba(244,114,208,.07);
+      color: #f4a4da;
+    }
+
+    @media (max-width: 920px) {
+      .pe-layout { grid-template-columns: minmax(0,1fr) 290px; gap: 12px; }
+      .pe-scene, #photoelectric-canvas { height: 450px; min-height: 450px; }
+    }
+    @media (max-width: 760px) {
+      .pe-layout { grid-template-columns: 1fr; }
+      .pe-sidebar { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .pe-sidebar .data-panel { grid-column: 1 / -1; }
+      .pe-scene, #photoelectric-canvas { height: clamp(360px,105vw,450px); min-height: 360px; }
+    }
+    @media (max-width: 540px) {
+      .pe-hero { padding-top: 22px; }
+      .pe-sidebar { grid-template-columns: 1fr; }
+      .pe-sidebar .data-panel { grid-column: auto; }
+      .pe-scene, #photoelectric-canvas { height: 390px; min-height: 390px; }
+      .pe-panel-body { padding: 14px; }
+      .data-grid { gap: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pe-check { transition: none; }
+    }
+  </style>
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      startup: { typeset: false }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@dimforge/rapier2d-compat": "https://cdn.jsdelivr.net/npm/@dimforge/rapier2d-compat@0.21.0/+esm"
+      }
+    }
+  </script>
+</head>
+<body>
+  <header class="chem-nav-wrap">
+    <nav class="chem-nav chem-shell" aria-label="Main navigation">
+      <a class="chem-brand" href="./index.html" aria-label="Back to Atomic Structure modules">
+        <span class="chem-logo" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="16" cy="16" rx="12" ry="5.2" stroke="currentColor" stroke-width="1.5" transform="rotate(38 16 16)"/>
+            <ellipse cx="16" cy="16" rx="12" ry="5.2" stroke="currentColor" stroke-width="1.5" transform="rotate(-38 16 16)"/>
+            <circle cx="16" cy="16" r="2.4" fill="#7df0bd"/>
+          </svg>
+        </span>
+        <span class="chem-brand-copy">Vinit Simulation Hub<small>Chemistry Laboratory</small></span>
+      </a>
+      <div class="chem-nav-actions">
+        <a class="back-link" href="./index.html" aria-label="Back to Atomic Structure" title="Back to Atomic Structure">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12.5 4.5 7 10l5.5 5.5M7.5 10H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Atomic Structure
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="chem-shell">
+    <section class="pe-hero" aria-labelledby="page-title">
+      <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Atomic Structure · Quantum Physics</span>
+      <h1 id="page-title">Photoelectric <span style="color:var(--accent-chem)">Effect</span></h1>
+      <p>Change the light wavelength, intensity and metal. Observe the threshold condition, photoelectron emission and the difference between photon energy and light intensity.</p>
+    </section>
+
+    <div class="pe-layout">
+      <section class="pe-main" aria-label="Photoelectric effect simulation">
+        <div class="pe-scene">
+          <div class="scene-topline">
+            <span class="scene-chip">Rapier2D physics</span>
+            <span class="scene-hint">Photon packets → metal surface → photoelectrons</span>
+          </div>
+          <canvas id="photoelectric-canvas" aria-label="Photoelectric effect particle simulation. Photons travel toward a metal surface and may eject electrons.">
+            Your browser does not support the canvas element.
+          </canvas>
+          <div class="scene-bottomline">
+            <span class="scene-label">Metal target · Cathode</span>
+            <span class="scene-label">Electron motion ↑</span>
+          </div>
+        </div>
+
+        <section class="pe-panel">
+          <div class="pe-panel-heading">Einstein's photoelectric equation</div>
+          <div class="pe-panel-body">
+            <div class="pe-formulas">
+              <div class="pe-formula-line">\\(E_\\gamma=h\\nu=\\dfrac{hc}{\\lambda}=\\phi+K_{\\max}\\)</div>
+              <div class="pe-formula-line">\\(K_{\\max}=\\max(E_\\gamma-\\phi,0)\\)</div>
+              <div class="pe-formula-line" id="debroglie-formula">\\(\\lambda_{dB}=\\dfrac{h}{p},\\quad p=\\sqrt{2m_eK_{\\max}}\\)</div>
+            </div>
+            <p class="pe-explain">
+              The wavelength control changes photon frequency and energy. Intensity changes the photon arrival rate. At a fixed wavelength and metal, increasing intensity increases the number of emitted electrons, not their maximum kinetic energy.
+            </p>
+            <p id="pe-status" class="pe-status" role="status" aria-live="polite">Loading Rapier2D WebAssembly…</p>
+          </div>
+        </section>
+      </section>
+
+      <aside class="pe-sidebar" aria-label="Simulation controls and live data">
+        <section class="pe-panel">
+          <div class="pe-panel-heading">Light &amp; metal controls</div>
+          <div class="pe-panel-body">
+            <label class="control-label" for="light-intensity">
+              <span>Light intensity</span>
+              <output class="control-value" id="intensity-value" for="light-intensity">50%</output>
+            </label>
+            <input class="pe-range" id="light-intensity" type="range" min="1" max="100" step="1" value="50">
+            <div class="range-ends"><span>Low photon rate</span><span>High photon rate</span></div>
+            <p class="control-hint" id="photon-rate-label">Approx. 8.4 photons per second</p>
+
+            <div class="pe-divider" aria-hidden="true"></div>
+
+            <label class="control-label" for="light-wavelength">
+              <span>Light frequency</span>
+              <output class="control-value" id="wavelength-value" for="light-wavelength">400 nm · UV</output>
+            </label>
+            <input class="pe-range" id="light-wavelength" type="range" min="100" max="800" step="1" value="400">
+            <div class="range-ends"><span>100 nm · UV</span><span>800 nm · IR</span></div>
+            <p class="control-hint" id="frequency-readout">Frequency: 749.5 THz</p>
+
+            <div class="pe-divider" aria-hidden="true"></div>
+
+            <label class="control-label" for="metal-select">
+              <span>Metal target</span>
+              <span class="control-value">Work function</span>
+            </label>
+            <select id="metal-select" class="pe-select">
+              <option value="sodium">Sodium · 2.28 eV</option>
+              <option value="potassium">Potassium · 2.30 eV</option>
+              <option value="calcium">Calcium · 2.90 eV</option>
+              <option value="zinc">Zinc · 4.31 eV</option>
+              <option value="copper">Copper · 4.70 eV</option>
+              <option value="silver">Silver · 4.73 eV</option>
+              <option value="platinum">Platinum · 6.35 eV</option>
+            </select>
+            <div class="metal-meta">
+              <span id="metal-name-readout">Sodium</span>
+              <strong id="work-function-readout">φ = 2.28 eV</strong>
+            </div>
+
+            <div class="pe-divider" aria-hidden="true"></div>
+
+            <label class="pe-check" for="show-debroglie">
+              <input id="show-debroglie" type="checkbox" checked>
+              <span>Show de Broglie wavelength<small>Reveal λdB data and schematic electron wave rings.</small></span>
+            </label>
+          </div>
+        </section>
+
+        <section class="pe-panel data-panel">
+          <div class="pe-panel-heading" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span>Live experiment data</span>
+            <span id="emission-state" class="threshold-pill">Calculating</span>
+          </div>
+          <div class="pe-panel-body">
+            <div class="data-grid">
+              <div class="data-card">
+                <span class="data-card-label">Photon energy · Eγ</span>
+                <strong id="data-photon-energy">3.10 eV</strong>
+                <small>hc / λ</small>
+              </div>
+              <div class="data-card accent">
+                <span class="data-card-label">Maximum KE</span>
+                <strong id="data-kinetic-energy">0.82 eV</strong>
+                <small>Kmax = Eγ − φ</small>
+              </div>
+              <div class="data-card">
+                <span class="data-card-label">Stopping potential</span>
+                <strong id="data-stopping-potential">0.82 V</strong>
+                <small>V₀ = Kmax / e</small>
+              </div>
+              <div class="data-card accent" id="debroglie-card">
+                <span class="data-card-label">de Broglie λ</span>
+                <strong id="data-debroglie">1.36 nm</strong>
+                <small>λ = h / p</small>
+              </div>
+              <div class="data-card wide">
+                <span class="data-card-label">Emitted photoelectrons</span>
+                <strong id="data-electrons">0</strong>
+                <small id="data-electron-speed">Electron speed: —</small>
+              </div>
+            </div>
+            <p class="pe-explain" id="threshold-explanation">Photons above the metal work function can eject electrons.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <span><strong>Vinit Simulation Hub</strong> · Chemistry Learning Environment</span>
+      <span>Photoelectric effect · Rapier2D</span>
+    </footer>
+  </main>
+
+  <script type="module" src="./photoelectric.js"></script>
+</body>
+</html>
