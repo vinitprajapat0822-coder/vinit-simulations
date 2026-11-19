@@ -7,8 +7,7 @@ import {
   PLANCK_CONSTANT,
   SPEED_OF_LIGHT,
   ELECTRON_MASS,
-  RYDBERG_CONSTANT,
-  BOHR_RADIUS
+  RYDBERG_CONSTANT
 } from "./constants.js";
 
 const MAX_LEVEL = 6;
@@ -470,10 +469,10 @@ function recordPhoton(lowerN, upperN, origin) {
     (1 / (lowerN * lowerN) - 1 / (upperN * upperN));
 
   ui.transitionEquation.innerHTML =
-    "\\\\(\\\\frac{1}{\\\\lambda}=" + RYDBERG_NM.toExponential(4) +
-    "\\\\left(\\\\frac{1}{" + lowerN + "^2}-\\\\frac{1}{" +
-    upperN + "^2}\\\\right)= " + (inverseWavelength / 1e9).toExponential(4) +
-    "\\\\;\\\\text{nm}^{-1}\\\\\\\\" + "\\\\)";
+    "\\(\\frac{1}{\\lambda}=" + RYDBERG_NM.toExponential(4) +
+    "\\left(\\frac{1}{" + lowerN + "^2}-\\frac{1}{" +
+    upperN + "^2}\\right)=" + inverseWavelength.toExponential(4) +
+    "\\;\\text{m}^{-1}\\)";
 
   typesetNodes([ui.transitionEquation]);
   renderSpectrum();
@@ -533,13 +532,20 @@ function updateLiveData() {
   ui.stageState.textContent = "Electron · n = " + n;
   ui.orbitChip.textContent = "n = " + n;
 
+  const velocityParts = velocity.toExponential(3).split("e");
+  const velocityMantissa = velocityParts[0];
+  const velocityExponent = Number(velocityParts[1]);
+
   ui.liveEquations.innerHTML =
-    "<div>\\\\(E_" + n + "=-\\\\frac{13.6}{" + n + "^2}=" +
-      energy.toFixed(3) + "\\\\;\\\\text{eV}\\\\)</div>" +
-    "<div>\\\\(r_" + n + "=52.9\\\\times" + n + "^2=" +
-      radius.toFixed(1) + "\\\\;\\\\text{pm}\\\\)</div>" +
-    "<div>\\\\(v_" + n + "=\\\\frac{2.18\\\\times10^6}{" + n + "}=" +
-      velocity.toExponential(3).replace("e+", "\\\\times10^{") + "}\\\\;\\\\text{m/s}\\\\)</div>";
+    "<div>\\(E_" + n + "=-\\frac{13.6}{" + n + "^2}=" +
+      energy.toFixed(3) + "\\;\\text{eV}\\)</div>" +
+    "<div>\\(r_" + n + "=52.9\\times" + n + "^2=" +
+      radius.toFixed(1) + "\\;\\text{pm}\\)</div>" +
+    "<div>\\(v_" + n + "=\\frac{2.18\\times10^6}{" + n + "}=" +
+      velocityMantissa + "\\times10^{" + velocityExponent + "}" +
+      "\\;\\text{m/s}\\)</div>" +
+    "<div>\\(\\lambda_{dB}=\\frac{h}{m_ev}=" +
+      deBroglie.toFixed(1) + "\\;\\text{pm}\\)</div>";
 
   if (ui.waveToggle.checked) {
     ui.status.textContent =
