@@ -5,7 +5,6 @@
 
 import {
   PLANCK_CONSTANT,
-  SPEED_OF_LIGHT,
   ELECTRON_MASS,
   RYDBERG_CONSTANT
 } from "./constants.js";
@@ -58,7 +57,6 @@ let resizeObserver = null;
 let geometry = null;
 let photonParticles = [];
 let spectrumLines = [];
-let previousTransition = null;
 let mathJaxReady = false;
 
 const canvasContext = ui.canvas ? ui.canvas.getContext("2d") : null;
@@ -110,12 +108,6 @@ function transitionWavelengthNm(lowerN, upperN) {
   }
 
   return 1e9 / inverseWavelengthPerMetre;
-}
-
-function photonEnergyEVForTransition(lowerN, upperN) {
-  const wavelengthMetres = transitionWavelengthNm(lowerN, upperN) * 1e-9;
-  return PLANCK_CONSTANT * SPEED_OF_LIGHT /
-    (wavelengthMetres * 1.602176634e-19);
 }
 
 function clamp(value, minimum, maximum) {
@@ -454,24 +446,21 @@ function recordPhoton(lowerN, upperN, origin) {
   });
   if (spectrumLines.length > 80) spectrumLines.shift();
 
-  previousTransition = {
-    upperN,
-    lowerN,
-    wavelengthNm,
-    color
-  };
-
   ui.lastTransition.textContent =
     upperN + " → " + lowerN + " · λ = " + wavelengthNm.toFixed(1) +
     " nm · " + seriesForLowerLevel(lowerN).name + " series";
 
   const inverseWavelength = RYDBERG_NM *
     (1 / (lowerN * lowerN) - 1 / (upperN * upperN));
+  const rydbergParts = RYDBERG_NM.toExponential(4).split("e");
+  const inverseParts = inverseWavelength.toExponential(4).split("e");
+  const rydbergTex = rydbergParts[0] + "\\times10^{" + Number(rydbergParts[1]) + "}";
+  const inverseTex = inverseParts[0] + "\\times10^{" + Number(inverseParts[1]) + "}";
 
   ui.transitionEquation.innerHTML =
-    "\\(\\frac{1}{\\lambda}=" + RYDBERG_NM.toExponential(4) +
+    "\\(\\frac{1}{\\lambda}=" + rydbergTex +
     "\\left(\\frac{1}{" + lowerN + "^2}-\\frac{1}{" +
-    upperN + "^2}\\right)=" + inverseWavelength.toExponential(4) +
+    upperN + "^2}\\right)=" + inverseTex +
     "\\;\\text{m}^{-1}\\)";
 
   typesetNodes([ui.transitionEquation]);
@@ -554,10 +543,6 @@ function updateLiveData() {
   }
 
   typesetNodes([ui.liveEquations]);
-}
-
-function visibleSpectrumColor(wavelengthNm) {
-  return wavelengthToColor(wavelengthNm);
 }
 
 function drawSpectrumBackground(ctx, width, height) {
