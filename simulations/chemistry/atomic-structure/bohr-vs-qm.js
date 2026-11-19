@@ -2,8 +2,8 @@
  * Vinit Simulation Hub — Atomic Structure / Bohr vs Quantum
  * Canvas-only comparison of a classical Bohr orbit and hydrogen ns probability clouds.
  *
- * The cloud is sampled from the hydrogen radial probability distribution:
- * P(r) dr ∝ r² |R_n0(r)|² dr, with R_n0 expressed using associated Laguerre polynomials.
+ * The cloud is a 2D cross-section of |ψ|². Points are sampled over the plane
+ * with area weight r |R_n0(r)|², so radial nodes appear as dark circular gaps.
  * The uncertainty slider is an explicitly illustrative spread control, not a measured Δx.
  */
 
@@ -71,7 +71,7 @@
     for (let i = 1; i <= steps; i += 1) {
       const x = i * dx;
       const laguerre = laguerreForSState(n, x);
-      const density = x * x * laguerre * laguerre * Math.exp(-x);
+      const density = x * laguerre * laguerre * Math.exp(-x);
       total += (previousDensity + density) * 0.5 * dx;
       cdf[i] = total;
       previousDensity = density;
@@ -109,15 +109,13 @@
     for (let i = 0; i < CLOUD_POINTS; i += 1) {
       const x = sampleRadius(random);
       const radiusA0 = (n * x) / 2;
-      const z = random() * 2 - 1;
       const azimuth = random() * Math.PI * 2;
-      const projectedRadius = radiusA0 * Math.sqrt(Math.max(0, 1 - z * z));
       const opacity = 0.25 + random() * 0.48;
       const dotSize = 0.65 + random() * 1.05;
 
       points.push({
-        x: Math.cos(azimuth) * projectedRadius,
-        y: Math.sin(azimuth) * projectedRadius,
+        x: Math.cos(azimuth) * radiusA0,
+        y: Math.sin(azimuth) * radiusA0,
         opacity: opacity,
         size: dotSize
       });
@@ -268,8 +266,8 @@
     const cx = width / 2;
     const cy = height / 2;
     const minSide = Math.min(width, height);
-    const spread = 1 + (uncertainty / 100) * 0.82;
-    const pixelsPerA0 = (minSide * 0.024) / level;
+    const spread = 1 + (uncertainty / 100) * 0.55;
+    const pixelsPerA0 = (minSide * 0.046) / level;
 
     drawBackdrop(quantumCtx, width, height, "rgba(125,240,189,0.105)");
 
@@ -320,7 +318,8 @@
     const energy = -RYDBERG_EV / nSquared;
 
     ui.bohrLevel.textContent = "n = " + level;
-    ui.quantumLevel.textContent = level + "s orbital";
+    ui.quantumLevel.textContent = level + "s orbital · " +
+      (level === 1 ? "no radial nodes" : (level - 1) + " radial node(s)");
     ui.comparisonN.textContent = "n = " + level;
     ui.bohrRadius.textContent = bohrRadius.toFixed(1) + " pm";
     ui.quantumRadius.textContent = quantumMeanRadius.toFixed(1) + " pm";
