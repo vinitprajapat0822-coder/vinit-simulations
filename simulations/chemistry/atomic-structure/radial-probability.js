@@ -59,7 +59,6 @@ const ORBITALS = {
     notation: "R_{32}(r)",
     formula: String.raw`\[R_{32}(r) \propto \left(\frac{r}{a_0}\right)^2e^{-r/(3a_0)}\]`,
     radial: (rho) => rho * rho * Math.exp(-rho / 3),
-    nodes: []
   }
 };
 
@@ -203,7 +202,7 @@ const radialNodePlugin = {
     ctx.font = "11px system-ui, sans-serif";
     ctx.textBaseline = "top";
 
-    orbital.nodes.forEach((node, index) => {
+    nodes.forEach((node, index) => {
       const pixelX = xScale.getPixelForValue(node);
       if (pixelX < area.left || pixelX > area.right) return;
 
