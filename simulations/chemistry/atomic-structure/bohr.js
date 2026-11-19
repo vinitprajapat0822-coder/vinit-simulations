@@ -495,6 +495,7 @@ function jumpToLevel(targetN) {
     : { x: ui.canvas.clientWidth / 2, y: ui.canvas.clientHeight / 2 };
 
   currentN = targetN;
+  ui.excite.disabled = currentN >= MAX_LEVEL;
   updateLiveData();
 
   if (targetN < previousN) {
