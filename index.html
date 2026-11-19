@@ -125,19 +125,91 @@
       color: var(--text);
     }
     
-    .subject-picker { margin-top: 10px; }
-    .subject-picker > span {
-      display:block; font-size:11px; font-weight:700; color:var(--muted);
-      margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase;
+    .subject-picker {
+      width: min(100%, 540px);
+      margin: 14px 0 4px;
     }
-    .subject-seg { display:flex; flex-wrap:wrap; gap:6px; }
+    .subject-picker > span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    .subject-seg {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      width: 100%;
+      min-height: 54px;
+      padding: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(98,231,255,.24);
+      border-radius: 18px;
+      background: linear-gradient(135deg,rgba(10,17,34,.82),rgba(25,17,45,.76));
+      box-shadow: 0 12px 32px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(22px) saturate(155%);
+      -webkit-backdrop-filter: blur(22px) saturate(155%);
+    }
     .subject-seg button {
-      padding: 7px 12px; border-radius: 999px; border: 1px solid #31415f;
-      background: #121a2e; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 44px;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: color .22s ease, transform .22s ease;
     }
     .subject-seg button[aria-pressed="true"] {
-      color: #07111b; border: 0;
-      background: linear-gradient(135deg,#67e8f9,#a78bfa);
+      color: #07111b;
+      text-shadow: 0 1px 0 rgba(255,255,255,.22);
+    }
+    .subject-seg button:active { transform: scale(.96); }
+    .subject-seg button:focus-visible {
+      z-index: 3;
+      outline: 2px solid #fff;
+      outline-offset: -3px;
+    }
+    .subject-pill {
+      position: absolute;
+      z-index: 0;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: calc(33.333333% - 2.6667px);
+      border: 1px solid rgba(255,255,255,.42);
+      border-radius: 13px;
+      background: linear-gradient(115deg,rgba(98,231,255,.94),rgba(167,139,250,.94));
+      box-shadow:
+        0 8px 24px rgba(98,231,255,.19),
+        0 0 20px rgba(167,139,250,.22),
+        inset 0 1px 0 rgba(255,255,255,.55);
+      backdrop-filter: blur(24px) saturate(165%);
+      -webkit-backdrop-filter: blur(24px) saturate(165%);
+      transform: translateX(0);
+      transition: transform 620ms cubic-bezier(.2,1.35,.35,1);
+      pointer-events: none;
+    }
+    @media (max-width: 420px) {
+      .subject-picker { width: 100%; }
+      .subject-seg button { padding-inline: 5px; font-size: 11px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .subject-pill, .subject-seg button { transition: none !important; }
     }
 
     .filters { display: flex; flex-wrap: wrap; gap: 7px; margin: 16px 0 20px; }
@@ -1696,6 +1768,16 @@ html{scroll-behavior:smooth}
         <input class="search" id="search" type="search" placeholder="Search activities…" aria-label="Search">
       </div>
 
+      <div class="subject-picker">
+        <span>Subject</span>
+        <div class="subject-seg" id="subject-seg" role="group" aria-label="Subject">
+          <button type="button" data-subject="physics" aria-pressed="true">Physics</button>
+          <button type="button" data-subject="chemistry" aria-pressed="false">Chemistry</button>
+          <button type="button" data-subject="math" aria-pressed="false">Mathematics</button>
+          <span class="subject-pill" aria-hidden="true"></span>
+        </div>
+      </div>
+
       <div class="filters" id="filters" role="group" aria-label="Category filters"></div>
 
       <div class="grid" id="project-grid"></div>
@@ -1811,22 +1893,47 @@ html{scroll-behavior:smooth}
       const empty = document.getElementById("empty");
       const search = document.getElementById("search");
       const filtersEl = document.getElementById("filters");
+      const subjectKey = "vsh-subject";
+      const validSubjects = ["physics", "chemistry", "math"];
       let activeFilter = "all";
 
-      CATEGORIES.forEach(cat => {
-        const btn = document.createElement("button");
-        btn.className = "filter";
-        btn.dataset.filter = cat.id;
-        btn.textContent = cat.label;
-        btn.setAttribute("aria-pressed", cat.id === "all" ? "true" : "false");
-        btn.addEventListener("click", () => {
-          activeFilter = cat.id;
-          document.querySelectorAll(".filter").forEach(b => b.setAttribute("aria-pressed", b.dataset.filter === activeFilter));
-          render();
-        });
-        filtersEl.appendChild(btn);
-      });
+      // Restore a valid subject before the first catalog render.
+      try {
+        const savedSubject = localStorage.getItem(subjectKey);
+        window.VSH_SUBJECT = validSubjects.includes(savedSubject) ? savedSubject : "physics";
+      } catch (error) {
+        window.VSH_SUBJECT = "physics";
+      }
 
+      function getSubjectCategories() {
+        const subject = window.VSH_SUBJECT || "physics";
+        return CATEGORIES.filter(cat => {
+          if (cat.id === "all") return true;
+          if (subject === "chemistry") return cat.id === "chemistry";
+          if (subject === "math") return cat.id === "math";
+          return cat.id !== "chemistry" && cat.id !== "math" && cat.id !== "coming-soon";
+        });
+      }
+
+      function buildFilters() {
+        filtersEl.innerHTML = "";
+        getSubjectCategories().forEach(cat => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "filter";
+          btn.dataset.filter = cat.id;
+          btn.textContent = cat.label;
+          btn.setAttribute("aria-pressed", cat.id === activeFilter ? "true" : "false");
+          btn.addEventListener("click", () => {
+            activeFilter = cat.id;
+            filtersEl.querySelectorAll(".filter").forEach(filterButton => {
+              filterButton.setAttribute("aria-pressed", filterButton.dataset.filter === activeFilter ? "true" : "false");
+            });
+            render();
+          });
+          filtersEl.appendChild(btn);
+        });
+      }
 
       const expandedCats = new Set();
 
@@ -1859,6 +1966,12 @@ html{scroll-behavior:smooth}
         const matched = CATALOG.filter(item => {
           const isLive = item.status === "live";
           if (!isLive && !showSoon && activeFilter !== "coming-soon") return false;
+          const subject = window.VSH_SUBJECT || "physics";
+          const matchSubject = subject === "chemistry"
+            ? item.category === "chemistry"
+            : subject === "math"
+              ? item.category === "math"
+              : item.category !== "chemistry" && item.category !== "math";
           const matchFilter =
             activeFilter === "all" ||
             (activeFilter === "coming-soon" && item.status === "coming-soon") ||
@@ -1866,7 +1979,7 @@ html{scroll-behavior:smooth}
           const matchSearch = !q ||
             (item.title + " " + item.desc + " " + item.tags + " " + item.category)
               .toLowerCase().includes(q);
-          return matchFilter && matchSearch;
+          return matchSubject && matchFilter && matchSearch;
         });
 
         // Group by category when viewing "all"
@@ -1934,6 +2047,15 @@ html{scroll-behavior:smooth}
       document.getElementById("stat-total").textContent = CATALOG.length;
       document.getElementById("stat-live").textContent = liveCount;
       search.addEventListener("input", render);
+      buildFilters();
+
+      document.addEventListener("vsh-subject-change", () => {
+        activeFilter = "all";
+        expandedCats.clear();
+        buildFilters();
+        render();
+      });
+
       render();
     })();
   </script>
@@ -2183,25 +2305,62 @@ html{scroll-behavior:smooth}
 
 
 <script>
-(function(){
-  var KEY="vsh-subject";
-  var seg=document.getElementById("subject-seg");
-  if(!seg) return;
-  function apply(s){
-    window.VSH_SUBJECT=s;
-    try{ localStorage.setItem(KEY,s); }catch(e){}
-    seg.querySelectorAll("button").forEach(function(b){
-      b.setAttribute("aria-pressed", b.getAttribute("data-subject")===s ? "true":"false");
-    });
-    document.dispatchEvent(new CustomEvent("vsh-subject-change",{detail:{subject:s}}));
+(function () {
+  "use strict";
+
+  var KEY = "vsh-subject";
+  var VALID = ["physics", "chemistry", "math"];
+  var seg = document.getElementById("subject-seg");
+  if (!seg) return;
+
+  var pill = seg.querySelector(".subject-pill");
+  var buttons = Array.prototype.slice.call(seg.querySelectorAll("button[data-subject]"));
+  var reduceMotion = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function movePill(subject, animate) {
+    var index = VALID.indexOf(subject);
+    if (index < 0 || !pill) return;
+
+    if (!animate || reduceMotion) pill.style.transition = "none";
+    pill.style.transform = "translateX(" + (index * 100) + "%)";
+
+    if (!animate || reduceMotion) {
+      window.requestAnimationFrame(function () {
+        pill.style.removeProperty("transition");
+      });
+    }
   }
-  var s="physics";
-  try{ s=localStorage.getItem(KEY)||"physics"; }catch(e){}
-  if(["physics","chemistry","math"].indexOf(s)<0) s="physics";
-  apply(s);
-  seg.addEventListener("click", function(e){
-    var b=e.target.closest("button[data-subject]");
-    if(b) apply(b.getAttribute("data-subject"));
+
+  function apply(subject, animate) {
+    if (VALID.indexOf(subject) < 0) subject = "physics";
+
+    window.VSH_SUBJECT = subject;
+    try { localStorage.setItem(KEY, subject); } catch (error) {}
+
+    buttons.forEach(function (button) {
+      button.setAttribute(
+        "aria-pressed",
+        button.getAttribute("data-subject") === subject ? "true" : "false"
+      );
+    });
+
+    seg.setAttribute("data-active-subject", subject);
+    movePill(subject, !!animate);
+    document.dispatchEvent(new CustomEvent("vsh-subject-change", {
+      detail: { subject: subject }
+    }));
+  }
+
+  var saved = "physics";
+  try { saved = localStorage.getItem(KEY) || "physics"; } catch (error) {}
+  if (VALID.indexOf(saved) < 0) saved = "physics";
+
+  apply(saved, false);
+
+  seg.addEventListener("click", function (event) {
+    var button = event.target.closest("button[data-subject]");
+    if (button) apply(button.getAttribute("data-subject"), true);
   });
 })();
 </script>
