@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0514">
+  <meta name="description" content="Explore hydrogen 1s, 2s, 2p and 3d atomic orbitals in an interactive 3D point-cloud laboratory.">
+  <title>3D Orbitals &amp; Nodes | Atomic Structure — Vinit Simulation Hub</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    .orbital-hero { padding: 28px 0 20px; }
+    .orbital-hero h1 {
+      margin: 12px 0 8px;
+      font-size: clamp(28px, 4.5vw, 43px);
+      letter-spacing: -.055em;
+    }
+    .orbital-hero p { max-width: 760px; margin: 0; color: var(--muted-chem); }
+    .orbital-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      align-items: stretch;
+      gap: 16px;
+      padding-bottom: 42px;
+    }
+    .orbital-stage-panel {
+      position: relative;
+      min-width: 0;
+      min-height: 560px;
+      overflow: hidden;
+      border: 1px solid var(--line-chem);
+      border-radius: 24px;
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(98,231,255,.075), transparent 52%),
+        linear-gradient(145deg, rgba(37,23,61,.78), rgba(13,8,25,.91));
+      box-shadow: var(--shadow-chem), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+    }
+    .stage-topline {
+      position: absolute;
+      z-index: 2;
+      top: 14px;
+      right: 16px;
+      left: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      pointer-events: none;
+    }
+    .stage-badge {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 11px;
+      border: 1px solid rgba(167,139,250,.24);
+      border-radius: 99px;
+      background: rgba(10,5,20,.64);
+      color: #ddd2f5;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+    .stage-badge::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green-chem);
+      box-shadow: 0 0 11px rgba(125,240,189,.75);
+      content: "";
+    }
+    .stage-hint { color: rgba(221,210,245,.68); font-size: 10px; text-align: right; }
+    #orbital-stage {
+      position: absolute;
+      inset: 0;
+      min-width: 0;
+      min-height: 100%;
+      touch-action: pan-y;
+    }
+    #orbital-stage canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      outline: none;
+    }
+    .stage-bottomline {
+      position: absolute;
+      z-index: 2;
+      right: 15px;
+      bottom: 14px;
+      left: 15px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      pointer-events: none;
+    }
+    .stage-orbital-name {
+      padding: 8px 11px;
+      border: 1px solid rgba(221,207,255,.13);
+      border-radius: 12px;
+      background: rgba(10,5,20,.68);
+      color: var(--text-chem);
+      font-size: 12px;
+      font-weight: 800;
+      backdrop-filter: blur(12px);
+    }
+    .stage-controls-hint {
+      max-width: 180px;
+      color: rgba(221,210,245,.66);
+      font-size: 10px;
+      text-align: right;
+    }
+    .orbital-sidebar { display: grid; align-content: start; gap: 14px; min-width: 0; }
+    .orbital-panel {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line-chem);
+      border-radius: 21px;
+      background: linear-gradient(145deg, rgba(42,26,67,.80), rgba(19,12,34,.80));
+      box-shadow: var(--shadow-chem), inset 0 1px 0 rgba(255,255,255,.07);
+      backdrop-filter: blur(20px) saturate(145%);
+      -webkit-backdrop-filter: blur(20px) saturate(145%);
+    }
+    .orbital-panel-heading {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line-chem);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .orbital-panel-body { padding: 15px; }
+    .control-label {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--muted-chem);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+    .orbital-select {
+      width: 100%;
+      min-height: 50px;
+      padding: 0 12px;
+      border: 1px solid rgba(167,139,250,.38);
+      border-radius: 13px;
+      background: rgba(10,5,20,.82);
+      color: var(--text-chem);
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .node-toggles { display: grid; gap: 8px; }
+    .node-toggle {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(221,207,255,.11);
+      border-radius: 12px;
+      background: rgba(255,255,255,.025);
+      color: var(--text-chem);
+      cursor: pointer;
+    }
+    .node-toggle:hover { border-color: rgba(98,231,255,.28); background: rgba(98,231,255,.045); }
+    .node-toggle input {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      margin: 0;
+      accent-color: var(--accent-chem);
+    }
+    .node-toggle span { font-size: 11px; font-weight: 750; }
+    .node-toggle small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted-chem);
+      font-size: 9px;
+      font-weight: 500;
+    }
+    .reset-button {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid rgba(98,231,255,.38);
+      border-radius: 13px;
+      background: linear-gradient(110deg, rgba(98,231,255,.15), rgba(125,240,189,.08));
+      color: #e4fbff;
+      font-size: 12px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform 170ms ease, background 170ms ease, border-color 170ms ease;
+    }
+    .reset-button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(98,231,255,.65);
+      background: linear-gradient(110deg, rgba(98,231,255,.23), rgba(125,240,189,.15));
+    }
+    .quantum-grid {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 8px;
+    }
+    .quantum-cell {
+      min-width: 0;
+      padding: 10px 5px;
+      border: 1px solid rgba(167,139,250,.17);
+      border-radius: 12px;
+      background: rgba(167,139,250,.055);
+      text-align: center;
+    }
+    .quantum-cell span {
+      display: block;
+      color: var(--muted-chem);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .quantum-cell strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--accent-chem);
+      font-size: 19px;
+      font-weight: 850;
+    }
+    .quantum-meta { margin: 11px 0 0; color: var(--muted-chem); font-size: 10px; line-height: 1.6; }
+    .phase-legend { display: grid; gap: 9px; }
+    .phase-item { display: flex; align-items: center; gap: 9px; color: var(--muted-chem); font-size: 10px; }
+    .phase-dot { width: 10px; height: 10px; flex: 0 0 auto; border-radius: 50%; }
+    .phase-positive { background: var(--primary-chem); box-shadow: 0 0 11px rgba(167,139,250,.6); }
+    .phase-negative { background: var(--accent-chem); box-shadow: 0 0 11px rgba(98,231,255,.55); }
+    #render-status {
+      min-height: 34px;
+      margin: 10px 0 0;
+      color: var(--muted-chem);
+      font-size: 10px;
+      line-height: 1.55;
+    }
+    .orbital-explainer {
+      margin: 10px 0 0;
+      padding: 10px 11px;
+      border-left: 2px solid var(--primary-chem);
+      border-radius: 0 10px 10px 0;
+      background: rgba(167,139,250,.065);
+      color: #d0c4e8;
+      font-size: 10px;
+      line-height: 1.65;
+    }
+    .footer { margin-top: 4px; }
+    @media (max-width: 920px) {
+      .orbital-layout { grid-template-columns: minmax(0,1fr) 270px; gap: 12px; }
+      .orbital-stage-panel { min-height: 510px; }
+    }
+    @media (max-width: 760px) {
+      .orbital-layout { grid-template-columns: 1fr; }
+      .orbital-stage-panel { min-height: 440px; }
+      .orbital-sidebar { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .orbital-sidebar .orbital-panel:first-child { grid-row: span 2; }
+    }
+    @media (max-width: 540px) {
+      .orbital-hero { padding-top: 22px; }
+      .orbital-stage-panel { min-height: 390px; border-radius: 19px; }
+      .orbital-sidebar { grid-template-columns: 1fr; }
+      .orbital-sidebar .orbital-panel:first-child { grid-row: auto; }
+      .stage-hint { max-width: 115px; }
+      .stage-controls-hint { max-width: 135px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reset-button { transition: none; }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <header class="chem-nav-wrap">
+    <nav class="chem-nav chem-shell" aria-label="Main navigation">
+      <a class="chem-brand" href="./index.html" aria-label="Back to Atomic Structure modules">
+        <span class="chem-logo" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="16" cy="16" rx="12" ry="5.2" stroke="currentColor" stroke-width="1.5" transform="rotate(38 16 16)"/>
+            <ellipse cx="16" cy="16" rx="12" ry="5.2" stroke="currentColor" stroke-width="1.5" transform="rotate(-38 16 16)"/>
+            <circle cx="16" cy="16" r="2.4" fill="#7df0bd"/>
+          </svg>
+        </span>
+        <span class="chem-brand-copy">
+          Vinit Simulation Hub
+          <small>Chemistry Laboratory</small>
+        </span>
+      </a>
+      <div class="chem-nav-actions">
+        <a class="back-link" href="./index.html" aria-label="Back to Atomic Structure" title="Back to Atomic Structure">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12.5 4.5 7 10l5.5 5.5M7.5 10H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Atomic Structure
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="chem-shell">
+    <section class="orbital-hero" aria-labelledby="page-title">
+      <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Atomic Structure · 3D Laboratory</span>
+      <h1 id="page-title">3D Orbitals <span style="color:var(--accent-chem)">&amp; Nodes</span></h1>
+      <p>Rotate hydrogenic orbital probability clouds, inspect wavefunction phases and reveal the nodal surfaces that separate regions of opposite phase.</p>
+    </section>
+
+    <div class="orbital-layout">
+      <section class="orbital-stage-panel" aria-label="Interactive 3D orbital viewer">
+        <div class="stage-topline">
+          <span class="stage-badge">Interactive WebGL</span>
+          <span class="stage-hint">Drag to rotate · Pinch to zoom</span>
+        </div>
+        <div id="orbital-stage">
+          <canvas id="orbital-canvas" aria-label="Interactive three-dimensional atomic orbital model"></canvas>
+        </div>
+        <div class="stage-bottomline">
+          <span id="stage-orbital-name" class="stage-orbital-name">1s · Spherical cloud</span>
+          <span class="stage-controls-hint">Two-finger pinch or mouse wheel to zoom</span>
+        </div>
+      </section>
+
+      <aside class="orbital-sidebar" aria-label="Orbital controls and information">
+        <section class="orbital-panel">
+          <div class="orbital-panel-heading">Orbital controls</div>
+          <div class="orbital-panel-body">
+            <label class="control-label" for="orbital-3d-select">Select orbital</label>
+            <select id="orbital-3d-select" class="orbital-select">
+              <option value="1s">1s — Spherical</option>
+              <option value="2s">2s — Spherical with radial node</option>
+              <option value="2p_x">2pₓ — Dumbbell (x)</option>
+              <option value="2p_y">2pᵧ — Dumbbell (y)</option>
+              <option value="2p_z">2p_z — Dumbbell (z)</option>
+              <option value="3d_xy">3dₓᵧ — Four-leaf clover</option>
+              <option value="3d_z2">3d_z² — Dumbbell + torus</option>
+            </select>
+
+            <div style="height:1px;margin:16px 0;background:var(--line-chem)" aria-hidden="true"></div>
+
+            <span class="control-label">Nodal surfaces</span>
+            <div class="node-toggles">
+              <label class="node-toggle">
+                <input id="show-radial-nodes" type="checkbox" checked>
+                <span>Radial nodes<small>Transparent spherical shells</small></span>
+              </label>
+              <label class="node-toggle">
+                <input id="show-angular-nodes" type="checkbox" checked>
+                <span>Angular nodes<small>Nodal planes or nodal cones</small></span>
+              </label>
+            </div>
+
+            <div style="height:1px;margin:16px 0;background:var(--line-chem)" aria-hidden="true"></div>
+            <button id="reset-view" class="reset-button" type="button">↺ &nbsp; Reset View</button>
+            <p id="render-status" role="status" aria-live="polite">Preparing the 3D orbital scene…</p>
+          </div>
+        </section>
+
+        <section class="orbital-panel">
+          <div class="orbital-panel-heading">Quantum numbers</div>
+          <div class="orbital-panel-body">
+            <div class="quantum-grid" aria-live="polite">
+              <div class="quantum-cell"><span>Principal · n</span><strong id="quantum-n">1</strong></div>
+              <div class="quantum-cell"><span>Azimuthal · l</span><strong id="quantum-l">0</strong></div>
+              <div class="quantum-cell"><span>Magnetic · m</span><strong id="quantum-m">0</strong></div>
+            </div>
+            <p id="quantum-meta" class="quantum-meta">1s orbital · s subshell · 0 radial nodes.</p>
+            <p id="orbital-description" class="orbital-explainer">Spherical electron cloud with no angular or radial nodes.</p>
+          </div>
+        </section>
+
+        <section class="orbital-panel">
+          <div class="orbital-panel-heading">Wavefunction phase</div>
+          <div class="orbital-panel-body">
+            <div class="phase-legend">
+              <div class="phase-item"><span class="phase-dot phase-positive" aria-hidden="true"></span> Positive phase · +ψ</div>
+              <div class="phase-item"><span class="phase-dot phase-negative" aria-hidden="true"></span> Negative phase · −ψ</div>
+            </div>
+            <p class="quantum-meta">Colors represent the sign of the real wavefunction, not positive or negative electric charge.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <span><strong>Vinit Simulation Hub</strong> · Chemistry Learning Environment</span>
+      <span>3D hydrogenic orbitals · Interactive WebGL</span>
+    </footer>
+  </main>
+
+  <script type="module" src="./orbitals-3d.js"></script>
+</body>
+</html>
