@@ -19,7 +19,6 @@ const ORBITALS = {
     notation: "R_{10}(r)",
     formula: String.raw`\[R_{10}(r) \propto e^{-r/a_0}\]`,
     radial: (rho) => Math.exp(-rho),
-    nodes: []
   },
   "2s": {
     n: 2,
@@ -28,7 +27,6 @@ const ORBITALS = {
     notation: "R_{20}(r)",
     formula: String.raw`\[R_{20}(r) \propto \left(2-\frac{r}{a_0}\right)e^{-r/(2a_0)}\]`,
     radial: (rho) => (2 - rho) * Math.exp(-rho / 2),
-    nodes: [2]
   },
   "2p": {
     n: 2,
@@ -37,8 +35,6 @@ const ORBITALS = {
     notation: "R_{21}(r)",
     formula: String.raw`\[R_{21}(r) \propto \left(\frac{r}{a_0}\right)e^{-r/(2a_0)}\]`,
     radial: (rho) => rho * Math.exp(-rho / 2),
-    // R(0) = 0 here is the origin, not a radial node.
-    nodes: []
   },
   "3s": {
     n: 3,
@@ -47,7 +43,6 @@ const ORBITALS = {
     notation: "R_{30}(r)",
     formula: String.raw`\[R_{30}(r) \propto \left[27-18\left(\frac{r}{a_0}\right)+2\left(\frac{r}{a_0}\right)^2\right]e^{-r/(3a_0)}\]`,
     radial: (rho) => (27 - 18 * rho + 2 * rho * rho) * Math.exp(-rho / 3),
-    nodes: [4.5 - 1.5 * Math.sqrt(3), 4.5 + 1.5 * Math.sqrt(3)]
   },
   "3p": {
     n: 3,
@@ -56,7 +51,6 @@ const ORBITALS = {
     notation: "R_{31}(r)",
     formula: String.raw`\[R_{31}(r) \propto \left(\frac{r}{a_0}\right)\left(6-\frac{r}{a_0}\right)e^{-r/(3a_0)}\]`,
     radial: (rho) => rho * (6 - rho) * Math.exp(-rho / 3),
-    nodes: [6]
   },
   "3d": {
     n: 3,
@@ -84,6 +78,7 @@ const elements = {
 
 let radialChart = null;
 let selectedOrbital = "1s";
+let currentRadialNodes = [];
 
 function assertElementsExist() {
   for (const [name, element] of Object.entries(elements)) {
@@ -133,11 +128,70 @@ function normaliseByPeak(values, preserveSign) {
   return values.map((value) => value / peak);
 }
 
+/**
+ * Detect positive-radius radial nodes directly from the selected radial
+ * function. A sign-change scan locates brackets; bisection refines each root.
+ * The origin is deliberately excluded because R(0) = 0 for p and d states
+ * is not counted as a radial node.
+ */
+function findRadialNodes(radialFunction) {
+  const scanIntervals = 4000;
+  const minimumRadius = 1e-6;
+  const roots = [];
+  let left = minimumRadius;
+  let leftValue = radialFunction(left);
+
+  for (let index = 1; index <= scanIntervals; index += 1) {
+    const right = minimumRadius +
+      (MAX_RADIUS_A0 - minimumRadius) * index / scanIntervals;
+    const rightValue = radialFunction(right);
+    let root = null;
+
+    if (Math.abs(rightValue) < 1e-12 && right > 1e-5) {
+      root = right;
+    } else if (leftValue * rightValue < 0) {
+      let low = left;
+      let high = right;
+      let lowValue = leftValue;
+
+      for (let iteration = 0; iteration < 64; iteration += 1) {
+        const middle = (low + high) / 2;
+        const middleValue = radialFunction(middle);
+
+        if (Math.abs(middleValue) < 1e-15) {
+          low = middle;
+          high = middle;
+          break;
+        }
+
+        if (lowValue * middleValue < 0) {
+          high = middle;
+        } else {
+          low = middle;
+          lowValue = middleValue;
+        }
+      }
+
+      root = (low + high) / 2;
+    }
+
+    if (root !== null && root > 1e-5 &&
+        !roots.some((existing) => Math.abs(existing - root) < 1e-4)) {
+      roots.push(root);
+    }
+
+    left = right;
+    leftValue = rightValue;
+  }
+
+  return roots.sort((a, b) => a - b);
+}
+
 const radialNodePlugin = {
   id: "radialNodeMarkers",
   afterDatasetsDraw(chart) {
-    const orbital = ORBITALS[selectedOrbital];
-    if (!orbital || orbital.nodes.length === 0) return;
+    const nodes = currentRadialNodes;
+    if (nodes.length === 0) return;
 
     const xScale = chart.scales.x;
     const area = chart.chartArea;
@@ -357,19 +411,19 @@ async function typesetFormula() {
   }
 }
 
-function renderNodeSummary(orbital) {
-  if (orbital.nodes.length === 0) {
+function renderNodeSummary(orbital, nodes) {
+  if (nodes.length === 0) {
     elements.nodeSummary.innerHTML =
-      "<strong>Radial nodes:</strong> 0 · No radial node for this orbital.";
+      `<strong>Radial nodes:</strong> 0 · No radial node for ${orbital.label} (excluding the origin).`;
     return;
   }
 
-  const positions = orbital.nodes
+  const positions = nodes
     .map((node) => `${node.toFixed(2)} a₀`)
     .join(", ");
 
   elements.nodeSummary.innerHTML =
-    `<strong>Radial nodes:</strong> ${orbital.nodes.length} · ${positions}`;
+    `<strong>Radial nodes:</strong> ${nodes.length} · ${positions}`;
 }
 
 function updateOrbital(orbitalKey) {
@@ -379,6 +433,7 @@ function updateOrbital(orbitalKey) {
   }
 
   selectedOrbital = orbitalKey;
+  currentRadialNodes = findRadialNodes(orbital.radial);
 
   const radii = makeRadiusSamples();
   const curves = evaluateOrbital(orbital, radii);
@@ -416,7 +471,7 @@ function updateOrbital(orbitalKey) {
   }
   elements.formula.innerHTML = orbital.formula;
 
-  renderNodeSummary(orbital);
+  renderNodeSummary(orbital, currentRadialNodes);
   elements.liveStatus.textContent =
     `Showing ${orbital.label}: ${SAMPLE_INTERVALS + 1} calculated radial samples from 0 to ${MAX_RADIUS_A0} a₀.`;
 
