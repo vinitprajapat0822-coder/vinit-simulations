@@ -501,7 +501,7 @@ button { min-height: 48px; cursor: pointer; }
   .chem-brand-copy small { font-size: 9px; }
   .back-link { width: 44px; padding-inline: 0; font-size: 0; }
   .back-link svg { width: 18px; height: 18px; }
-  .theory-toggle { min-height: 44px; gap: 7px; padding-inline: 10px; font-size: 11px; }
+  .theory-toggle { min-height: 48px; gap: 7px; padding-inline: 10px; font-size: 11px; }
   .theory-switch { width: 27px; height: 16px; }
   .theory-switch::after { width: 8px; height: 8px; }
   .hero { min-height: 0; grid-template-columns: minmax(0, 1fr); padding-block: 42px 24px; }
