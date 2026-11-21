@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en" data-subject="chemistry">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080914">
+  <meta name="description" content="An interactive JEE Mole Concept and Stoichiometry Lab. Balance chemical equations, identify limiting reagents and visualize particle-level reactions.">
+  <title>Mole Concept &amp; Stoichiometry Lab | Vinit Simulation Hub</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="../../atomic-structure/style.css">
+  <style>
+    :root {
+      --mole-bg: #080914;
+      --mole-panel: rgba(21, 19, 42, .78);
+      --mole-panel-soft: rgba(25, 24, 48, .57);
+      --mole-border: rgba(159, 181, 255, .18);
+      --mole-cyan: var(--accent-chem, #62e7ff);
+      --mole-purple: var(--primary-chem, #a78bfa);
+      --mole-green: var(--green-chem, #7df0bd);
+      --mole-muted: #aaa8c3;
+      --mole-text: #f5f4ff;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--mole-bg); }
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--mole-text);
+      background:
+        radial-gradient(ellipse at 10% 0%, rgba(98, 231, 255, .11), transparent 34rem),
+        radial-gradient(ellipse at 92% 16%, rgba(167, 139, 250, .13), transparent 33rem),
+        radial-gradient(ellipse at 55% 100%, rgba(125, 240, 189, .07), transparent 38rem),
+        var(--mole-bg);
+    }
+    button, input, select { font: inherit; }
+    button, a, input, select { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--mole-cyan);
+      outline-offset: 3px;
+    }
+
+    .mole-shell { width: min(1540px, calc(100% - 36px)); margin: 0 auto; }
+    .mole-topbar {
+      position: sticky; z-index: 30; top: 0;
+      border-bottom: 1px solid rgba(205, 211, 255, .11);
+      background: rgba(8, 9, 20, .79);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+    }
+    .mole-nav {
+      display: flex; min-height: 68px; align-items: center;
+      justify-content: space-between; gap: 14px;
+    }
+    .mole-brand { display: flex; min-width: 0; align-items: center; gap: 11px; }
+    .mole-brand-mark {
+      display: grid; width: 40px; height: 40px; flex: 0 0 auto;
+      place-items: center; border: 1px solid rgba(98, 231, 255, .34);
+      border-radius: 14px; color: var(--mole-cyan);
+      background: linear-gradient(145deg, rgba(98,231,255,.15), rgba(167,139,250,.16));
+      box-shadow: 0 0 25px rgba(98,231,255,.11), inset 0 1px rgba(255,255,255,.16);
+      font-size: 21px;
+    }
+    .mole-brand-copy { display: grid; font-size: 13px; font-weight: 850; line-height: 1.2; }
+    .mole-brand-copy small {
+      margin-top: 4px; color: var(--mole-muted); font-size: 9px;
+      font-weight: 750; letter-spacing: .15em; text-transform: uppercase;
+    }
+    .mole-nav-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .mole-nav-link {
+      display: inline-flex; min-height: 42px; align-items: center; justify-content: center;
+      padding: 0 13px; border: 1px solid var(--mole-border); border-radius: 13px;
+      color: #e4e4f5; background: rgba(255,255,255,.035);
+      font-size: 11px; font-weight: 800; transition: .2s ease;
+    }
+    .mole-nav-link:hover { transform: translateY(-2px); border-color: rgba(98,231,255,.48); background: rgba(98,231,255,.08); }
+
+    .mole-hero {
+      display: flex; align-items: end; justify-content: space-between; gap: 24px;
+      padding: 40px 0 25px;
+    }
+    .mole-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 11px; border: 1px solid rgba(98,231,255,.23);
+      border-radius: 99px; color: #b9f4ff; background: rgba(98,231,255,.07);
+      font-size: 9px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase;
+    }
+    .mole-eyebrow::before {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--mole-green);
+      box-shadow: 0 0 12px var(--mole-green); content: "";
+    }
+    .mole-hero h1 {
+      margin: 15px 0 9px; font-size: clamp(30px, 5vw, 52px);
+      font-weight: 900; letter-spacing: -.06em; line-height: 1.02;
+    }
+    .mole-hero h1 span {
+      color: transparent; background: linear-gradient(95deg, var(--mole-cyan), var(--mole-purple), var(--mole-green));
+      background-clip: text; -webkit-background-clip: text;
+    }
+    .mole-hero p { max-width: 700px; margin: 0; color: var(--mole-muted); font-size: 13px; line-height: 1.7; }
+    .hero-chip {
+      flex: 0 0 auto; padding: 9px 12px; border: 1px solid rgba(125,240,189,.2);
+      border-radius: 12px; color: #baf9df; background: rgba(125,240,189,.065);
+      font-size: 10px; font-weight: 850; letter-spacing: .1em;
+    }
+
+    .lab-grid {
+      display: grid; grid-template-columns: minmax(250px, .82fr) minmax(350px, 1.35fr) minmax(255px, .82fr);
+      align-items: start; gap: 15px; padding-bottom: 30px;
+    }
+    .glass-panel {
+      min-width: 0; padding: 19px; border: 1px solid var(--mole-border);
+      border-radius: 22px; background: linear-gradient(145deg, rgba(36,35,65,.76), rgba(13,14,30,.82)), var(--mole-panel);
+      box-shadow: 0 22px 58px rgba(0,0,0,.27), inset 0 1px 0 rgba(255,255,255,.09), 0 0 28px rgba(98,231,255,.035);
+      backdrop-filter: blur(22px) saturate(145%); -webkit-backdrop-filter: blur(22px) saturate(145%);
+    }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 17px; }
+    .panel-heading h2 { margin: 0; font-size: 15px; font-weight: 900; letter-spacing: -.025em; }
+    .panel-index { color: rgba(180,184,218,.65); font-size: 9px; font-weight: 900; letter-spacing: .15em; }
+
+    .field { display: grid; gap: 8px; margin-bottom: 16px; }
+    .field label, .field-label {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      color: #dcdcf0; font-size: 11px; font-weight: 800;
+    }
+    .field small { color: var(--mole-muted); font-size: 10px; line-height: 1.5; }
+    .mole-input, .mole-select {
+      width: 100%; min-width: 0; min-height: 47px; padding: 0 13px;
+      border: 1px solid rgba(177,190,255,.2); border-radius: 13px;
+      color: #f5f6ff; background: rgba(7,9,24,.72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.045);
+    }
+    .mole-input::placeholder { color: #777d9e; }
+    .mole-select { cursor: pointer; }
+    .mole-select option { color: #f5f6ff; background: #101326; }
+    .mole-input:focus, .mole-select:focus { border-color: rgba(98,231,255,.65); outline: none; box-shadow: 0 0 0 3px rgba(98,231,255,.1); }
+    .reaction-input-wrap { position: relative; }
+    .reaction-input { font-weight: 750; letter-spacing: .015em; }
+    .input-tip { margin-top: -7px; color: #8e92b2; font-size: 9px; line-height: 1.5; }
+
+    .primary-action {
+      position: relative; display: inline-flex; width: 100%; min-height: 49px;
+      align-items: center; justify-content: center; gap: 9px; overflow: hidden;
+      margin: 1px 0 18px; padding: 0 15px; border: 1px solid rgba(98,231,255,.43);
+      border-radius: 14px; color: #07131b;
+      background: linear-gradient(105deg, #62e7ff, #7df0bd);
+      box-shadow: 0 8px 24px rgba(98,231,255,.15), inset 0 1px 0 rgba(255,255,255,.52);
+      font-size: 12px; font-weight: 950; cursor: pointer;
+      transition: transform 220ms cubic-bezier(.2,.85,.2,1.25), box-shadow 220ms ease, filter 220ms ease;
+    }
+    .primary-action:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(98,231,255,.25); filter: saturate(1.12); }
+    .primary-action:active { transform: scale(.975); }
+    .primary-action:disabled { cursor: wait; opacity: .72; }
+    .primary-action .action-icon { font-size: 16px; }
+
+    .range-field { padding: 12px; border: 1px solid rgba(177,190,255,.12); border-radius: 14px; background: rgba(255,255,255,.025); }
+    .range-field + .range-field { margin-top: 10px; }
+    .range-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .range-name { min-width: 0; color: #e5e6f8; font-size: 10px; font-weight: 850; }
+    .range-value {
+      flex: 0 0 auto; min-width: 58px; padding: 4px 7px; border: 1px solid rgba(98,231,255,.2);
+      border-radius: 8px; color: #baf6ff; background: rgba(98,231,255,.07);
+      font-size: 10px; font-variant-numeric: tabular-nums; font-weight: 900; text-align: center;
+    }
+    input[type="range"].mole-range {
+      display: block; width: 100%; min-height: 34px; margin: 8px 0 0; padding: 0;
+      accent-color: var(--mole-cyan); cursor: pointer; touch-action: pan-y;
+    }
+    .range-scale { display: flex; justify-content: space-between; color: #777e9c; font-size: 9px; }
+
+    .canvas-panel { padding: 17px; }
+    .canvas-heading { margin: 1px 2px 12px; }
+    .canvas-heading h2 { margin: 0; font-size: 15px; font-weight: 900; }
+    .canvas-heading p { margin: 5px 0 0; color: var(--mole-muted); font-size: 10px; }
+    .canvas-shell {
+      position: relative; overflow: hidden; border: 1px solid rgba(98,231,255,.19);
+      border-radius: 17px; background: #090d1d;
+      box-shadow: inset 0 0 35px rgba(98,231,255,.045), 0 0 25px rgba(98,231,255,.045);
+    }
+    #molecule-canvas { display: block; width: 100%; height: auto; min-height: 285px; aspect-ratio: 1.42 / 1; }
+    .canvas-overlay {
+      position: absolute; inset: 10px 11px auto; display: flex; align-items: center;
+      justify-content: space-between; gap: 10px; pointer-events: none;
+    }
+    .canvas-tag {
+      padding: 5px 8px; border: 1px solid rgba(177,190,255,.15); border-radius: 8px;
+      color: #aab2d1; background: rgba(7,10,25,.65); font-size: 8px; font-weight: 900;
+      letter-spacing: .1em; text-transform: uppercase; backdrop-filter: blur(8px);
+    }
+    .particle-legend { display: flex; flex-wrap: wrap; gap: 13px; margin: 12px 2px 2px; }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; color: #aab0cc; font-size: 9px; font-weight: 750; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+    .canvas-note { margin: 11px 2px 0; color: #858ba9; font-size: 9px; line-height: 1.55; }
+
+    .result-card {
+      position: relative; overflow: hidden; margin-bottom: 11px; padding: 13px;
+      border: 1px solid rgba(177,190,255,.14); border-radius: 14px;
+      background: linear-gradient(140deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+    }
+    .result-label { margin-bottom: 8px; color: #999fbe; font-size: 9px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .equation-output {
+      min-height: 45px; overflow-wrap: anywhere; color: #eafaff;
+      font-size: clamp(13px, 1.35vw, 17px); font-weight: 800; line-height: 1.8;
+    }
+    .equation-output .MathJax { max-width: 100%; }
+    .reagent-badge {
+      display: inline-flex; max-width: 100%; align-items: center; gap: 7px;
+      padding: 7px 10px; border: 1px solid rgba(251,191,36,.35); border-radius: 99px;
+      color: #ffe5a6; background: rgba(251,191,36,.095);
+      box-shadow: 0 0 20px rgba(251,191,36,.075); font-size: 11px; font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+    .reagent-badge::before { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: #fbbf24; box-shadow: 0 0 9px #fbbf24; content: ""; }
+    .result-copy { color: #e1e4f7; font-size: 11px; line-height: 1.65; overflow-wrap: anywhere; }
+    .result-copy.muted { color: var(--mole-muted); }
+    .product-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+    .product-list li {
+      display: flex; justify-content: space-between; gap: 12px; padding: 7px 9px;
+      border: 1px solid rgba(125,240,189,.13); border-radius: 9px;
+      color: #d9fbea; background: rgba(125,240,189,.045); font-size: 10px;
+    }
+    .product-list strong { color: #9af4c9; font-variant-numeric: tabular-nums; }
+    .steps-toggle {
+      display: inline-flex; width: 100%; min-height: 45px; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 3px; border: 1px solid rgba(167,139,250,.3); border-radius: 13px;
+      color: #e6ddff; background: rgba(167,139,250,.09);
+      font-size: 11px; font-weight: 850; cursor: pointer; transition: .2s ease;
+    }
+    .steps-toggle:hover { border-color: rgba(167,139,250,.62); background: rgba(167,139,250,.15); }
+    .steps-panel { margin-top: 11px; padding: 13px; border: 1px solid rgba(167,139,250,.18); border-radius: 13px; background: rgba(167,139,250,.045); }
+    .steps-panel[hidden] { display: none; }
+    .steps-panel h3 { margin: 0 0 9px; color: #e3d8ff; font-size: 11px; }
+    .steps-list { display: grid; gap: 10px; margin: 0; padding-left: 18px; color: #c9cbe1; font-size: 10px; line-height: 1.65; }
+    .steps-list li::marker { color: var(--mole-cyan); font-weight: 900; }
+    .steps-list strong { color: #f0edff; }
+    .app-status {
+      min-height: 32px; margin: 11px 1px 0; color: #8c94b5;
+      font-size: 9px; line-height: 1.55;
+    }
+    .app-status[data-state="error"] { color: #ff9dba; }
+    .app-status[data-state="success"] { color: #9df0c5; }
+    .lab-footer {
+      display: flex; justify-content: space-between; gap: 12px; padding: 15px 0 24px;
+      border-top: 1px solid rgba(205,211,255,.1); color: #888eac; font-size: 10px;
+    }
+    .lab-footer strong { color: #cdd0e8; }
+
+    @media (max-width: 1120px) {
+      .lab-grid { grid-template-columns: minmax(255px,.85fr) minmax(340px,1.15fr); }
+      .results-panel { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+      .results-panel .panel-heading, .results-panel .app-status, .results-panel .steps-toggle, .results-panel .steps-panel { grid-column: 1 / -1; }
+      .results-panel .result-card { margin: 0; }
+    }
+    @media (max-width: 760px) {
+      .mole-shell { width: min(100% - 26px, 1540px); }
+      .mole-nav { min-height: 62px; }
+      .mole-nav-link { min-height: 40px; padding-inline: 10px; font-size: 10px; }
+      .mole-hero { align-items: flex-start; flex-direction: column; padding-top: 30px; gap: 13px; }
+      .hero-chip { align-self: flex-start; }
+      .lab-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+      .results-panel { grid-column: auto; display: block; }
+      .results-panel .result-card { margin-bottom: 10px; }
+      .canvas-panel { order: 2; }
+      .input-panel { order: 1; }
+      .results-panel { order: 3; }
+      #molecule-canvas { min-height: 250px; }
+      .lab-footer { flex-direction: column; }
+    }
+    @media (max-width: 430px) {
+      .mole-brand-copy { font-size: 11px; }
+      .mole-brand-mark { width: 36px; height: 36px; }
+      .mole-nav-links { gap: 5px; }
+      .mole-nav-link { min-height: 38px; padding-inline: 8px; font-size: 9px; }
+      .glass-panel { padding: 15px; border-radius: 18px; }
+      .results-panel .result-card { padding: 11px; }
+      .equation-output { font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
+      chtml: { scale: 0.96 },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/fast-balance@1.1.0/dist/legacy/fast-balance.global.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script defer src="./mole-concept.js"></script>
+</head>
+<body class="mole-lab" data-subject="chemistry">
+  <header class="mole-topbar">
+    <nav class="mole-shell mole-nav" aria-label="Mole Concept lab navigation">
+      <a class="mole-brand" href="../../../index.html" aria-label="Vinit Simulation Hub home">
+        <span class="mole-brand-mark" aria-hidden="true">⚗</span>
+        <span class="mole-brand-copy">Vinit Simulation Hub<small>Chemistry Laboratory</small></span>
+      </a>
+      <div class="mole-nav-links">
+        <a class="mole-nav-link" href="../../atomic-structure/index.html">Chemistry Dashboard</a>
+        <a class="mole-nav-link" href="../../../index.html">← Hub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="mole-shell">
+    <section class="mole-hero" aria-labelledby="page-title">
+      <div>
+        <span class="mole-eyebrow">JEE Chemistry · Interactive Simulation</span>
+        <h1 id="page-title">Mole Concept <span>&amp; Stoichiometry Lab</span></h1>
+        <p>Balance a reaction, vary the amount of each reactant and watch the limiting reagent control the maximum product yield. Every result is calculated from the balanced mole ratio.</p>
+      </div>
+      <span class="hero-chip">MASS → MOLES → MOLE RATIO</span>
+    </section>
+
+    <section class="lab-grid" aria-label="Stoichiometry simulator">
+      <aside class="glass-panel input-panel" aria-labelledby="input-title">
+        <div class="panel-heading">
+          <h2 id="input-title">Reaction Workspace</h2>
+          <span class="panel-index">01 / INPUT</span>
+        </div>
+
+        <div class="field">
+          <label for="reaction-select">Select a JEE reaction</label>
+          <select class="mole-select" id="reaction-select">
+            <option value="N2 + H2 -> NH3" selected>Nitrogen + Hydrogen → Ammonia</option>
+            <option value="H2 + O2 -> H2O">Hydrogen + Oxygen → Water</option>
+            <option value="CH4 + O2 -> CO2 + H2O">Methane combustion</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="reaction-input">Enter reaction</label>
+          <div class="reaction-input-wrap">
+            <input class="mole-input reaction-input" id="reaction-input" type="text" spellcheck="false" autocomplete="off" value="N2 + H2 -> NH3" placeholder="e.g. H2 + O2 -> H2O">
+          </div>
+          <small class="input-tip">Use spaces around species separators: H2 + O2 -&gt; H2O. Use element symbols and numeric subscripts.</small>
+        </div>
+
+        <button class="primary-action" id="simulate-button" type="button">
+          <span class="action-icon" aria-hidden="true">✦</span>
+          Balance &amp; Simulate
+        </button>
+
+        <div class="panel-heading">
+          <h2>Reactant Amounts</h2>
+          <span class="panel-index">0–10 mol</span>
+        </div>
+        <div class="range-field" id="reactant-one-field">
+          <div class="range-head">
+            <span class="range-name" id="reactant-one-label">Reactant 1 · N2</span>
+            <output class="range-value" id="moles-one-value" for="moles-one">2.0 mol</output>
+          </div>
+          <input class="mole-range" id="moles-one" type="range" min="0" max="10" step="0.1" value="2" aria-label="Moles of reactant one">
+          <div class="range-scale"><span>0 mol</span><span>10 mol</span></div>
+        </div>
+
+        <div class="range-field" id="reactant-two-field">
+          <div class="range-head">
+            <span class="range-name" id="reactant-two-label">Reactant 2 · H2</span>
+            <output class="range-value" id="moles-two-value" for="moles-two">3.0 mol</output>
+          </div>
+          <input class="mole-range" id="moles-two" type="range" min="0" max="10" step="0.1" value="3" aria-label="Moles of reactant two">
+          <div class="range-scale"><span>0 mol</span><span>10 mol</span></div>
+        </div>
+        <div id="extra-reactant-controls" aria-live="polite"></div>
+        <p class="input-tip">For reactions with more than two reactants, additional mole sliders appear automatically. Each slider represents the amount supplied, not the stoichiometric coefficient.</p>
+      </aside>
+
+      <section class="glass-panel canvas-panel" aria-labelledby="canvas-title">
+        <div class="canvas-heading">
+          <div>
+            <h2 id="canvas-title">Molecular Reaction View</h2>
+            <p>Particle-level view · 1 mol is represented by 10 particles</p>
+          </div>
+        </div>
+        <div class="canvas-shell">
+          <div class="canvas-overlay" aria-hidden="true">
+            <span class="canvas-tag">Reactants</span>
+            <span class="canvas-tag">Products</span>
+          </div>
+          <canvas id="molecule-canvas" width="900" height="620" role="img" aria-label="Animated particle visualization of reactants converting into products">
+            Your browser does not support HTML Canvas.
+          </canvas>
+        </div>
+        <div class="particle-legend" aria-label="Particle colour legend">
+          <span class="legend-item"><i class="legend-dot" style="color:#62e7ff;background:#62e7ff"></i> Reactant 1</span>
+          <span class="legend-item"><i class="legend-dot" style="color:#a78bfa;background:#a78bfa"></i> Reactant 2 / additional</span>
+          <span class="legend-item"><i class="legend-dot" style="color:#7df0bd;background:#7df0bd"></i> Product</span>
+        </div>
+        <p class="canvas-note">Illustrative particle counts are scaled for visualization. The numerical mole calculations shown at right use the exact balanced stoichiometric coefficients, not the drawing scale.</p>
+      </section>
+
+      <aside class="glass-panel results-panel" aria-labelledby="results-title" aria-live="polite">
+        <div class="panel-heading">
+          <h2 id="results-title">Stoichiometry Results</h2>
+          <span class="panel-index">02 / OUTPUT</span>
+        </div>
+
+        <div class="result-card">
+          <div class="result-label">Balanced equation</div>
+          <div class="equation-output" id="balanced-equation">Balance a reaction to begin.</div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-label">Limiting reagent</div>
+          <div id="limiting-reagent"><span class="result-copy muted">Waiting for calculation</span></div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-label">Excess reagent · leftover amount</div>
+          <div class="result-copy muted" id="excess-reagent">—</div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-label">Product formed</div>
+          <ul class="product-list" id="product-formed">
+            <li><span>Awaiting reaction</span><strong>—</strong></li>
+          </ul>
+        </div>
+
+        <div class="result-card">
+          <div class="result-label">Reaction extent</div>
+          <div class="result-copy" id="reaction-extent">—</div>
+        </div>
+
+        <button class="steps-toggle" id="steps-toggle" type="button" aria-expanded="false" aria-controls="steps-panel">
+          <span aria-hidden="true">▤</span> Show Calculation Steps
+        </button>
+        <div class="steps-panel" id="steps-panel" hidden>
+          <h3>Limiting Reagent Method</h3>
+          <ol class="steps-list" id="steps-list">
+            <li>Balance the equation and enter the reactant amounts.</li>
+          </ol>
+        </div>
+        <p class="app-status" id="app-status" role="status" aria-live="polite">Ready. Choose a reaction or enter your own equation.</p>
+      </aside>
+    </section>
+
+    <footer class="lab-footer">
+      <span><strong>Vinit Simulation Hub</strong> · Chemistry Learning Environment</span>
+      <span>Stoichiometry is calculated from balanced mole ratios.</span>
+    </footer>
+  </main>
+</body>
+</html>
