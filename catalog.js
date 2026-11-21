@@ -120,7 +120,7 @@ const CATALOG = [
   { id: "photoelectric", title: "Photoelectric Effect", desc: "Einstein equation, threshold frequency, stopping potential and intensity effects.", category: "modern", tags: "photoelectric einstein quantum", status: "live", url: "projects/photoelectric.html", icon: "💡" },
   { id: "atomic-models", title: "Bohr Atomic Model", desc: "Hydrogen energy levels, electron transitions and spectral lines.", category: "modern", tags: "bohr atom spectrum energy levels", status: "live", url: "projects/bohr-model.html", icon: "⚛️" },
 { id: "debroglie", title: "de Broglie Wavelength", desc: "Matter waves: λ = h/p. Explore wave nature of particles.", category: "modern", tags: "de broglie wavelength dual nature", status: "live", url: "projects/debroglie.html", icon: "🌊" },
-  { id: "radioactivity", title: "Radioactivity & Half-life", desc: "Exponential decay, half-life, activity and decay constant.", category: "modern", tags: "radioactivity half-life nuclear decay", status: "live", url: "projects/radioactivity.html", icon: "☢️" },,
+  { id: "radioactivity", title: "Radioactivity & Half-life", desc: "Exponential decay, half-life, activity and decay constant.", category: "modern", tags: "radioactivity half-life nuclear decay", status: "live", url: "projects/radioactivity.html", icon: "☢️" },
 
   // TOOLS (4)
   { id: "graphing-tool", title: "Graphing Calculator", desc: "Plot functions and experimental data points.", category: "tools", tags: "graph plot function data", status: "live", icon: "📊" , url: "projects/graphing-tool.html" },
@@ -152,17 +152,46 @@ const CATALOG = [
   { id: "capacitor-live", title: "RC Charging Curve", desc: "Capacitor charge vs time", category: "em", tags: "capacitor", status: "live", url: "projects/capacitor.html", icon: "🔋" },
   { id: "lens-live", title: "Thin Lens Equation", desc: "Lens formula", category: "optics", tags: "lens", status: "live", url: "projects/lens.html", icon: "🔦" },
 
+  // PHYSICAL CHEMISTRY
+  { id: "chem-physical-mole-concept", title: "Mole Concept", desc: "Explore mole, molar mass, limiting reagent, empirical formula and molecular formula calculations.", category: "chem-physical", tags: "mole concept molar mass stoichiometry limiting reagent empirical molecular formula", status: "coming-soon", url: "#", icon: "⚗️" },
+  { id: "chem-physical-states", title: "States of Matter", desc: "Study gas laws, kinetic theory, molecular speeds and real-gas behaviour.", category: "chem-physical", tags: "states of matter gases gas laws kinetic theory real gas", status: "coming-soon", url: "#", icon: "🌫️" },
+  { id: "chem-physical-thermodynamics", title: "Thermodynamics", desc: "Visualize the first law, internal energy, enthalpy, entropy and Gibbs energy.", category: "chem-physical", tags: "thermodynamics first law enthalpy entropy gibbs energy", status: "coming-soon", url: "#", icon: "🌡️" },
+  { id: "chem-physical-equilibrium", title: "Chemical Equilibrium", desc: "Explore Kc, Kp, reaction quotient and Le Chatelier's principle.", category: "chem-physical", tags: "chemical equilibrium kc kp reaction quotient le chatelier", status: "coming-soon", url: "#", icon: "⚖️" },
+  { id: "chem-physical-ionic-equilibrium", title: "Ionic Equilibrium", desc: "Practice pH, buffers, salt hydrolysis, solubility product and common-ion effect.", category: "chem-physical", tags: "ionic equilibrium ph buffer hydrolysis solubility product common ion", status: "coming-soon", url: "#", icon: "🧪" },
+  { id: "chem-physical-solutions", title: "Solutions", desc: "Work with concentration terms, Raoult's law and colligative properties.", category: "chem-physical", tags: "solutions concentration molarity molality raoults law colligative properties", status: "coming-soon", url: "#", icon: "💧" },
+  { id: "chem-physical-redox", title: "Redox Reactions", desc: "Learn oxidation number, redox balancing and equivalent concepts.", category: "chem-physical", tags: "redox oxidation reduction oxidation number balancing equivalent", status: "coming-soon", url: "#", icon: "🔋" },
+  { id: "chem-physical-electrochemistry", title: "Electrochemistry", desc: "Explore galvanic cells, electrode potential, Nernst equation, EMF and electrolysis.", category: "chem-physical", tags: "electrochemistry galvanic cell electrode potential nernst emf electrolysis", status: "coming-soon", url: "#", icon: "⚡" },
+  { id: "chem-physical-kinetics", title: "Chemical Kinetics", desc: "Study rate laws, reaction order, integrated rate equations and Arrhenius equation.", category: "chem-physical", tags: "chemical kinetics rate law order integrated rate arrhenius equation", status: "coming-soon", url: "#", icon: "⏱️" },
+
+  // INORGANIC CHEMISTRY
+  { id: "chem-inorganic-periodic", title: "Periodic Properties", desc: "Compare atomic and ionic radii, ionization enthalpy, electron gain enthalpy and electronegativity trends.", category: "chem-inorganic", tags: "periodic properties periodic table atomic radius ionization enthalpy electronegativity", status: "coming-soon", url: "#", icon: "🧩" },
+  { id: "chem-inorganic-bonding", title: "Chemical Bonding", desc: "Explore ionic and covalent bonding, VSEPR shapes, hybridisation and molecular orbital theory.", category: "chem-inorganic", tags: "chemical bonding ionic covalent vsepr hybridisation molecular orbital theory", status: "coming-soon", url: "#", icon: "🔗" },
+  { id: "chem-inorganic-hydrogen", title: "Hydrogen", desc: "Study hydrogen isotopes, hydrides, water and hydrogen peroxide.", category: "chem-inorganic", tags: "hydrogen isotopes hydrides water hydrogen peroxide", status: "coming-soon", url: "#", icon: "💧" },
+  { id: "chem-inorganic-s-block", title: "s-Block Elements", desc: "Review alkali and alkaline earth metals, their properties and important compounds.", category: "chem-inorganic", tags: "s block alkali metals alkaline earth metals compounds", status: "coming-soon", url: "#", icon: "🧱" },
+  { id: "chem-inorganic-p-block", title: "p-Block Elements", desc: "Explore the chemistry and trends of groups 13 to 18 and their compounds.", category: "chem-inorganic", tags: "p block groups 13 14 15 16 17 18 inorganic compounds", status: "coming-soon", url: "#", icon: "🧬" },
+  { id: "chem-inorganic-df-block", title: "d- and f-Block Elements", desc: "Study transition elements, lanthanoids, actinoids and their characteristic properties.", category: "chem-inorganic", tags: "d block f block transition elements lanthanoids actinoids", status: "coming-soon", url: "#", icon: "⚛️" },
+  { id: "chem-inorganic-coordination", title: "Coordination Compounds", desc: "Practice nomenclature, isomerism, bonding, crystal field theory and magnetic behaviour.", category: "chem-inorganic", tags: "coordination compounds nomenclature isomerism crystal field theory magnetic", status: "coming-soon", url: "#", icon: "🧲" },
+  { id: "chem-inorganic-metallurgy", title: "Metallurgy", desc: "Explore ore concentration, extraction principles and refining of metals.", category: "chem-inorganic", tags: "metallurgy ores concentration extraction refining metals", status: "coming-soon", url: "#", icon: "🔥" },
+
+  // LAB & PRACTICAL CHEMISTRY
+  { id: "chem-practical-volumetric", title: "Volumetric Analysis", desc: "Practice titration setup, endpoint detection and concentration calculations.", category: "chem-practical", tags: "volumetric analysis titration endpoint concentration practical chemistry", status: "coming-soon", url: "#", icon: "🧪" },
+  { id: "chem-practical-salt-analysis", title: "Salt Analysis", desc: "Follow systematic qualitative analysis to identify common cations and anions.", category: "chem-practical", tags: "salt analysis qualitative analysis cation anion practical chemistry", status: "coming-soon", url: "#", icon: "🧂" },
+  { id: "chem-practical-radicals", title: "Radical Tests", desc: "Review confirmatory tests and observations for acidic and basic radicals.", category: "chem-practical", tags: "radical tests acidic radicals basic radicals confirmatory tests", status: "coming-soon", url: "#", icon: "🔬" },
+  { id: "chem-practical-indicators", title: "pH & Indicators", desc: "Explore pH measurement, indicator colour ranges and acid-base endpoints.", category: "chem-practical", tags: "ph indicators acid base indicator colour range endpoint", status: "coming-soon", url: "#", icon: "🧫" },
+  { id: "chem-practical-separation", title: "Chromatography", desc: "Understand chromatographic separation, stationary and mobile phases, and Rf values.", category: "chem-practical", tags: "chromatography separation stationary phase mobile phase rf value practical", status: "coming-soon", url: "#", icon: "🌈" },
+
   // ORGANIC CHEMISTRY MVP (GOC)
-  { id: "organic-home", title: "Organic Chemistry Lab (MVP)", desc: "Mini GOC pack — inductive effect, resonance, hyperconjugation, acidity, carbocation stability.", category: "chemistry", tags: "organic chemistry GOC jee", status: "live", url: "projects/organic-home.html", icon: "🧪" },
-  { id: "organic-inductive", title: "Inductive Effect", desc: "+I / −I groups and distance dependence on a carbon chain (teaching model).", category: "chemistry", tags: "inductive effect GOC electronic", status: "live", url: "projects/organic-inductive.html", icon: "⬇️" },
-  { id: "organic-resonance", title: "Resonance & Electron Flow", desc: "Valid resonance forms and electron-pair movement (carboxylate-like schematic).", category: "chemistry", tags: "resonance electron flow GOC", status: "live", url: "projects/organic-resonance.html", icon: "🔁" },
-  { id: "organic-hyperconjugation", title: "Hyperconjugation", desc: "α-H count model for carbocation stabilization trends.", category: "chemistry", tags: "hyperconjugation carbocation GOC", status: "live", url: "projects/organic-hyperconjugation.html", icon: "🔗" },
-  { id: "organic-acidity", title: "Acidity Comparison", desc: "Approximate pKa trends — carboxylic acids, phenol, alcohols.", category: "chemistry", tags: "acidity pKa phenol carboxylic GOC", status: "live", url: "projects/organic-acidity.html", icon: "🧫" },
-  { id: "organic-carbocation", title: "Carbocation Stability", desc: "1° / 2° / 3° / allylic / benzylic stability teaching order.", category: "chemistry", tags: "carbocation stability intermediate GOC", status: "live", url: "projects/organic-carbocation.html", icon: "➕" },
+  { id: "organic-home", title: "Organic Chemistry Lab (MVP)", desc: "Mini GOC pack — inductive effect, resonance, hyperconjugation, acidity, carbocation stability.", category: "chem-organic", tags: "organic chemistry GOC jee", status: "live", url: "projects/organic-home.html", icon: "🧪" },
+  { id: "organic-inductive", title: "Inductive Effect", desc: "+I / −I groups and distance dependence on a carbon chain (teaching model).", category: "chem-organic", tags: "inductive effect GOC electronic", status: "live", url: "projects/organic-inductive.html", icon: "⬇️" },
+  { id: "organic-resonance", title: "Resonance & Electron Flow", desc: "Valid resonance forms and electron-pair movement (carboxylate-like schematic).", category: "chem-organic", tags: "resonance electron flow GOC", status: "live", url: "projects/organic-resonance.html", icon: "🔁" },
+  { id: "organic-hyperconjugation", title: "Hyperconjugation", desc: "α-H count model for carbocation stabilization trends.", category: "chem-organic", tags: "hyperconjugation carbocation GOC", status: "live", url: "projects/organic-hyperconjugation.html", icon: "🔗" },
+  { id: "organic-acidity", title: "Acidity Comparison", desc: "Approximate pKa trends — carboxylic acids, phenol, alcohols.", category: "chem-organic", tags: "acidity pKa phenol carboxylic GOC", status: "live", url: "projects/organic-acidity.html", icon: "🧫" },
+  { id: "organic-carbocation", title: "Carbocation Stability", desc: "1° / 2° / 3° / allylic / benzylic stability teaching order.", category: "chem-organic", tags: "carbocation stability intermediate GOC", status: "live", url: "projects/organic-carbocation.html", icon: "➕" },
 ];
 
 const CATEGORIES = [
   { id: "all", label: "All" },
+  // Physics
   { id: "kinematics", label: "Kinematics" },
   { id: "mechanics", label: "Mechanics" },
   { id: "forces", label: "Forces" },
@@ -173,8 +202,13 @@ const CATEGORIES = [
   { id: "rotation", label: "Rotation" },
   { id: "fluids", label: "Fluids" },
   { id: "modern", label: "Modern" },
-  { id: "chemistry", label: "Chemistry" },
+  // Chemistry
+  { id: "chem-physical", label: "Physical Chemistry" },
+  { id: "chem-inorganic", label: "Inorganic Chemistry" },
+  { id: "chem-organic", label: "Organic Chemistry" },
+  { id: "chem-practical", label: "Lab & Practical" },
+  // Other sections
   { id: "math", label: "Math" },
-    { id: "tools", label: "Tools" },
+  { id: "tools", label: "Tools" },
   { id: "fun", label: "Fun" }
 ];
