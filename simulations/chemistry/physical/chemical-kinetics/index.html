@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0514">
+  <meta name="description" content="Explore reaction order, rate laws, Arrhenius temperature effects, half-life and collision theory in the Chemical Kinetics Lab.">
+  <title>Chemical Kinetics Lab | Vinit Simulation Hub</title>
+  <link rel="stylesheet" href="../../atomic-structure/style.css">
+  <style>
+    :root {
+      --kin-bg: var(--bg-chem, #0a0514);
+      --kin-primary: var(--primary-chem, #a78bfa);
+      --kin-accent: var(--accent-chem, #62e7ff);
+      --kin-green: var(--green-chem, #7df0bd);
+      --kin-pink: var(--magenta-chem, #f472d0);
+      --kin-text: var(--text-chem, #f5f1ff);
+      --kin-muted: var(--muted-chem, #aaa0c5);
+      --kin-line: var(--line-chem, rgba(221,207,255,.14));
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; min-height: 100%; background: var(--kin-bg); }
+    body {
+      min-width: 320px; min-height: 100vh; margin: 0; overflow-x: hidden; color: var(--kin-text);
+      background: radial-gradient(ellipse at 8% 0%,rgba(167,139,250,.16),transparent 34rem),
+        radial-gradient(ellipse at 92% 14%,rgba(98,231,255,.11),transparent 34rem),
+        radial-gradient(ellipse at 55% 100%,rgba(244,114,208,.07),transparent 38rem),var(--kin-bg);
+    }
+    button,input,select { font: inherit; }
+    button,a,input,select { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible { outline: 3px solid var(--kin-accent); outline-offset: 3px; }
+    .kin-shell { width: min(1580px,calc(100% - 36px)); margin-inline: auto; }
+    .kin-topbar { position: sticky; z-index: 20; top: 0; border-bottom: 1px solid rgba(221,207,255,.1); background: rgba(10,5,20,.8); backdrop-filter: blur(22px) saturate(155%); -webkit-backdrop-filter: blur(22px) saturate(155%); }
+    .kin-nav { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 14px; }
+    .kin-brand { display: flex; align-items: center; gap: 11px; color: inherit; text-decoration: none; font-size: 13px; font-weight: 850; }
+    .kin-mark { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid rgba(98,231,255,.34); border-radius: 14px; color: var(--kin-accent); background: linear-gradient(145deg,rgba(167,139,250,.2),rgba(98,231,255,.12)); box-shadow: 0 0 24px rgba(98,231,255,.1),inset 0 1px rgba(255,255,255,.15); font-size: 21px; }
+    .kin-brand small { display: block; margin-top: 3px; color: var(--kin-muted); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
+    .kin-nav-link { display: inline-flex; min-height: 42px; align-items: center; padding: 0 13px; border: 1px solid var(--kin-line); border-radius: 13px; color: #e8e4f5; background: rgba(255,255,255,.035); font-size: 10px; font-weight: 800; text-decoration: none; }
+    .kin-hero { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 37px 0 24px; }
+    .kin-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid rgba(167,139,250,.3); border-radius: 99px; color: #d9ceff; background: rgba(167,139,250,.08); font-size: 9px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+    .kin-eyebrow::before { width: 7px; height: 7px; border-radius: 50%; background: var(--kin-green); box-shadow: 0 0 12px var(--kin-green); content: ""; }
+    .kin-hero h1 { margin: 15px 0 9px; font-size: clamp(30px,5vw,50px); font-weight: 900; letter-spacing: -.06em; line-height: 1.02; }
+    .kin-hero h1 span { color: transparent; background: linear-gradient(95deg,var(--kin-primary),var(--kin-accent),var(--kin-green)); background-clip: text; -webkit-background-clip: text; }
+    .kin-hero p { max-width: 760px; margin: 0; color: var(--kin-muted); font-size: 13px; line-height: 1.7; }
+    .kin-chip { flex: 0 0 auto; padding: 9px 12px; border: 1px solid rgba(98,231,255,.22); border-radius: 12px; color: #c9f8ff; background: rgba(98,231,255,.07); font-size: 9px; font-weight: 900; letter-spacing: .09em; }
+    .kin-layout { display: grid; grid-template-columns: minmax(245px,.82fr) minmax(340px,1.34fr) minmax(235px,.78fr); align-items: start; gap: 14px; padding-bottom: 30px; }
+    .kin-glass { min-width: 0; padding: 17px; border: 1px solid var(--kin-line); border-radius: 21px; background: linear-gradient(145deg,rgba(42,28,68,.78),rgba(17,11,31,.86)); box-shadow: 0 20px 54px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.09),0 0 28px rgba(98,231,255,.035); backdrop-filter: blur(22px) saturate(145%); -webkit-backdrop-filter: blur(22px) saturate(145%); }
+    .kin-panel-head,.kin-visual-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+    .kin-panel-head h2,.kin-visual-head h2 { margin: 0; font-size: 14px; font-weight: 900; letter-spacing: -.025em; }
+    .kin-index { color: rgba(185,176,211,.62); font-size: 9px; font-weight: 900; letter-spacing: .14em; }
+    .kin-field { display: grid; gap: 8px; margin-bottom: 16px; }
+    .kin-field label,.kin-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #e4def1; font-size: 10px; font-weight: 850; }
+    .kin-field small { color: #9289ab; font-size: 9px; line-height: 1.5; }
+    .kin-select { width: 100%; min-height: 46px; padding: 0 11px; border: 1px solid rgba(177,165,217,.22); border-radius: 12px; color: #f5f1ff; background: rgba(9,6,22,.82); font-size: 11px; }
+    .kin-select option { color: white; background: #171026; }
+    .kin-output { padding: 4px 8px; border: 1px solid rgba(98,231,255,.22); border-radius: 8px; color: #c6f7ff; background: rgba(98,231,255,.07); font-size: 10px; font-variant-numeric: tabular-nums; font-weight: 900; white-space: nowrap; }
+    .kin-range { width: 100%; min-height: 32px; margin: 3px 0 0; accent-color: var(--kin-accent); touch-action: pan-y; }
+    .kin-scale { display: flex; justify-content: space-between; color: #807894; font-size: 9px; }
+    .kin-control { padding: 10px; border: 1px solid rgba(177,165,217,.12); border-radius: 13px; background: rgba(255,255,255,.025); }
+    .kin-control+.kin-control { margin-top: 9px; }
+    .kin-control.is-hidden { display: none; }
+    .kin-toggle { display: flex; align-items: flex-start; gap: 9px; margin: 4px 0 15px; color: #dcd4ed; font-size: 10px; font-weight: 850; line-height: 1.5; }
+    .kin-toggle input { width: 17px; height: 17px; margin: 0; accent-color: var(--kin-accent); }
+    .kin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .kin-button { min-height: 44px; padding: 0 10px; border: 1px solid rgba(177,165,217,.22); border-radius: 12px; color: #e9e4f5; background: rgba(255,255,255,.045); font-size: 10px; font-weight: 850; cursor: pointer; transition: .2s ease; }
+    .kin-button:hover { border-color: rgba(98,231,255,.5); background: rgba(98,231,255,.08); }
+    .kin-button.primary { grid-column: 1/-1; min-height: 48px; border-color: rgba(98,231,255,.45); color: #07131a; background: linear-gradient(105deg,var(--kin-accent),var(--kin-green)); box-shadow: 0 9px 24px rgba(98,231,255,.13),inset 0 1px rgba(255,255,255,.45); }
+    .kin-button:disabled { cursor: not-allowed; opacity: .45; }
+    .kin-status { min-height: 34px; margin: 12px 1px 0; color: #a59bbd; font-size: 9px; line-height: 1.55; }
+    .kin-status[data-state="error"] { color: #ffabc8; }
+    .kin-status[data-state="success"] { color: #aaf0ce; }
+    .kin-center { display: grid; min-width: 0; gap: 13px; }
+    .kin-visual-head { margin: 0 0 11px; }
+    .kin-visual-head p { margin: 4px 0 0; color: var(--kin-muted); font-size: 9px; }
+    .kin-live { color: #aaf0ce; font-size: 9px; font-weight: 900; letter-spacing: .1em; }
+    .kin-canvas-wrap { position: relative; overflow: hidden; border: 1px solid rgba(98,231,255,.2); border-radius: 15px; background: #0a0c1c; box-shadow: inset 0 0 30px rgba(98,231,255,.04),0 0 22px rgba(98,231,255,.035); }
+    #molecule-canvas { display: block; width: 100%; height: auto; aspect-ratio: 1.7/1; min-height: 205px; }
+    .kin-legend { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 10px; }
+    .kin-legend span { display: inline-flex; align-items: center; gap: 6px; color: #aaa1bf; font-size: 9px; }
+    .kin-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot); box-shadow: 0 0 9px var(--dot); }
+    .kin-collision-readout { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 10px; color: #9d94b5; font-size: 9px; }
+    .kin-chart-wrap { position: relative; height: 255px; min-height: 225px; }
+    #concentration-chart { display: block; width: 100%; height: 100%; }
+    .kin-chart-note { margin: 9px 2px 0; color: #8f86a6; font-size: 9px; line-height: 1.5; }
+    .kin-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .kin-stat { min-width: 0; padding: 12px; border: 1px solid rgba(177,165,217,.14); border-radius: 13px; background: rgba(255,255,255,.03); }
+    .kin-stat.wide { grid-column: 1/-1; }
+    .kin-stat-label { color: #978daa; font-size: 8px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .kin-stat-value { margin-top: 6px; color: #f0eafa; font-size: clamp(16px,2vw,22px); font-weight: 900; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .kin-stat-unit { margin-top: 4px; color: #89809f; font-size: 8px; line-height: 1.4; }
+    .kin-formula { margin-top: 11px; padding: 12px; border: 1px solid rgba(167,139,250,.2); border-radius: 14px; color: #e2d9ff; background: rgba(167,139,250,.055); }
+    .kin-formula .kin-index { margin-bottom: 7px; }
+    .kin-formula-line { min-height: 38px; color: #e8deff; font-size: 12px; line-height: 1.9; overflow-wrap: anywhere; }
+    .kin-formula-note { margin-top: 8px; color: #9e94b4; font-size: 9px; line-height: 1.55; }
+    .kin-foot { display: flex; justify-content: space-between; gap: 12px; padding: 15px 0 25px; border-top: 1px solid rgba(221,207,255,.1); color: #9289a7; font-size: 9px; }
+    @media (max-width: 1160px) {
+      .kin-layout { grid-template-columns: minmax(235px,.8fr) minmax(320px,1.2fr); }
+      .kin-results { grid-column: 1/-1; }
+      .kin-stat-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
+      .kin-formula { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 10px; }
+    }
+    @media (max-width: 760px) {
+      .kin-shell { width: min(100% - 26px,1580px); }
+      .kin-hero { align-items: flex-start; flex-direction: column; padding-top: 28px; }
+      .kin-layout { grid-template-columns: minmax(0,1fr); gap: 12px; }
+      .kin-input { order: 1; }
+      .kin-center { order: 2; }
+      .kin-results { order: 3; grid-column: auto; }
+      .kin-stat-grid { grid-template-columns: 1fr 1fr; }
+      .kin-formula { display: block; }
+      #molecule-canvas { min-height: 185px; }
+      .kin-chart-wrap { height: 235px; }
+      .kin-foot { flex-direction: column; }
+    }
+    @media (max-width: 430px) {
+      .kin-glass { padding: 14px; border-radius: 18px; }
+      .kin-brand { font-size: 11px; }
+      .kin-mark { width: 36px; height: 36px; }
+      .kin-nav-link { min-height: 38px; padding-inline: 9px; font-size: 9px; }
+      .kin-chart-wrap { height: 220px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { scroll-behavior: auto!important; animation-duration: .01ms!important; transition-duration: .01ms!important; }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
+      chtml: { scale: .96 },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script defer src="./kinetics.js"></script>
+</head>
+<body>
+  <header class="kin-topbar">
+    <nav class="kin-shell kin-nav" aria-label="Chemical Kinetics navigation">
+      <a class="kin-brand" href="../../../../index.html">
+        <span class="kin-mark" aria-hidden="true">⚗</span>
+        <span>Vinit Simulation Hub<small>Chemistry Laboratory</small></span>
+      </a>
+      <a class="kin-nav-link" href="../../atomic-structure/index.html">← Chemistry Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="kin-shell">
+    <section class="kin-hero" aria-labelledby="kin-title">
+      <div>
+        <span class="kin-eyebrow">JEE Physical Chemistry · Reaction Dynamics</span>
+        <h1 id="kin-title">Chemical <span>Kinetics Lab</span></h1>
+        <p>Investigate how concentration and temperature control reaction speed. Compare first- and second-order rate laws, follow concentration-time curves, and use collision theory to understand activation energy.</p>
+      </div>
+      <span class="kin-chip">ARRHENIUS · RATE LAW · COLLISIONS</span>
+    </section>
+
+    <section class="kin-layout" aria-label="Chemical kinetics simulator">
+      <aside class="kin-glass kin-input" aria-labelledby="inputs-title">
+        <div class="kin-panel-head"><h2 id="inputs-title">Reaction Controls</h2><span class="kin-index">01 / INPUT</span></div>
+
+        <div class="kin-field">
+          <label for="reaction-select">Select reaction model</label>
+          <select class="kin-select" id="reaction-select">
+            <option value="first-order" selected>First order · A → Products</option>
+            <option value="second-order">Second order · A + B → C</option>
+          </select>
+          <small>These are idealised teaching models with the displayed rate law.</small>
+        </div>
+
+        <div class="kin-control">
+          <div class="kin-label"><label for="amount-a">Initial concentration · [A]₀</label><output class="kin-output" id="amount-a-value">1.00 M</output></div>
+          <input class="kin-range" id="amount-a" type="range" min="0.10" max="2.00" step="0.05" value="1.00">
+          <div class="kin-scale"><span>0.10 M</span><span>2.00 M</span></div>
+        </div>
+        <div class="kin-control" id="control-b">
+          <div class="kin-label"><label for="amount-b">Initial concentration · [B]₀</label><output class="kin-output" id="amount-b-value">1.00 M</output></div>
+          <input class="kin-range" id="amount-b" type="range" min="0.10" max="2.00" step="0.05" value="1.00">
+          <div class="kin-scale"><span>0.10 M</span><span>2.00 M</span></div>
+        </div>
+
+        <div class="kin-field" style="margin-top:15px">
+          <div class="kin-label"><label for="temperature">Temperature · T</label><output class="kin-output" id="temperature-value">298 K</output></div>
+          <input class="kin-range" id="temperature" type="range" min="250" max="500" step="1" value="298">
+          <div class="kin-scale"><span>250 K</span><span>500 K</span></div>
+          <small>Changing temperature updates k using the Arrhenius relationship.</small>
+        </div>
+
+        <label class="kin-toggle" for="collision-toggle">
+          <input id="collision-toggle" type="checkbox">
+          <span>Show Collision Theory <small style="display:block;color:#958ca9;font-weight:600">Visualise successful and unsuccessful collisions against an activation-energy threshold.</small></span>
+        </label>
+
+        <div class="kin-actions">
+          <button class="kin-button primary" id="start-button" type="button">▶ Start Reaction</button>
+          <button class="kin-button" id="pause-button" type="button" disabled>Ⅱ Pause</button>
+          <button class="kin-button" id="reset-button" type="button">↺ Reset</button>
+        </div>
+        <p class="kin-status" id="app-status" role="status" aria-live="polite">Ready. Adjust concentrations and temperature, then start the reaction.</p>
+      </aside>
+
+      <div class="kin-center">
+        <section class="kin-glass">
+          <div class="kin-visual-head">
+            <div><h2>Molecular Collision Chamber</h2><p>Particle motion and activation-energy events · illustrative model</p></div>
+            <span class="kin-live" id="collision-state">● PREVIEW</span>
+          </div>
+          <div class="kin-canvas-wrap">
+            <canvas id="molecule-canvas" width="960" height="560" role="img" aria-label="Animated molecular particles and collision events"></canvas>
+          </div>
+          <div class="kin-legend">
+            <span><i class="kin-dot" style="--dot:#62e7ff"></i> Reactant A</span>
+            <span id="legend-b"><i class="kin-dot" style="--dot:#a78bfa"></i> Reactant B</span>
+            <span><i class="kin-dot" style="--dot:#7df0bd"></i> Product</span>
+            <span><i class="kin-dot" style="--dot:#f6b86a"></i> Failed collision</span>
+          </div>
+          <div class="kin-collision-readout">
+            <span id="collision-explanation">Enable collision theory to compare collision energy with activation energy.</span>
+            <span id="collision-counts">Successful 0 · Failed 0</span>
+          </div>
+        </section>
+
+        <section class="kin-glass">
+          <div class="kin-visual-head">
+            <div><h2>Concentration vs Time</h2><p>Real-time concentration profile from the selected rate law.</p></div>
+            <span class="kin-index">LIVE DATA</span>
+          </div>
+          <div class="kin-chart-wrap"><canvas id="concentration-chart" role="img" aria-label="Line chart showing concentration of reactants against time"></canvas></div>
+          <p class="kin-chart-note">The graph is sampled during animation. The second-order model tracks both A and B; the first-order model tracks A.</p>
+        </section>
+      </div>
+
+      <aside class="kin-glass kin-results" aria-labelledby="results-title">
+        <div class="kin-panel-head"><h2 id="results-title">Kinetics Monitor</h2><span class="kin-index">02 / OUTPUT</span></div>
+        <div class="kin-stat-grid">
+          <div class="kin-stat wide">
+            <div class="kin-stat-label">Current rate of reaction</div>
+            <div class="kin-stat-value" id="rate-value">0.180</div>
+            <div class="kin-stat-unit">mol L⁻¹ s⁻¹</div>
+          </div>
+          <div class="kin-stat">
+            <div class="kin-stat-label">Rate constant · k</div>
+            <div class="kin-stat-value" id="k-value">0.180</div>
+            <div class="kin-stat-unit" id="k-unit">s⁻¹</div>
+          </div>
+          <div class="kin-stat">
+            <div class="kin-stat-label">Half-life · t½</div>
+            <div class="kin-stat-value" id="half-life-value">3.851</div>
+            <div class="kin-stat-unit">seconds at current T</div>
+          </div>
+          <div class="kin-stat wide">
+            <div class="kin-stat-label">Elapsed simulation time</div>
+            <div class="kin-stat-value" id="time-value">0.00</div>
+            <div class="kin-stat-unit">seconds</div>
+          </div>
+        </div>
+        <div class="kin-formula">
+          <div class="kin-index">RATE LAW</div>
+          <div class="kin-formula-line" id="rate-law">\\( -\\dfrac{d[A]}{dt}=k[A] \\)</div>
+          <div class="kin-formula-note" id="rate-law-note">First-order: rate is directly proportional to [A].</div>
+        </div>
+        <div class="kin-formula">
+          <div class="kin-index">ARRHENIUS EQUATION</div>
+          <div class="kin-formula-line">\\( k=Ae^{-E_a/(RT)} \\)</div>
+          <div class="kin-formula-note">As T increases, the exponential factor increases for positive activation energy, so k rises and first-order half-life falls.</div>
+        </div>
+        <p class="kin-status" id="model-note">Kinetic model: ideal first-order decay with constant temperature during each time step.</p>
+      </aside>
+    </section>
+    <footer class="kin-foot"><span><strong>Vinit Simulation Hub</strong> · Physical Chemistry</span><span>Reaction kinetics · Arrhenius equation · Collision theory</span></footer>
+  </main>
+</body>
+</html>
