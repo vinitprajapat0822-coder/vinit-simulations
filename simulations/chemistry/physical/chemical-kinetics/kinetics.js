@@ -204,12 +204,18 @@
     } else {
       const difference = initialB - initialA;
       const derivative = (a) => -rateConstant * Math.max(0, a) * Math.max(0, a + difference);
-      const a = state.A;
-      const k1 = derivative(a);
-      const k2 = derivative(a + k1 * dt / 2);
-      const k3 = derivative(a + k2 * dt / 2);
-      const k4 = derivative(a + k3 * dt);
-      state.A = Math.max(0, a + (dt / 6) * (k1 + 2 * k2 + 2 * k3 + k4));
+      // Adaptive substeps keep RK4 stable when high temperature makes k very large.
+      const stiffness = rateConstant * Math.max(initialA, initialB);
+      const steps = Math.max(1, Math.ceil((dt * stiffness) / 0.12));
+      const step = dt / steps;
+      for (let index = 0; index < steps; index++) {
+        const a = state.A;
+        const k1 = derivative(a);
+        const k2 = derivative(Math.max(0, a + k1 * step / 2));
+        const k3 = derivative(Math.max(0, a + k2 * step / 2));
+        const k4 = derivative(Math.max(0, a + k3 * step));
+        state.A = Math.max(0, a + (step / 6) * (k1 + 2 * k2 + 2 * k3 + k4));
+      }
       state.B = Math.max(0, initialB - (initialA - state.A));
     }
     state.P = Math.max(0, initialA - state.A);
