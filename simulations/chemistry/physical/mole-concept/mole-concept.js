@@ -470,143 +470,422 @@
   }
 
 
-  // Lightweight integer stoichiometry balancer. Supports ordinary JEE
-  // molecular formulae, nested (), [] and {} groups, and coefficients.
-  function parseChemicalFormula(source) {
-    const formula = String(source).replace(/\s+/g, "");
-    let index = 0;
+  // Exact matrix-based stoichiometric balancer.
+  // Formula parsing supports nested (), [] and {} groups, standard element
+  // symbols, and ionic charges such as Fe^3+, SO4^2- and e^-.
+  const ELEMENT_SYMBOLS = new Set((
+    "H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn " +
+    "Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La " +
+    "Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po " +
+    "At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg " +
+    "Cn Nh Fl Mc Lv Ts Og"
+  ).split(/\s+/));
 
-    function parseGroup(closing) {
+  function parseChemicalFormula(source) {
+    let formula = String(source).trim().replace(/\s+/g, "");
+    if (!formula) throw new Error("A chemical formula is missing.");
+
+    const superscriptDigits = { "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9" };
+    const superscriptCharge = formula.match(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)([⁺⁻])$/);
+    if (superscriptCharge) {
+      const magnitude = Array.from(superscriptCharge[1]).map((char) => superscriptDigits[char]).join("");
+      formula = formula.slice(0, superscriptCharge.index) + "^" + magnitude + (superscriptCharge[2] === "⁺" ? "+" : "-");
+    }
+    const subscriptDigits = { "₀": "0", "₁": "1", "₂": "2", "₃": "3", "₄": "4", "₅": "5", "₆": "6", "₇": "7", "₈": "8", "₉": "9" };
+    formula = Array.from(formula).map((char) => subscriptDigits[char] || char).join("");
+
+    if (formula.indexOf("·") >= 0 || formula.indexOf(".") >= 0) {
+      throw new Error("Hydrate notation is not supported yet. Enter the compound formula without the dot separator.");
+    }
+
+    let charge = 0;
+    const explicitCharge = formula.match(/\^(\d*)([+-])$/);
+    if (explicitCharge) {
+      const magnitude = explicitCharge[1] ? Number(explicitCharge[1]) : 1;
+      if (!Number.isSafeInteger(magnitude) || magnitude < 1 || magnitude > 1000) {
+        throw new Error("Invalid ionic charge in " + source + ".");
+      }
+      charge = magnitude * (explicitCharge[2] === "+" ? 1 : -1);
+      formula = formula.slice(0, explicitCharge.index);
+    } else if (/[+-]$/.test(formula)) {
+      charge = formula.slice(-1) === "+" ? 1 : -1;
+      formula = formula.slice(0, -1);
+    }
+
+    if (formula === "e" && charge !== 0) {
+      return { atoms: Object.create(null), charge: charge };
+    }
+    if (!formula) throw new Error("The ion " + source + " must contain an element or be an electron.");
+
+    let index = 0;
+    function readMultiplier() {
+      let digits = "";
+      while (index < formula.length && /[0-9]/.test(formula[index])) digits += formula[index++];
+      const value = digits ? Number(digits) : 1;
+      if (!Number.isSafeInteger(value) || value < 1 || value > 10000) {
+        throw new Error("Invalid or excessively large subscript in " + source + ".");
+      }
+      return value;
+    }
+
+    function parseGroup(expectedClosing) {
       const counts = Object.create(null);
+      let foundContent = false;
+
       while (index < formula.length) {
         const char = formula[index];
-        if (closing && char === closing) {
+
+        if (char === ")" || char === "]" || char === "}") {
+          if (!expectedClosing || char !== expectedClosing) {
+            throw new Error("Mismatched brackets in formula: " + source + ".");
+          }
+          if (!foundContent) throw new Error("Empty bracket group in formula: " + source + ".");
           index++;
           return counts;
         }
 
         if (char === "(" || char === "[" || char === "{") {
           index++;
-          const close = char === "(" ? ")" : char === "[" ? "]" : "}";
-          const nested = parseGroup(close);
-          let digits = "";
-          while (/\d/.test(formula[index] || "")) digits += formula[index++];
-          const multiplier = digits ? Number(digits) : 1;
+          const closing = char === "(" ? ")" : char === "[" ? "]" : "}";
+          const nested = parseGroup(closing);
+          const multiplier = readMultiplier();
           Object.keys(nested).forEach((element) => {
             counts[element] = (counts[element] || 0) + nested[element] * multiplier;
           });
+          foundContent = true;
           continue;
         }
 
         if (/[A-Z]/.test(char)) {
           let element = formula[index++];
-          while (/[a-z]/.test(formula[index] || "")) element += formula[index++];
-          let digits = "";
-          while (/\d/.test(formula[index] || "")) digits += formula[index++];
-          counts[element] = (counts[element] || 0) + (digits ? Number(digits) : 1);
+          while (index < formula.length && /[a-z]/.test(formula[index])) element += formula[index++];
+          if (!ELEMENT_SYMBOLS.has(element)) {
+            throw new Error("'" + element + "' is not a valid chemical element symbol. Check the formula.");
+          }
+          const multiplier = readMultiplier();
+          counts[element] = (counts[element] || 0) + multiplier;
+          foundContent = true;
           continue;
         }
 
-        throw new Error("Unsupported formula near '" + formula.slice(index) + "'. Use standard element symbols and subscripts.");
+        throw new Error("Invalid formula near '" + formula.slice(index) + "' in " + source + ". Use standard element symbols and subscripts.");
       }
-      if (closing) throw new Error("Unclosed group in formula: " + source);
+
+      if (expectedClosing) throw new Error("Unclosed bracket group in formula: " + source + ".");
+      if (!foundContent) throw new Error("Invalid chemical formula: " + source + ".");
       return counts;
     }
 
-    const result = parseGroup(null);
-    if (!Object.keys(result).length || index !== formula.length) {
-      throw new Error("Invalid chemical formula: " + source);
+    const atoms = parseGroup(null);
+    if (index !== formula.length || !Object.keys(atoms).length) {
+      throw new Error("Invalid chemical formula: " + source + ".");
     }
-    return result;
+    return { atoms: atoms, charge: charge };
+  }
+
+  function splitReactionSide(side) {
+    const parts = [];
+    let start = 0;
+
+    for (let i = 0; i < side.length; i++) {
+      if (side[i] !== "+") continue;
+      const previous = side[i - 1] || "";
+      const next = side[i + 1] || "";
+      let separator = false;
+
+      if (/\s/.test(previous)) {
+        separator = true;
+      } else if (/\s/.test(next)) {
+        let lookAhead = i + 1;
+        while (lookAhead < side.length && /\s/.test(side[lookAhead])) lookAhead++;
+        // In "Fe^2+ + MnO4^-", the first plus is the ion charge.
+        separator = side[lookAhead] !== "+" &&
+          lookAhead < side.length && !side.slice(lookAhead).startsWith("->");
+      } else if (/[A-Z([{]/.test(next) && previous !== "^") {
+        // Also accept compact neutral input such as CH4+O2.
+        separator = true;
+      } else if (previous === "+") {
+        separator = true;
+      }
+
+      if (separator) {
+        parts.push(side.slice(start, i).trim());
+        start = i + 1;
+      }
+    }
+
+    parts.push(side.slice(start).trim());
+    if (parts.some((part) => !part)) {
+      throw new Error("A reaction contains an empty species. Separate reactants and products with + signs.");
+    }
+    return parts;
   }
 
   function parseReactionInput(input) {
     const normalized = String(input)
       .replace(/[⟶→]/g, "->")
       .replace(/[⇌⇄↔]/g, "->")
+      .replace(/\s*=>\s*/g, " -> ")
       .replace(/\s*=\s*/g, " -> ");
-    const sides = normalized.split(/\s*(?:->|=>)\s*/);
+    const arrows = normalized.match(/->/g) || [];
+    if (arrows.length !== 1) {
+      throw new Error("Use exactly one reaction arrow, for example: CH4 + O2 -> CO2 + H2O.");
+    }
+
+    const sides = normalized.split("->");
     if (sides.length !== 2 || !sides[0].trim() || !sides[1].trim()) {
-      throw new Error("Use one reaction arrow, for example: CH4 + O2 -> CO2 + H2O.");
+      throw new Error("Add reactants and products on both sides of the reaction arrow.");
     }
 
     function parseSide(side) {
-      return side.split(/\s+\+\s+/).map((raw) => {
-        let token = raw.trim();
-        const leading = token.match(/^(\d+)\s+(.+)$/);
-        if (leading) token = leading[2];
-        if (!token) throw new Error("A reaction contains an empty species.");
-        return { formula: token, atoms: parseChemicalFormula(token) };
+      return splitReactionSide(side).map((raw) => {
+        // Ignore any coefficient the user typed; the solver recalculates it.
+        const token = raw.replace(/^(\d+)\s*(?=[A-Z(\[{])/, "").trim();
+        if (!token) throw new Error("A reaction contains an empty chemical formula.");
+        const parsed = parseChemicalFormula(token);
+        return { formula: token, atoms: parsed.atoms, charge: parsed.charge };
       });
     }
 
     const reactants = parseSide(sides[0]);
     const products = parseSide(sides[1]);
-    if (!reactants.length || !products.length) throw new Error("Add at least one reactant and one product.");
-    return { reactants, products };
+    if (!reactants.length || !products.length) {
+      throw new Error("Add at least one reactant and one product.");
+    }
+    if (reactants.length + products.length > 10) {
+      throw new Error("This balancer supports up to 10 chemical species in one reaction.");
+    }
+    return { reactants: reactants, products: products };
+  }
+
+  // Rational arithmetic keeps Gaussian elimination exact; no floating-point
+  // rounding can silently produce an atom- or charge-unbalanced equation.
+  function bigintAbs(value) {
+    return value < 0n ? -value : value;
+  }
+
+  function bigintGcd(a, b) {
+    a = bigintAbs(a);
+    b = bigintAbs(b);
+    while (b) {
+      const remainder = a % b;
+      a = b;
+      b = remainder;
+    }
+    return a || 1n;
+  }
+
+  function fraction(numerator, denominator) {
+    let n = BigInt(numerator);
+    let d = denominator === undefined ? 1n : BigInt(denominator);
+    if (d === 0n) throw new Error("Internal balancing error: division by zero.");
+    if (d < 0n) { n = -n; d = -d; }
+    const divisor = bigintGcd(n, d);
+    return { n: n / divisor, d: d / divisor };
+  }
+
+  function fractionAdd(a, b) {
+    return fraction(a.n * b.d + b.n * a.d, a.d * b.d);
+  }
+
+  function fractionSubtract(a, b) {
+    return fraction(a.n * b.d - b.n * a.d, a.d * b.d);
+  }
+
+  function fractionMultiply(a, b) {
+    return fraction(a.n * b.n, a.d * b.d);
+  }
+
+  function fractionDivide(a, b) {
+    if (b.n === 0n) throw new Error("Internal balancing error: division by zero.");
+    return fraction(a.n * b.d, a.d * b.n);
+  }
+
+  function fractionIsZero(value) {
+    return value.n === 0n;
+  }
+
+  function reduceMatrixToRref(sourceMatrix) {
+    const matrix = sourceMatrix.map((row) => row.map((value) => fraction(value.n, value.d)));
+    const columns = matrix[0] ? matrix[0].length : 0;
+    const pivotColumns = [];
+    let pivotRow = 0;
+
+    for (let column = 0; column < columns && pivotRow < matrix.length; column++) {
+      let selected = pivotRow;
+      while (selected < matrix.length && fractionIsZero(matrix[selected][column])) selected++;
+      if (selected === matrix.length) continue;
+
+      if (selected !== pivotRow) {
+        const swap = matrix[selected];
+        matrix[selected] = matrix[pivotRow];
+        matrix[pivotRow] = swap;
+      }
+
+      const pivot = matrix[pivotRow][column];
+      for (let j = 0; j < columns; j++) {
+        matrix[pivotRow][j] = fractionDivide(matrix[pivotRow][j], pivot);
+      }
+
+      for (let row = 0; row < matrix.length; row++) {
+        if (row === pivotRow) continue;
+        const factor = matrix[row][column];
+        if (fractionIsZero(factor)) continue;
+        for (let j = 0; j < columns; j++) {
+          matrix[row][j] = fractionSubtract(
+            matrix[row][j],
+            fractionMultiply(factor, matrix[pivotRow][j])
+          );
+        }
+      }
+
+      pivotColumns.push(column);
+      pivotRow++;
+    }
+
+    return { matrix: matrix, pivotColumns: pivotColumns };
+  }
+
+  function normalizePositiveIntegerVector(vector) {
+    let commonDenominator = 1n;
+    vector.forEach((value) => {
+      commonDenominator = (commonDenominator / bigintGcd(commonDenominator, value.d)) * value.d;
+    });
+
+    let integers = vector.map((value) => value.n * (commonDenominator / value.d));
+    if (integers.every((value) => value < 0n)) integers = integers.map((value) => -value);
+    if (!integers.every((value) => value > 0n)) return null;
+
+    const divisor = integers.reduce((accumulator, value) => bigintGcd(accumulator, value), 0n) || 1n;
+    integers = integers.map((value) => value / divisor);
+
+    if (integers.some((value) => value > 1000000n)) return null;
+    return integers.map((value) => Number(value));
+  }
+
+  function solvePositiveNullVector(rref, speciesCount) {
+    const pivotSet = new Set(rref.pivotColumns);
+    const freeColumns = [];
+    for (let column = 0; column < speciesCount; column++) {
+      if (!pivotSet.has(column)) freeColumns.push(column);
+    }
+    if (!freeColumns.length) {
+      throw new Error("This reaction has no non-zero stoichiometric solution. Check its formulas.");
+    }
+
+    const basis = freeColumns.map((freeColumn) => {
+      const vector = new Array(speciesCount).fill(null).map(() => fraction(0n));
+      vector[freeColumn] = fraction(1n);
+      rref.pivotColumns.forEach((pivotColumn, row) => {
+        const value = rref.matrix[row][freeColumn];
+        vector[pivotColumn] = fraction(-value.n, value.d);
+      });
+      return vector;
+    });
+
+    if (basis.length === 1) {
+      const solution = normalizePositiveIntegerVector(basis[0]);
+      if (!solution) {
+        throw new Error("No all-positive coefficient set exists for this reaction. Check the reaction direction and formulas.");
+      }
+      return { coefficients: solution, underdetermined: false };
+    }
+
+    // More than one free variable means the equation is underdetermined.
+    // Search small positive integer assignments for a compact valid solution.
+    let best = null;
+    let bestSum = Infinity;
+    let visited = 0;
+    const maxParameterSum = basis.length > 4 ? 34 : 80;
+    const visitLimit = 140000;
+    const parameters = new Array(basis.length).fill(1);
+
+    function evaluateParameters() {
+      const vector = new Array(speciesCount).fill(null).map(() => fraction(0n));
+      basis.forEach((basisVector, basisIndex) => {
+        const parameter = fraction(BigInt(parameters[basisIndex]));
+        for (let i = 0; i < speciesCount; i++) {
+          vector[i] = fractionAdd(vector[i], fractionMultiply(basisVector[i], parameter));
+        }
+      });
+      const candidate = normalizePositiveIntegerVector(vector);
+      if (!candidate) return;
+      const sum = candidate.reduce((total, value) => total + value, 0);
+      if (sum < bestSum) {
+        best = candidate;
+        bestSum = sum;
+      }
+    }
+
+    function enumerate(position, remaining) {
+      if (visited >= visitLimit) return;
+      if (position === parameters.length - 1) {
+        if (remaining < 1) return;
+        parameters[position] = remaining;
+        visited++;
+        evaluateParameters();
+        return;
+      }
+
+      const slotsAfter = parameters.length - position - 1;
+      for (let value = 1; value <= remaining - slotsAfter && visited < visitLimit; value++) {
+        parameters[position] = value;
+        enumerate(position + 1, remaining - value);
+      }
+    }
+
+    for (let total = parameters.length; total <= maxParameterSum && visited < visitLimit; total++) {
+      enumerate(0, total);
+    }
+
+    if (!best) {
+      throw new Error("The reaction has multiple independent balances. Add more chemical context or simplify the equation.");
+    }
+    return { coefficients: best, underdetermined: true };
   }
 
   function balanceReactionInput(input) {
     const parsed = parseReactionInput(input);
     const species = parsed.reactants.concat(parsed.products);
-    if (species.length < 2 || species.length > 8) {
-      throw new Error("This lightweight balancer supports 2–8 species per reaction.");
+    const elements = Array.from(new Set(species.flatMap((item) => Object.keys(item.atoms))));
+    const hasIons = species.some((item) => item.charge !== 0);
+    if (!elements.length && !hasIons) {
+      throw new Error("No atoms or ionic charges were found. Check the chemical formulas.");
     }
 
-    const elements = Array.from(new Set(species.flatMap((item) => Object.keys(item.atoms))));
-    const target = elements.map((element) => species.map((item, index) => {
-      const count = item.atoms[element] || 0;
-      return index < parsed.reactants.length ? count : -count;
+    const rows = elements.map((element) => species.map((item, index) => {
+      const amount = item.atoms[element] || 0;
+      return fraction(BigInt(index < parsed.reactants.length ? amount : -amount));
     }));
 
-    // Search the smallest positive integer coefficient set first.
-    // This is deterministic and handles the common JEE reactions used here.
-    const count = species.length;
-    const maxTotal = 60;
-    let solution = null;
-
-    function isBalanced(coefficients) {
-      return target.every((row) => row.reduce((sum, value, i) => sum + value * coefficients[i], 0) === 0);
+    if (hasIons) {
+      rows.push(species.map((item, index) => {
+        const charge = item.charge || 0;
+        return fraction(BigInt(index < parsed.reactants.length ? charge : -charge));
+      }));
     }
 
-    function findForTotal(total) {
-      const coefficients = new Array(count).fill(1);
-      function assign(position, remaining) {
-        if (position === count - 1) {
-          coefficients[position] = remaining;
-          if (isBalanced(coefficients)) {
-            solution = coefficients.slice();
-            return true;
-          }
-          return false;
-        }
-        const slotsAfter = count - position - 1;
-        const maxValue = remaining - slotsAfter;
-        for (let value = 1; value <= maxValue; value++) {
-          coefficients[position] = value;
-          if (assign(position + 1, remaining - value)) return true;
-        }
-        return false;
+    const reduced = reduceMatrixToRref(rows);
+    const solved = solvePositiveNullVector(reduced, species.length);
+    const coefficients = solved.coefficients;
+
+    // Final exact conservation check for every element and total charge.
+    rows.forEach((row) => {
+      const total = row.reduce((sum, value, index) =>
+        sum + value.n * BigInt(coefficients[index]), 0n);
+      if (total !== 0n) {
+        throw new Error("The calculated coefficients failed the atom/charge conservation check. Try checking the input.");
       }
-      return assign(0, total - (count - 1));
-    }
-
-    for (let total = count; total <= maxTotal && !solution; total++) {
-      findForTotal(total);
-    }
-    if (!solution) {
-      throw new Error("Could not find a simple integer balance (coefficient sum ≤ 60). Check the reaction formulas.");
-    }
+    });
 
     return {
       reactants: parsed.reactants.map((item, index) => ({
-        formula: item.formula,
-        coefficient: solution[index]
+        formula: item.formula, coefficient: coefficients[index]
       })),
       products: parsed.products.map((item, index) => ({
-        formula: item.formula,
-        coefficient: solution[parsed.reactants.length + index]
-      }))
+        formula: item.formula, coefficient: coefficients[parsed.reactants.length + index]
+      })),
+      underdetermined: solved.underdetermined
     };
   }
 
@@ -636,6 +915,18 @@
     } catch (error) {
       balanced = null;
       calculation = null;
+      reactantControls = [];
+      els.equation.textContent = "Unable to balance this reaction.";
+      els.limiting.replaceChildren();
+      const errorResult = document.createElement("span");
+      errorResult.className = "result-copy muted";
+      errorResult.textContent = "Correct the reaction formulae and try again.";
+      els.limiting.appendChild(errorResult);
+      els.excess.textContent = "—";
+      els.excess.classList.add("muted");
+      els.products.replaceChildren();
+      els.extent.textContent = "No reaction extent available.";
+      els.stepsList.replaceChildren();
       drawScene(1);
       setStatus(error && error.message ? error.message : "This reaction could not be balanced. Check the formulas and arrow.", "error");
     } finally {
