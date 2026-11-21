@@ -524,16 +524,16 @@
     const normalized = String(input)
       .replace(/[⟶→]/g, "->")
       .replace(/[⇌⇄↔]/g, "->")
-      .replace(/\\s*=\\s*/g, " -> ");
-    const sides = normalized.split(/\\s*(?:->|=>)\\s*/);
+      .replace(/\s*=\s*/g, " -> ");
+    const sides = normalized.split(/\s*(?:->|=>)\s*/);
     if (sides.length !== 2 || !sides[0].trim() || !sides[1].trim()) {
       throw new Error("Use one reaction arrow, for example: CH4 + O2 -> CO2 + H2O.");
     }
 
     function parseSide(side) {
-      return side.split(/\\s+\\+\\s+/).map((raw) => {
+      return side.split(/\s+\+\s+/).map((raw) => {
         let token = raw.trim();
-        const leading = token.match(/^(\\d+)\\s+(.+)$/);
+        const leading = token.match(/^(\d+)\s+(.+)$/);
         if (leading) token = leading[2];
         if (!token) throw new Error("A reaction contains an empty species.");
         return { formula: token, atoms: parseChemicalFormula(token) };
