@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080914">
+  <meta name="description" content="Explore dynamic chemical equilibrium, reaction quotient, equilibrium constant and Le Chatelier's principle in an interactive Chemistry lab.">
+  <title>Chemical Equilibrium Lab | Vinit Simulation Hub</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="../../atomic-structure/style.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --eq-bg: #080914;
+      --eq-border: rgba(168,185,255,.18);
+      --eq-cyan: var(--accent-chem,#62e7ff);
+      --eq-purple: var(--primary-chem,#a78bfa);
+      --eq-green: var(--green-chem,#7df0bd);
+      --eq-pink: #f472d0;
+      --eq-text: #f5f4ff;
+      --eq-muted: #a8a8c4;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; min-height: 100%; background: var(--eq-bg); }
+    body {
+      min-width: 320px; min-height: 100vh; margin: 0; overflow-x: hidden; color: var(--eq-text);
+      background: radial-gradient(ellipse at 8% 0%,rgba(98,231,255,.10),transparent 34rem),
+        radial-gradient(ellipse at 92% 12%,rgba(167,139,250,.14),transparent 34rem),
+        radial-gradient(ellipse at 50% 100%,rgba(125,240,189,.065),transparent 38rem),var(--eq-bg);
+    }
+    button,input,select { font: inherit; }
+    button,input,select,a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible { outline: 3px solid var(--eq-cyan); outline-offset: 3px; }
+    .eq-shell { width: min(1560px,calc(100% - 36px)); margin-inline: auto; }
+    .eq-topbar { position: sticky; z-index: 30; top: 0; border-bottom: 1px solid rgba(205,211,255,.11); background: rgba(8,9,20,.8); backdrop-filter: blur(22px) saturate(160%); -webkit-backdrop-filter: blur(22px) saturate(160%); }
+    .eq-nav { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 14px; }
+    .eq-brand { display: flex; min-width: 0; align-items: center; gap: 11px; color: inherit; text-decoration: none; }
+    .eq-brand-mark { display: grid; width: 40px; height: 40px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(98,231,255,.34); border-radius: 14px; color: var(--eq-cyan); background: linear-gradient(145deg,rgba(98,231,255,.15),rgba(167,139,250,.16)); box-shadow: 0 0 25px rgba(98,231,255,.11),inset 0 1px rgba(255,255,255,.16); font-size: 21px; }
+    .eq-brand-copy { display: grid; font-size: 13px; font-weight: 850; line-height: 1.2; }
+    .eq-brand-copy small { margin-top: 4px; color: var(--eq-muted); font-size: 9px; font-weight: 750; letter-spacing: .15em; text-transform: uppercase; }
+    .eq-nav-links { display: flex; justify-content: flex-end; gap: 8px; }
+    .eq-nav-link { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; padding: 0 13px; border: 1px solid var(--eq-border); border-radius: 13px; color: #e5e5f6; background: rgba(255,255,255,.035); font-size: 11px; font-weight: 800; text-decoration: none; transition: .2s ease; }
+    .eq-nav-link:hover { transform: translateY(-2px); border-color: rgba(98,231,255,.5); background: rgba(98,231,255,.08); }
+    .eq-hero { display: flex; align-items: end; justify-content: space-between; gap: 22px; padding: 39px 0 24px; }
+    .eq-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid rgba(98,231,255,.24); border-radius: 99px; color: #b9f4ff; background: rgba(98,231,255,.07); font-size: 9px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+    .eq-eyebrow::before { width: 7px; height: 7px; border-radius: 50%; background: var(--eq-green); box-shadow: 0 0 12px var(--eq-green); content: ""; }
+    .eq-hero h1 { margin: 15px 0 9px; font-size: clamp(30px,5vw,51px); font-weight: 900; letter-spacing: -.06em; line-height: 1.02; }
+    .eq-hero h1 span { color: transparent; background: linear-gradient(95deg,var(--eq-cyan),var(--eq-purple),var(--eq-green)); background-clip: text; -webkit-background-clip: text; }
+    .eq-hero p { max-width: 740px; margin: 0; color: var(--eq-muted); font-size: 13px; line-height: 1.7; }
+    .eq-chip { flex: 0 0 auto; padding: 9px 12px; border: 1px solid rgba(125,240,189,.2); border-radius: 12px; color: #baf9df; background: rgba(125,240,189,.065); font-size: 10px; font-weight: 850; letter-spacing: .1em; }
+    .eq-layout { display: grid; grid-template-columns: minmax(250px,.84fr) minmax(350px,1.34fr) minmax(250px,.82fr); align-items: start; gap: 15px; padding-bottom: 30px; }
+    .eq-glass { min-width: 0; padding: 18px; border: 1px solid var(--eq-border); border-radius: 22px; background: linear-gradient(145deg,rgba(36,35,65,.75),rgba(13,14,30,.82)); box-shadow: 0 22px 58px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,255,255,.09),0 0 28px rgba(98,231,255,.035); backdrop-filter: blur(22px) saturate(145%); -webkit-backdrop-filter: blur(22px) saturate(145%); }
+    .eq-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 17px; }
+    .eq-panel-head h2 { margin: 0; font-size: 15px; font-weight: 900; letter-spacing: -.025em; }
+    .eq-index { color: rgba(180,184,218,.65); font-size: 9px; font-weight: 900; letter-spacing: .15em; }
+    .eq-field { display: grid; gap: 8px; margin-bottom: 15px; }
+    .eq-field label,.eq-field-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #dedff1; font-size: 10px; font-weight: 850; }
+    .eq-field small { color: #858ba9; font-size: 9px; line-height: 1.55; }
+    .eq-select { width: 100%; min-height: 46px; padding: 0 12px; border: 1px solid rgba(177,190,255,.2); border-radius: 13px; color: #f5f6ff; background: rgba(7,9,24,.76); cursor: pointer; }
+    .eq-select option { color: #fff; background: #101326; }
+    .species-control { padding: 11px; border: 1px solid rgba(177,190,255,.12); border-radius: 14px; background: rgba(255,255,255,.025); }
+    .species-control + .species-control { margin-top: 9px; }
+    .species-control.is-disabled { opacity: .36; }
+    .species-name { color: #e5e6f8; font-size: 10px; font-weight: 850; }
+    .species-value { min-width: 65px; padding: 4px 7px; border: 1px solid rgba(98,231,255,.2); border-radius: 8px; color: #baf6ff; background: rgba(98,231,255,.07); font-size: 10px; font-variant-numeric: tabular-nums; font-weight: 900; text-align: center; }
+    .species-control input[type=range] { display: block; width: 100%; min-height: 32px; margin: 6px 0 0; accent-color: var(--eq-cyan); touch-action: pan-y; }
+    .range-scale { display: flex; justify-content: space-between; color: #777e9c; font-size: 9px; }
+    .volume-note { margin: 0 0 15px; padding: 9px 10px; border: 1px solid rgba(167,139,250,.16); border-radius: 11px; color: #bdb4dd; background: rgba(167,139,250,.05); font-size: 9px; line-height: 1.55; }
+    .eq-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+    .eq-button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 7px; padding: 0 10px; border: 1px solid rgba(177,190,255,.2); border-radius: 13px; color: #e9eaff; background: rgba(255,255,255,.045); font-size: 11px; font-weight: 850; cursor: pointer; transition: .2s ease; }
+    .eq-button:hover { border-color: rgba(98,231,255,.45); background: rgba(98,231,255,.08); }
+    .eq-button.primary { grid-column: 1/-1; min-height: 49px; border-color: rgba(98,231,255,.43); color: #07131b; background: linear-gradient(105deg,#62e7ff,#7df0bd); box-shadow: 0 8px 24px rgba(98,231,255,.15),inset 0 1px 0 rgba(255,255,255,.52); transition: transform 220ms cubic-bezier(.2,.85,.2,1.25),box-shadow 220ms ease; }
+    .eq-button.primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(98,231,255,.24); }
+    .eq-button:active { transform: scale(.975); }
+    .eq-button:disabled { cursor: not-allowed; opacity: .45; }
+    .eq-toggle-row { display: flex; align-items: center; gap: 10px; margin: 14px 0 10px; color: #d9d9ec; font-size: 10px; font-weight: 850; }
+    .eq-toggle-row input { width: 17px; height: 17px; accent-color: var(--eq-cyan); }
+    .inject-panel { display: grid; gap: 9px; padding: 12px; border: 1px solid rgba(125,240,189,.18); border-radius: 14px; background: rgba(125,240,189,.045); }
+    .inject-panel[hidden] { display: none; }
+    .inject-panel label { color: #c6f5dd; font-size: 10px; font-weight: 850; }
+    .inject-action { min-height: 43px; border: 1px solid rgba(125,240,189,.34); border-radius: 12px; color: #c9fce1; background: rgba(125,240,189,.10); font-size: 10px; font-weight: 900; cursor: pointer; }
+    .inject-action:hover { background: rgba(125,240,189,.16); }
+    .eq-center { display: grid; gap: 13px; min-width: 0; }
+    .visual-card { padding: 15px; }
+    .visual-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 1px 2px 11px; }
+    .visual-title h2 { margin: 0; font-size: 14px; font-weight: 900; }
+    .visual-title p { margin: 4px 0 0; color: var(--eq-muted); font-size: 9px; }
+    .visual-live { color: #95efc4; font-size: 9px; font-weight: 900; letter-spacing: .12em; }
+    .canvas-wrap { position: relative; overflow: hidden; border: 1px solid rgba(98,231,255,.18); border-radius: 16px; background: #090d1d; box-shadow: inset 0 0 30px rgba(98,231,255,.04),0 0 22px rgba(98,231,255,.035); }
+    #particle-canvas { display: block; width: 100%; height: auto; aspect-ratio: 1.75/1; min-height: 210px; }
+    .canvas-caption { display: flex; justify-content: space-between; gap: 10px; margin: 9px 2px 0; color: #858ba9; font-size: 9px; }
+    .particle-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 2px 1px; }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; color: #aab0cc; font-size: 9px; font-weight: 750; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 9px currentColor; }
+    .chart-wrap { position: relative; height: 255px; min-height: 230px; }
+    #concentration-chart { display: block; width: 100%; height: 100%; }
+    .chart-note { margin: 10px 2px 0; color: #8189a8; font-size: 9px; line-height: 1.5; }
+    .equation-card { padding: 13px; border: 1px solid rgba(98,231,255,.15); border-radius: 14px; background: rgba(98,231,255,.035); }
+    .eq-label { margin-bottom: 8px; color: #9299b8; font-size: 9px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+    .equation-line { min-height: 33px; color: #ebfaff; font-size: 14px; font-weight: 800; line-height: 1.9; overflow-wrap: anywhere; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .stat-card { min-width: 0; padding: 12px; border: 1px solid rgba(177,190,255,.14); border-radius: 14px; background: rgba(255,255,255,.03); }
+    .stat-value { color: #f2f2ff; font-size: clamp(16px,2vw,22px); font-weight: 900; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .stat-sub { margin-top: 5px; color: #858ba9; font-size: 9px; line-height: 1.45; }
+    .equilibrium-status { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid rgba(98,231,255,.2); border-radius: 99px; color: #b8f5ff; background: rgba(98,231,255,.06); font-size: 10px; font-weight: 900; }
+    .equilibrium-status::before { width: 7px; height: 7px; border-radius: 50%; background: var(--eq-cyan); box-shadow: 0 0 10px currentColor; content: ""; }
+    .equilibrium-status[data-state=equilibrium] { border-color: rgba(125,240,189,.3); color: #aef5d0; background: rgba(125,240,189,.075); }
+    .equilibrium-status[data-state=equilibrium]::before { background: var(--eq-green); }
+    .rate-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .rate-box { padding: 9px; border: 1px solid rgba(177,190,255,.1); border-radius: 11px; background: rgba(255,255,255,.025); }
+    .rate-box span { display: block; color: #8d94b3; font-size: 8px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .rate-box strong { display: block; margin-top: 5px; color: #e5e8fb; font-size: 11px; font-variant-numeric: tabular-nums; }
+    .formula-card { padding: 13px; border: 1px solid rgba(167,139,250,.17); border-radius: 14px; background: rgba(167,139,250,.045); }
+    .formula-display { min-height: 40px; color: #ded4ff; font-size: 12px; line-height: 1.9; overflow-wrap: anywhere; }
+    .model-note { margin: 11px 1px 0; color: #7f87a7; font-size: 9px; line-height: 1.6; }
+    .app-status { min-height: 33px; margin: 11px 1px 0; color: #8c94b5; font-size: 9px; line-height: 1.55; }
+    .app-status[data-state=error] { color: #ff9dba; }
+    .app-status[data-state=success] { color: #9df0c5; }
+    .eq-footer { display: flex; justify-content: space-between; gap: 12px; padding: 15px 0 24px; border-top: 1px solid rgba(205,211,255,.1); color: #888eac; font-size: 10px; }
+    .eq-footer strong { color: #cdd0e8; }
+    @media (max-width: 1160px) {
+      .eq-layout { grid-template-columns: minmax(250px,.85fr) minmax(340px,1.15fr); }
+      .eq-results { grid-column: 1/-1; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+      .eq-results>.eq-panel-head,.eq-results>.equation-card,.eq-results>.formula-card,.eq-results>.model-note { grid-column: 1/-1; }
+    }
+    @media (max-width: 760px) {
+      .eq-shell { width: min(100% - 26px,1560px); }
+      .eq-nav { min-height: 62px; }
+      .eq-nav-link { min-height: 40px; padding-inline: 10px; font-size: 10px; }
+      .eq-hero { align-items: flex-start; flex-direction: column; padding-top: 30px; gap: 13px; }
+      .eq-layout { grid-template-columns: minmax(0,1fr); gap: 12px; }
+      .eq-center { order: 2; }
+      .eq-input { order: 1; }
+      .eq-results { order: 3; grid-column: auto; display: block; }
+      .eq-results>* { margin-bottom: 10px; }
+      #particle-canvas { min-height: 190px; }
+      .chart-wrap { height: 235px; }
+      .eq-footer { flex-direction: column; }
+    }
+    @media (max-width: 430px) {
+      .eq-brand-copy { font-size: 11px; }
+      .eq-brand-mark { width: 36px; height: 36px; }
+      .eq-nav-links { gap: 5px; }
+      .eq-nav-link { min-height: 38px; padding-inline: 8px; font-size: 9px; }
+      .eq-glass { padding: 14px; border-radius: 18px; }
+      .visual-card { padding: 12px; }
+      .chart-wrap { height: 220px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { scroll-behavior: auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\\\(', '\\\\)'], ['$', '$']], displayMath: [['\\\\[', '\\\\]']] },
+      chtml: { scale: .96 },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script defer src="./equilibrium.js"></script>
+</head>
+<body>
+  <header class="eq-topbar">
+    <nav class="eq-shell eq-nav" aria-label="Chemical Equilibrium lab navigation">
+      <a class="eq-brand" href="../../../index.html" aria-label="Vinit Simulation Hub home">
+        <span class="eq-brand-mark" aria-hidden="true">⇌</span>
+        <span class="eq-brand-copy">Vinit Simulation Hub<small>Chemistry Laboratory</small></span>
+      </a>
+      <div class="eq-nav-links">
+        <a class="eq-nav-link" href="../../atomic-structure/index.html">Chemistry Dashboard</a>
+        <a class="eq-nav-link" href="../../../index.html">← Hub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="eq-shell">
+    <section class="eq-hero" aria-labelledby="page-title">
+      <div>
+        <span class="eq-eyebrow">JEE Physical Chemistry · Dynamic Systems</span>
+        <h1 id="page-title">Chemical <span>Equilibrium Lab</span></h1>
+        <p>Watch a reversible reaction approach dynamic equilibrium. Change the starting amounts, compare Qc with Kc, and test Le Chatelier's principle by injecting a species while the reaction is running.</p>
+      </div>
+      <span class="eq-chip">DYNAMIC EQUILIBRIUM · 1.00 L</span>
+    </section>
+
+    <section class="eq-layout" aria-label="Chemical equilibrium simulator">
+      <aside class="eq-glass eq-input" aria-labelledby="inputs-title">
+        <div class="eq-panel-head"><h2 id="inputs-title">Reaction Workspace</h2><span class="eq-index">01 / INPUT</span></div>
+        <div class="eq-field">
+          <label for="reaction-select">Select reversible reaction</label>
+          <select class="eq-select" id="reaction-select">
+            <option value="h2-i2" selected>Hydrogen + Iodine ⇌ Hydrogen Iodide</option>
+            <option value="n2o4">Dinitrogen Tetroxide ⇌ Nitrogen Dioxide</option>
+            <option value="co-water">Carbon Monoxide + Water ⇌ Carbon Dioxide + Hydrogen</option>
+          </select>
+        </div>
+        <div class="eq-field">
+          <label>Initial species amounts</label>
+          <small>Adjust the amounts before starting. All calculations use a fixed 1.00 L vessel.</small>
+        </div>
+        <div class="species-control" id="control-r1">
+          <div class="eq-field-label"><label class="species-name" id="label-r1" for="amount-r1">Reactant 1 · H₂</label><output class="species-value" id="value-r1" for="amount-r1">1.20 mol</output></div>
+          <input type="range" id="amount-r1" min="0" max="5" step=".05" value="1.2" aria-label="Initial amount of reactant one"><div class="range-scale"><span>0 mol</span><span>5 mol</span></div>
+        </div>
+        <div class="species-control" id="control-r2">
+          <div class="eq-field-label"><label class="species-name" id="label-r2" for="amount-r2">Reactant 2 · I₂</label><output class="species-value" id="value-r2" for="amount-r2">1.00 mol</output></div>
+          <input type="range" id="amount-r2" min="0" max="5" step=".05" value="1" aria-label="Initial amount of reactant two"><div class="range-scale"><span>0 mol</span><span>5 mol</span></div>
+        </div>
+        <div class="species-control" id="control-p1">
+          <div class="eq-field-label"><label class="species-name" id="label-p1" for="amount-p1">Product 1 · HI</label><output class="species-value" id="value-p1" for="amount-p1">0.00 mol</output></div>
+          <input type="range" id="amount-p1" min="0" max="5" step=".05" value="0" aria-label="Initial amount of product one"><div class="range-scale"><span>0 mol</span><span>5 mol</span></div>
+        </div>
+        <div class="species-control" id="control-p2">
+          <div class="eq-field-label"><label class="species-name" id="label-p2" for="amount-p2">Product 2 · —</label><output class="species-value" id="value-p2" for="amount-p2">—</output></div>
+          <input type="range" id="amount-p2" min="0" max="5" step=".05" value="0" aria-label="Initial amount of product two" disabled><div class="range-scale"><span>0 mol</span><span>5 mol</span></div>
+        </div>
+        <p class="volume-note">Model assumption: constant volume = 1.00 L, so numeric moles equal mol L⁻¹. This is a simplified homogeneous, elementary reversible-reaction model.</p>
+        <label class="eq-toggle-row" for="le-chatelier-toggle"><input type="checkbox" id="le-chatelier-toggle"> Show Le Chatelier Effect</label>
+        <div class="inject-panel" id="inject-panel" hidden>
+          <label for="inject-species">Choose a species to add</label>
+          <select class="eq-select" id="inject-species"></select>
+          <label for="inject-amount">Added amount <output id="inject-value">0.25 mol</output></label>
+          <input type="range" id="inject-amount" min=".05" max="1" step=".05" value=".25" aria-label="Amount to inject">
+          <button class="inject-action" id="inject-button" type="button">＋ Inject Species</button>
+        </div>
+        <div class="eq-actions">
+          <button class="eq-button primary" id="start-button" type="button">▶ Start Reaction</button>
+          <button class="eq-button" id="pause-button" type="button" disabled>Ⅱ Pause</button>
+          <button class="eq-button" id="reset-button" type="button">↺ Reset</button>
+        </div>
+        <p class="app-status" id="app-status" role="status" aria-live="polite">Ready. Choose a reaction and start the simulation.</p>
+      </aside>
+
+      <div class="eq-center">
+        <section class="eq-glass visual-card" aria-labelledby="particle-title">
+          <div class="visual-title"><div><h2 id="particle-title">Molecular Reaction View</h2><p>Particle population follows simulated species concentrations.</p></div><span class="visual-live" id="particle-state">● READY</span></div>
+          <div class="canvas-wrap"><canvas id="particle-canvas" width="960" height="550" role="img" aria-label="Animated molecular particles in a reversible reaction"></canvas></div>
+          <div class="canvas-caption"><span>Reactant population</span><span>↔</span><span>Product population</span></div>
+          <div class="particle-legend">
+            <span class="legend-item"><i class="legend-dot" style="color:#62e7ff;background:#62e7ff"></i> Reactants</span>
+            <span class="legend-item"><i class="legend-dot" style="color:#7df0bd;background:#7df0bd"></i> Products</span>
+            <span class="legend-item"><i class="legend-dot" style="color:#f472d0;background:#f472d0"></i> Injected species</span>
+          </div>
+        </section>
+        <section class="eq-glass visual-card" aria-labelledby="chart-title">
+          <div class="visual-title"><div><h2 id="chart-title">Concentration vs Time</h2><p>Track each species as the system moves toward equilibrium.</p></div><span class="eq-index">LIVE DATA</span></div>
+          <div class="chart-wrap"><canvas id="concentration-chart" role="img" aria-label="Line chart of species concentration over simulation time"></canvas></div>
+          <p class="chart-note">An instantaneous jump after injection is followed by the curve toward the new equilibrium.</p>
+        </section>
+      </div>
+
+      <aside class="eq-glass eq-results" aria-labelledby="results-title" aria-live="polite">
+        <div class="eq-panel-head"><h2 id="results-title">Equilibrium Monitor</h2><span class="eq-index">02 / OUTPUT</span></div>
+        <div class="equation-card"><div class="eq-label">Selected reaction</div><div class="equation-line" id="reaction-equation">\\(H_2 + I_2 \\rightleftharpoons 2HI\\)</div></div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="eq-label">Reaction quotient · Qc</div><div class="stat-value" id="qc-value">0.000</div><div class="stat-sub">Current concentrations</div></div>
+          <div class="stat-card"><div class="eq-label">Equilibrium constant · Kc</div><div class="stat-value" id="kc-value">3.000</div><div class="stat-sub">Fixed for this selected temperature</div></div>
+        </div>
+        <div>
+          <div class="eq-label">System status</div>
+          <span class="equilibrium-status" id="equilibrium-status" data-state="reaching">Reaching Equilibrium</span>
+          <div class="rate-pair">
+            <div class="rate-box"><span>Forward rate</span><strong id="forward-rate">0.0000</strong></div>
+            <div class="rate-box"><span>Reverse rate</span><strong id="reverse-rate">0.0000</strong></div>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="eq-label">Equilibrium expression</div>
+          <div class="formula-display" id="kc-formula">\\(K_c = \\frac{[HI]^2}{[H_2][I_2]} = \\frac{k_f}{k_r}\\)</div>
+          <div class="formula-display" id="qc-relation">\\(Q_c < K_c\\;\\Rightarrow\\;\\text{forward shift}\\)</div>
+        </div>
+        <p class="model-note">At dynamic equilibrium, forward and reverse rates are equal. Both reactions continue; concentrations remain constant because the rates balance.</p>
+      </aside>
+    </section>
+    <footer class="eq-footer"><span><strong>Vinit Simulation Hub</strong> · Physical Chemistry</span><span>Dynamic equilibrium · Le Chatelier's principle</span></footer>
+  </main>
+</body>
+</html>
