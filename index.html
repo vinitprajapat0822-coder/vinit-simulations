@@ -1879,7 +1879,7 @@ html{scroll-behavior:smooth}
         id: "chemistry-atomic-structure",
         title: "Chemistry — Atomic Structure",
         desc: "Explore radial probability curves, 3D orbitals, the photoelectric effect, Bohr spectra and quantum models.",
-        category: "chemistry",
+        category: "chem-physical",
         tags: "chemistry atomic structure hydrogen orbitals probability Bohr quantum",
         status: "live",
         url: "simulations/chemistry/atomic-structure/index.html",
@@ -1909,9 +1909,12 @@ html{scroll-behavior:smooth}
         const subject = window.VSH_SUBJECT || "physics";
         return CATEGORIES.filter(cat => {
           if (cat.id === "all") return true;
-          if (subject === "chemistry") return cat.id === "chemistry";
+          if (subject === "chemistry") return cat.id.startsWith("chem-");
           if (subject === "math") return cat.id === "math";
-          return cat.id !== "chemistry" && cat.id !== "math" && cat.id !== "coming-soon";
+          return !cat.id.startsWith("chem-") &&
+            cat.id !== "chemistry" &&
+            cat.id !== "math" &&
+            cat.id !== "coming-soon";
         });
       }
 
@@ -1968,10 +1971,12 @@ html{scroll-behavior:smooth}
           if (!isLive && !showSoon && activeFilter !== "coming-soon") return false;
           const subject = window.VSH_SUBJECT || "physics";
           const matchSubject = subject === "chemistry"
-            ? item.category === "chemistry"
+            ? item.category.startsWith("chem-") || item.category === "chemistry"
             : subject === "math"
               ? item.category === "math"
-              : item.category !== "chemistry" && item.category !== "math";
+              : !item.category.startsWith("chem-") &&
+                item.category !== "chemistry" &&
+                item.category !== "math";
           const matchFilter =
             activeFilter === "all" ||
             (activeFilter === "coming-soon" && item.status === "coming-soon") ||
@@ -2334,6 +2339,9 @@ html{scroll-behavior:smooth}
 
   function apply(subject, animate) {
     if (VALID.indexOf(subject) < 0) subject = "physics";
+
+    document.documentElement.dataset.subject = subject;
+    document.body.dataset.subject = subject;
 
     window.VSH_SUBJECT = subject;
     try { localStorage.setItem(KEY, subject); } catch (error) {}
