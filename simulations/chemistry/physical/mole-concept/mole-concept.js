@@ -63,8 +63,8 @@
     let value = String(formula)
       .replace(/·/g, "\\,\\cdot\\,")
       .replace(/•/g, "\\,\\cdot\\,")
-      .replace(/([A-Z][a-z]?)(\\d+)/g, "$1_{$2}")
-      .replace(/([)\\]])(\\d+)/g, "$1_{$2}");
+      .replace(/([A-Z][a-z]?)(\d+)/g, "$1_{$2}")
+      .replace(/([)\]])(\d+)/g, "$1_{$2}");
     value = value.replace(/\\^([0-9]*[+-])/g, "^{$1}");
     return "\\mathrm{" + value + "}";
   }
