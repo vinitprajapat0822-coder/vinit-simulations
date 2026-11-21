@@ -255,12 +255,12 @@
   function collide(a, b, dx, dy, distance) {
     const nx = dx / distance;
     const ny = dy / distance;
-    const relative = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
+    const relative = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
     if (relative < 0) {
-      a.vx -= relative * nx;
-      a.vy -= relative * ny;
-      b.vx += relative * nx;
-      b.vy += relative * ny;
+      a.vx += relative * nx;
+      a.vy += relative * ny;
+      b.vx -= relative * nx;
+      b.vy -= relative * ny;
     }
   }
   function handleCollisions(dt) {
