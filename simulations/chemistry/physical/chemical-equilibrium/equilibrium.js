@@ -104,21 +104,21 @@
       .replace(/([)\]])(\d+)/g, "$1_{$2}");
   }
   function speciesTerm(species, bracketed) {
-    const base = "\\\\mathrm{" + formulaTex(species.formula) + "}";
-    const value = bracketed ? "\\\\left[" + base + "\\\\right]" : base;
+    const base = "\\mathrm{" + formulaTex(species.formula) + "}";
+    const value = bracketed ? "\\left[" + base + "\\right]" : base;
     return value + (species.coefficient === 1 ? "" : "^{" + species.coefficient + "}");
   }
   function buildEquation(model) {
     const side = (list) => list.map((species) =>
-      (species.coefficient === 1 ? "" : species.coefficient + "\\\\,") +
-      "\\\\mathrm{" + formulaTex(species.formula) + "}"
+      (species.coefficient === 1 ? "" : species.coefficient + "\\,") +
+      "\\mathrm{" + formulaTex(species.formula) + "}"
     ).join(" + ");
-    return "\\\\(" + side(model.reactants) + " \\\\rightleftharpoons " + side(model.products) + "\\\\)";
+    return "\\(" + side(model.reactants) + " \\rightleftharpoons " + side(model.products) + "\\)";
   }
   function buildKcExpression(model) {
     const numerator = model.products.map((species) => speciesTerm(species, true)).join("");
     const denominator = model.reactants.map((species) => speciesTerm(species, true)).join("");
-    return "\\\\(K_c = \\\\frac{" + numerator + "}{" + denominator + "} = \\\\frac{k_f}{k_r}\\\\)";
+    return "\\(K_c = \\frac{" + numerator + "}{" + denominator + "} = \\frac{k_f}{k_r}\\)";
   }
   function typeset(nodes) {
     if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
@@ -154,14 +154,17 @@
     if (!Number.isFinite(value)) return "∞";
     return value.toFixed(digits == null ? 3 : digits);
   }
+  let lastQuotientRelation = "";
   function updateQuotientRelation() {
     const q = calculateQc(concentrations);
     const k = calculateKc();
-    let relation = "Q_c = K_c\\\\;\\\\Rightarrow\\\\;\\\\text{at equilibrium}";
-    if (Number.isNaN(q)) relation = "Q_c\\\\text{ is undefined for the current zero-concentration state}";
-    else if (q < k * (1 - 1e-5)) relation = "Q_c < K_c\\\\;\\\\Rightarrow\\\\;\\\\text{forward shift}";
-    else if (q > k * (1 + 1e-5)) relation = "Q_c > K_c\\\\;\\\\Rightarrow\\\\;\\\\text{reverse shift}";
-    els.qcRelation.textContent = "\\\\(" + relation + "\\\\)";
+    let relation = "Q_c = K_c\\;\\Rightarrow\\;\\text{at equilibrium}";
+    if (Number.isNaN(q)) relation = "Q_c\\text{ is undefined for the current zero-concentration state}";
+    else if (q < k * (1 - 1e-5)) relation = "Q_c < K_c\\;\\Rightarrow\\;\\text{forward shift}";
+    else if (q > k * (1 + 1e-5)) relation = "Q_c > K_c\\;\\Rightarrow\\;\\text{reverse shift}";
+    if (relation === lastQuotientRelation) return;
+    lastQuotientRelation = relation;
+    els.qcRelation.textContent = "\\(" + relation + "\\)";
     typeset([els.qcRelation]);
   }
   function updateMonitor() {
@@ -172,10 +175,13 @@
     els.kc.textContent = formatValue(k);
     els.forwardRate.textContent = rates.forward.toExponential(3);
     els.reverseRate.textContent = rates.reverse.toExponential(3);
-    const scale = Math.max(rates.forward, rates.reverse, 1e-9);
-    const atEquilibrium = Math.abs(rates.forward - rates.reverse) <= Math.max(1e-8, scale * EQUILIBRIUM_RELATIVE_TOLERANCE);
+    const scale = Math.max(rates.forward, rates.reverse);
+    const noMeasurableRate = scale <= 1e-9;
+    const atEquilibrium = !noMeasurableRate &&
+      Math.abs(rates.forward - rates.reverse) <= Math.max(1e-8, scale * EQUILIBRIUM_RELATIVE_TOLERANCE);
     els.equilibriumStatus.dataset.state = atEquilibrium ? "equilibrium" : "reaching";
-    els.equilibriumStatus.textContent = atEquilibrium ? "At Equilibrium" : "Reaching Equilibrium";
+    els.equilibriumStatus.textContent = noMeasurableRate ? "No Measurable Reaction" :
+      atEquilibrium ? "At Equilibrium" : "Reaching Equilibrium";
     els.particleState.textContent = running ? "● RUNNING" : atEquilibrium ? "● EQUILIBRIUM" : "● PAUSED";
     updateQuotientRelation();
   }
