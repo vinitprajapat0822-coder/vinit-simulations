@@ -272,9 +272,16 @@
     els.predictionFeedback.dataset.state = correct ? "success" : "error";
     els.predictionFeedback.innerHTML =
       "<strong>Your prediction was " + (correct ? "Correct" : "Incorrect") + ".</strong> The reaction shifted " +
-      directionLabel + " to consume the added " + result.side + ". " + quotientRule + " " +
+      directionLabel + " to move the system toward equilibrium after the " + result.side + " addition. " + quotientRule + " " +
       comparison + " " + progress;
     typeset([els.predictionFeedback]);
+    pendingPrediction = null;
+    predictionChoice = null;
+    els.predictionForward.disabled = false;
+    els.predictionReverse.disabled = false;
+    els.predictionForward.setAttribute("aria-pressed", "false");
+    els.predictionReverse.setAttribute("aria-pressed", "false");
+    els.injectButton.disabled = true;
   }
   function configureControls() {
     const available = Object.fromEntries(speciesList(reaction).map((species) => [species.key, species]));
