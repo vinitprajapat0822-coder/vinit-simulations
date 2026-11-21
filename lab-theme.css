@@ -137,3 +137,78 @@ body[data-subject="chemistry"][data-theme="control-room"] {
   --vsh-green-rgb: 167, 243, 208;
 }
 
+/* ============================================================
+   CHEMISTRY — CONSTELLATION WEB
+   ============================================================ */
+html[data-subject="chemistry"] body[data-theme="constellation"],
+body[data-subject="chemistry"][data-theme="constellation"] {
+  --lg-accent: #34D399;
+  --lg-accent-2: #22D3EE;
+  --lg-glow: rgba(34, 211, 238, 0.22);
+  --lg-border: rgba(77, 226, 206, 0.22);
+  --lg-border-dim: rgba(77, 226, 206, 0.12);
+  --cyan: #22D3EE;
+  --purple: #34D399;
+  --green: #6EE7B7;
+  --line: rgba(77, 226, 206, 0.18);
+  --vsh-cyan-rgb: 34, 211, 238;
+  --vsh-purple-rgb: 52, 211, 153;
+  --vsh-green-rgb: 110, 231, 183;
+}
+
+/* ============================================================
+   CHEMISTRY — HACKER TERMINAL
+   ============================================================ */
+html[data-subject="chemistry"] body[data-theme="terminal"],
+body[data-subject="chemistry"][data-theme="terminal"] {
+  --lg-accent: #A3E635;
+  --lg-accent-2: #FBBF24;
+  --lg-glow: rgba(163, 230, 53, 0.18);
+  --lg-panel: rgba(7, 20, 11, 0.82);
+  --lg-panel-strong: rgba(5, 16, 9, 0.94);
+  --lg-border: rgba(163, 230, 53, 0.26);
+  --lg-border-dim: rgba(251, 191, 36, 0.12);
+  --cyan: #A3E635;
+  --purple: #FBBF24;
+  --green: #BEF264;
+  --line: rgba(163, 230, 53, 0.22);
+  --vsh-cyan-rgb: 163, 230, 53;
+  --vsh-purple-rgb: 251, 191, 36;
+  --vsh-green-rgb: 190, 242, 100;
+}
+
+/* ============================================================
+   CHEMISTRY — LAB BACKGROUND SHADES
+   ============================================================ */
+html[data-subject="chemistry"] body.lab-themed.lab-theme-holographic,
+body.lab-themed.lab-theme-holographic[data-subject="chemistry"] {
+  --lg-bg: radial-gradient(ellipse at 50% 20%, #103B3A, #0A2028 50%, #060F17 100%);
+}
+
+html[data-subject="chemistry"] body.lab-themed.lab-theme-control-room,
+body.lab-themed.lab-theme-control-room[data-subject="chemistry"] {
+  --lg-bg: radial-gradient(ellipse at 20% 0%, #0B3435, #051419 55%);
+}
+
+html[data-subject="chemistry"] body.lab-themed.lab-theme-constellation,
+body.lab-themed.lab-theme-constellation[data-subject="chemistry"] {
+  --lg-bg: #030B12;
+}
+
+html[data-subject="chemistry"] body.lab-themed.lab-theme-terminal,
+body.lab-themed.lab-theme-terminal[data-subject="chemistry"] {
+  --lg-bg: #020805;
+}
+
+/* ============================================================
+   CHEMISTRY — DAYLIGHT MODE
+   ============================================================ */
+html[data-subject="chemistry"] body[data-appearance="daylight"],
+body[data-subject="chemistry"][data-appearance="daylight"] {
+  --lg-panel: rgba(249, 255, 252, 0.56);
+  --lg-panel-strong: rgba(255, 255, 255, 0.78);
+  --lg-border: rgba(35, 166, 143, 0.24);
+  --lg-border-dim: rgba(15, 23, 42, 0.06);
+  --line: rgba(35, 166, 143, 0.16);
+}
+
