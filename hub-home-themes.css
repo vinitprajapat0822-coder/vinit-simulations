@@ -446,3 +446,60 @@ body[data-theme] .nav-wrap {
   backdrop-filter: blur(28px) saturate(175%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(175%) !important;
 }
+
+/* ============================================================
+   MATH PALETTE — PREPARED, NOT ACTIVATED
+   ============================================================ */
+:root {
+  --vsh-math-holographic-accent: #FBBF24;
+  --vsh-math-holographic-accent-2: #FDE68A;
+  --vsh-math-control-accent: #D97706;
+  --vsh-math-control-accent-2: #FBBF24;
+  --vsh-math-constellation-accent: #FBBF24;
+  --vsh-math-constellation-accent-2: #FDE68A;
+  --vsh-math-terminal-accent: #EAB308;
+  --vsh-math-terminal-accent-2: #FDE68A;
+}
+
+/* ============================================================
+   CHEMISTRY — HOLOGRAPHIC CORE
+   ============================================================ */
+html[data-subject="chemistry"] body[data-theme="holographic"],
+body[data-subject="chemistry"][data-theme="holographic"] {
+  --lg-accent: #34D399;
+  --lg-accent-2: #2DD4BF;
+  --lg-glow: rgba(52, 211, 153, 0.24);
+  --lg-panel: rgba(17, 32, 43, 0.42);
+  --lg-panel-strong: rgba(11, 24, 36, 0.58);
+  --lg-border: rgba(112, 226, 203, 0.22);
+  --lg-border-dim: rgba(112, 226, 203, 0.11);
+  --cyan: #34D399;
+  --purple: #2DD4BF;
+  --green: #6EE7B7;
+  --line: rgba(112, 226, 203, 0.16);
+  --vsh-cyan-rgb: 52, 211, 153;
+  --vsh-purple-rgb: 45, 212, 191;
+  --vsh-green-rgb: 110, 231, 183;
+}
+
+/* ============================================================
+   CHEMISTRY — CONTROL ROOM BENTO
+   ============================================================ */
+html[data-subject="chemistry"] body[data-theme="control-room"],
+body[data-subject="chemistry"][data-theme="control-room"] {
+  --lg-accent: #2DD4BF;
+  --lg-accent-2: #86EFAC;
+  --lg-glow: rgba(45, 212, 191, 0.22);
+  --lg-panel: rgba(7, 34, 37, 0.55);
+  --lg-panel-strong: rgba(5, 24, 30, 0.76);
+  --lg-border: rgba(87, 223, 200, 0.28);
+  --lg-border-dim: rgba(87, 223, 200, 0.14);
+  --cyan: #2DD4BF;
+  --purple: #86EFAC;
+  --green: #A7F3D0;
+  --line: rgba(87, 223, 200, 0.20);
+  --vsh-cyan-rgb: 45, 212, 191;
+  --vsh-purple-rgb: 134, 239, 172;
+  --vsh-green-rgb: 167, 243, 208;
+}
+
