@@ -469,6 +469,147 @@
     animationFrame = requestAnimationFrame(frame);
   }
 
+
+  // Lightweight integer stoichiometry balancer. Supports ordinary JEE
+  // molecular formulae, nested (), [] and {} groups, and coefficients.
+  function parseChemicalFormula(source) {
+    const formula = String(source).replace(/\s+/g, "");
+    let index = 0;
+
+    function parseGroup(closing) {
+      const counts = Object.create(null);
+      while (index < formula.length) {
+        const char = formula[index];
+        if (closing && char === closing) {
+          index++;
+          return counts;
+        }
+
+        if (char === "(" || char === "[" || char === "{") {
+          index++;
+          const close = char === "(" ? ")" : char === "[" ? "]" : "}";
+          const nested = parseGroup(close);
+          let digits = "";
+          while (/\d/.test(formula[index] || "")) digits += formula[index++];
+          const multiplier = digits ? Number(digits) : 1;
+          Object.keys(nested).forEach((element) => {
+            counts[element] = (counts[element] || 0) + nested[element] * multiplier;
+          });
+          continue;
+        }
+
+        if (/[A-Z]/.test(char)) {
+          let element = formula[index++];
+          while (/[a-z]/.test(formula[index] || "")) element += formula[index++];
+          let digits = "";
+          while (/\d/.test(formula[index] || "")) digits += formula[index++];
+          counts[element] = (counts[element] || 0) + (digits ? Number(digits) : 1);
+          continue;
+        }
+
+        throw new Error("Unsupported formula near '" + formula.slice(index) + "'. Use standard element symbols and subscripts.");
+      }
+      if (closing) throw new Error("Unclosed group in formula: " + source);
+      return counts;
+    }
+
+    const result = parseGroup(null);
+    if (!Object.keys(result).length || index !== formula.length) {
+      throw new Error("Invalid chemical formula: " + source);
+    }
+    return result;
+  }
+
+  function parseReactionInput(input) {
+    const normalized = String(input)
+      .replace(/[⟶→]/g, "->")
+      .replace(/[⇌⇄↔]/g, "->")
+      .replace(/\\s*=\\s*/g, " -> ");
+    const sides = normalized.split(/\\s*(?:->|=>)\\s*/);
+    if (sides.length !== 2 || !sides[0].trim() || !sides[1].trim()) {
+      throw new Error("Use one reaction arrow, for example: CH4 + O2 -> CO2 + H2O.");
+    }
+
+    function parseSide(side) {
+      return side.split(/\\s+\\+\\s+/).map((raw) => {
+        let token = raw.trim();
+        const leading = token.match(/^(\\d+)\\s+(.+)$/);
+        if (leading) token = leading[2];
+        if (!token) throw new Error("A reaction contains an empty species.");
+        return { formula: token, atoms: parseChemicalFormula(token) };
+      });
+    }
+
+    const reactants = parseSide(sides[0]);
+    const products = parseSide(sides[1]);
+    if (!reactants.length || !products.length) throw new Error("Add at least one reactant and one product.");
+    return { reactants, products };
+  }
+
+  function balanceReactionInput(input) {
+    const parsed = parseReactionInput(input);
+    const species = parsed.reactants.concat(parsed.products);
+    if (species.length < 2 || species.length > 8) {
+      throw new Error("This lightweight balancer supports 2–8 species per reaction.");
+    }
+
+    const elements = Array.from(new Set(species.flatMap((item) => Object.keys(item.atoms))));
+    const target = elements.map((element) => species.map((item, index) => {
+      const count = item.atoms[element] || 0;
+      return index < parsed.reactants.length ? count : -count;
+    }));
+
+    // Search the smallest positive integer coefficient set first.
+    // This is deterministic and handles the common JEE reactions used here.
+    const count = species.length;
+    const maxTotal = 60;
+    let solution = null;
+
+    function isBalanced(coefficients) {
+      return target.every((row) => row.reduce((sum, value, i) => sum + value * coefficients[i], 0) === 0);
+    }
+
+    function findForTotal(total) {
+      const coefficients = new Array(count).fill(1);
+      function assign(position, remaining) {
+        if (position === count - 1) {
+          coefficients[position] = remaining;
+          if (isBalanced(coefficients)) {
+            solution = coefficients.slice();
+            return true;
+          }
+          return false;
+        }
+        const slotsAfter = count - position - 1;
+        const maxValue = remaining - slotsAfter;
+        for (let value = 1; value <= maxValue; value++) {
+          coefficients[position] = value;
+          if (assign(position + 1, remaining - value)) return true;
+        }
+        return false;
+      }
+      return assign(0, total - (count - 1));
+    }
+
+    for (let total = count; total <= maxTotal && !solution; total++) {
+      findForTotal(total);
+    }
+    if (!solution) {
+      throw new Error("Could not find a simple integer balance (coefficient sum ≤ 60). Check the reaction formulas.");
+    }
+
+    return {
+      reactants: parsed.reactants.map((item, index) => ({
+        formula: item.formula,
+        coefficient: solution[index]
+      })),
+      products: parsed.products.map((item, index) => ({
+        formula: item.formula,
+        coefficient: solution[parsed.reactants.length + index]
+      }))
+    };
+  }
+
   function balanceReaction() {
     const input = els.reactionInput.value.trim();
     if (!input) {
@@ -476,17 +617,11 @@
       els.reactionInput.focus();
       return;
     }
-    if (!window.FastBalance || typeof window.FastBalance.balance !== "function") {
-      setStatus("The fast-balance engine did not load. Check your connection and reload the lab.", "error");
-      return;
-    }
-
     els.simulateButton.disabled = true;
     try {
-      const result = window.FastBalance.balance(input, { showOne: false, format: "text" });
-      if (!result || !Array.isArray(result.reactants) || !Array.isArray(result.products) ||
-          !result.reactants.length || !result.products.length) {
-        throw new Error("The balancer returned an incomplete reaction.");
+      const result = balanceReactionInput(input);
+      if (!result || !result.reactants.length || !result.products.length) {
+        throw new Error("The reaction could not be balanced.");
       }
       balanced = result;
       setupReactantControls(result.reactants, false);
@@ -547,8 +682,13 @@
   }
 
   function initialize() {
-    resizeCanvas();
+    ctx = els.canvas.getContext("2d", { alpha: false });
+    if (!ctx) {
+      setStatus("Canvas is unavailable in this browser.", "error");
+      return;
+    }
     els.reactionInput.value = els.reactionSelect.value || DEFAULT_REACTION;
+    resizeCanvas();
     balanceReaction();
   }
 
