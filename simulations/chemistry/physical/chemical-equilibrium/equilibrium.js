@@ -15,6 +15,10 @@
     injectAmount: $("inject-amount"),
     injectValue: $("inject-value"),
     injectButton: $("inject-button"),
+    predictionPrompt: $("prediction-prompt"),
+    predictionForward: $("predict-forward"),
+    predictionReverse: $("predict-reverse"),
+    predictionFeedback: $("prediction-feedback"),
     start: $("start-button"),
     pause: $("pause-button"),
     reset: $("reset-button"),
@@ -87,6 +91,8 @@
   let pixelRatio = 1;
   let ctx = null;
   let previousInjectionKey = null;
+  let predictionChoice = null;
+  let pendingPrediction = null;
   const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function speciesList(model) { return model.reactants.concat(model.products); }
@@ -212,6 +218,63 @@
     });
     if (speciesList(reaction).some((species) => species.key === previous)) els.injectSpecies.value = previous;
     else els.injectSpecies.selectedIndex = 0;
+  }
+  function clearPrediction(message) {
+    predictionChoice = null;
+    pendingPrediction = null;
+    els.predictionForward.setAttribute("aria-pressed", "false");
+    els.predictionReverse.setAttribute("aria-pressed", "false");
+    els.injectButton.disabled = true;
+    els.predictionFeedback.dataset.state = "info";
+    els.predictionFeedback.textContent = message || "Choose a direction first. Then enable Le Chatelier Effect and inject the selected species.";
+    typeset([els.predictionFeedback]);
+  }
+  function updatePredictionPrompt() {
+    const species = speciesForKey(els.injectSpecies.value);
+    if (!species) {
+      els.predictionPrompt.textContent = "Choose a species to inject, then predict the equilibrium shift.";
+      return;
+    }
+    const side = species.key[0] === "r" ? "reactant" : "product";
+    els.predictionPrompt.textContent = "If we add more " + species.label + " (" + side + "), which way will the equilibrium shift?";
+  }
+  function choosePrediction(direction) {
+    if (pendingPrediction) return;
+    predictionChoice = direction;
+    els.predictionForward.setAttribute("aria-pressed", String(direction === "forward"));
+    els.predictionReverse.setAttribute("aria-pressed", String(direction === "reverse"));
+    els.injectButton.disabled = false;
+    els.predictionFeedback.dataset.state = "info";
+    els.predictionFeedback.textContent = "Prediction saved: " + (direction === "forward" ? "forward" : "reverse") + ". Now enable Le Chatelier Effect and inject the selected species.";
+  }
+  function assessPrediction() {
+    if (!pendingPrediction || pendingPrediction.complete) return;
+    const elapsed = simulationTime - pendingPrediction.startedAt;
+    const rates = calculateRates(concentrations);
+    const scale = Math.max(rates.forward, rates.reverse);
+    const atEquilibrium = scale > 1e-9 &&
+      Math.abs(rates.forward - rates.reverse) <= Math.max(1e-8, scale * EQUILIBRIUM_RELATIVE_TOLERANCE);
+    if (elapsed < 2.5 || (!atEquilibrium && elapsed < 5)) return;
+
+    const result = pendingPrediction;
+    result.complete = true;
+    const correct = result.choice === result.actual;
+    const directionLabel = result.actual === "forward" ? "forward" : "reverse";
+    const quotientRule = result.side === "reactant"
+      ? "Adding a reactant increases the denominator of the reaction quotient, so \\(Q_c\\) decreases."
+      : "Adding a product increases the numerator of the reaction quotient, so \\(Q_c\\) increases.";
+    const comparison = result.qAfter < result.kc
+      ? "\\(Q_c < K_c\\), so the forward reaction proceeds to form products."
+      : result.qAfter > result.kc
+        ? "\\(Q_c > K_c\\), so the reverse reaction proceeds to form reactants."
+        : "\\(Q_c = K_c\\), so the system is already at equilibrium.";
+    const progress = atEquilibrium ? "The rates have returned to equilibrium." : "The simulation is moving the quotient back toward \\(K_c\\).";
+    els.predictionFeedback.dataset.state = correct ? "success" : "error";
+    els.predictionFeedback.innerHTML =
+      "<strong>Your prediction was " + (correct ? "Correct" : "Incorrect") + ".</strong> The reaction shifted " +
+      directionLabel + " to consume the added " + result.side + ". " + quotientRule + " " +
+      comparison + " " + progress;
+    typeset([els.predictionFeedback]);
   }
   function configureControls() {
     const available = Object.fromEntries(speciesList(reaction).map((species) => [species.key, species]));
@@ -380,23 +443,50 @@
   }
   function injectSpecies() {
     if(!els.leChatelier.checked)return;
+    if(!predictionChoice) {
+      els.predictionFeedback.textContent = "Make a prediction before injecting a species.";
+      els.predictionFeedback.dataset.state = "error";
+      return;
+    }
+    if(pendingPrediction && !pendingPrediction.complete)return;
     const key=els.injectSpecies.value; const species=speciesForKey(key); const amount=Number(els.injectAmount.value);
     if(!species||!Number.isFinite(amount)||amount<=0)return;
-    // Keep a pre-injection sample, then a second point at nearly the same time to show the spike.
+    // Record the quotient immediately after the concentration jump; its relation to Kc
+    // determines the thermodynamically required direction of relaxation.
     sampleAfterInjection();
     concentrations[key]=(concentrations[key]||0)+amount/VOLUME_L;
     simulationTime+=.002;
     previousInjectionKey=key;
+    const qAfter = calculateQc(concentrations);
+    const kc = calculateKc();
+    const actual = Number.isNaN(qAfter) || qAfter < kc * (1 - 1e-5)
+      ? "forward"
+      : qAfter > kc * (1 + 1e-5) ? "reverse" : (key[0] === "r" ? "forward" : "reverse");
+    pendingPrediction = {
+      choice: predictionChoice,
+      actual: actual,
+      qAfter: qAfter,
+      kc: kc,
+      side: key[0] === "r" ? "reactant" : "product",
+      startedAt: simulationTime,
+      complete: false
+    };
     sampleAfterInjection();
     syncParticles(false); updateMonitor();
+    els.injectButton.disabled = true;
+    els.predictionForward.disabled = true;
+    els.predictionReverse.disabled = true;
+    els.predictionFeedback.dataset.state = "info";
+    els.predictionFeedback.textContent = "Species injected. Observe the reaction as it relaxes toward the new equilibrium...";
     if(!running)startReaction();
-    setStatus("Added "+species.label+" by "+amount.toFixed(2)+" mol. The equilibrium position will shift "+
-      (key[0]==="r"?"forward to consume added reactant.":"in reverse to consume added product."),"success");
+    setStatus("Added "+species.label+" by "+amount.toFixed(2)+" mol. Comparing the post-injection Qc with Kc to observe the shift.","success");
   }
   function resetSimulation(keepSliderValues) {
     if(!keepSliderValues)updateInitialAmountsFromControls();
     concentrations=Object.assign({},initialAmounts);
     simulationTime=0; frameCounter=0; running=false; lastFrameTime=0; previousInjectionKey=null;
+    els.predictionForward.disabled = false; els.predictionReverse.disabled = false;
+    clearPrediction("Simulation reset. Make a fresh prediction before the next injection.");
     els.start.textContent="▶ Start Reaction"; els.pause.disabled=true;
     rebuildChart(); syncParticles(true); updateMonitor(); drawParticles(performance.now());
     setStatus("Ready. Press Start Reaction to watch the system approach equilibrium.","info");
@@ -415,7 +505,7 @@
   }
   function selectReaction() {
     pauseReaction(); reaction=REACTIONS[els.reaction.value]||REACTIONS["h2-i2"];
-    configureControls(); renderEquations(); resetSimulation(true);
+    configureControls(); updatePredictionPrompt(); renderEquations(); resetSimulation(true);
   }
   function updateRangeOutput(key) {
     els.values[key].textContent=Number(els.ranges[key].value).toFixed(2)+" mol";
@@ -427,6 +517,7 @@
     if(running&&dt>0){
       updateKinetics(dt); simulationTime+=dt; frameCounter++;
       if(frameCounter%6===0){syncParticles(false);sampleAfterInjection();updateMonitor();}
+      assessPrediction();
     }
     drawParticles(now);
     rafId=window.requestAnimationFrame(frame);
@@ -444,6 +535,12 @@
   els.leChatelier.addEventListener("change",function(){els.injectPanel.hidden=!els.leChatelier.checked;});
   els.injectAmount.addEventListener("input",function(){els.injectValue.textContent=Number(els.injectAmount.value).toFixed(2)+" mol";});
   els.injectButton.addEventListener("click",injectSpecies);
+  els.predictionForward.addEventListener("click",function(){choosePrediction("forward");});
+  els.predictionReverse.addEventListener("click",function(){choosePrediction("reverse");});
+  els.injectSpecies.addEventListener("change",function(){
+    updatePredictionPrompt();
+    clearPrediction("Species changed. Make a new prediction for the selected species.");
+  });
 
   function initialize() {
     ctx=els.particles.getContext("2d");
