@@ -152,7 +152,7 @@
   </style>
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['\\\\(', '\\\\)'], ['$', '$']], displayMath: [['\\\\[', '\\\\]']] },
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
       chtml: { scale: .96 },
       options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
     };
@@ -253,7 +253,7 @@
 
       <aside class="eq-glass eq-results" aria-labelledby="results-title" aria-live="polite">
         <div class="eq-panel-head"><h2 id="results-title">Equilibrium Monitor</h2><span class="eq-index">02 / OUTPUT</span></div>
-        <div class="equation-card"><div class="eq-label">Selected reaction</div><div class="equation-line" id="reaction-equation">\\(H_2 + I_2 \\rightleftharpoons 2HI\\)</div></div>
+        <div class="equation-card"><div class="eq-label">Selected reaction</div><div class="equation-line" id="reaction-equation">\(H_2 + I_2 \rightleftharpoons 2HI\)</div></div>
         <div class="stat-grid">
           <div class="stat-card"><div class="eq-label">Reaction quotient · Qc</div><div class="stat-value" id="qc-value">0.000</div><div class="stat-sub">Current concentrations</div></div>
           <div class="stat-card"><div class="eq-label">Equilibrium constant · Kc</div><div class="stat-value" id="kc-value">3.000</div><div class="stat-sub">Fixed for this selected temperature</div></div>
@@ -268,8 +268,8 @@
         </div>
         <div class="formula-card">
           <div class="eq-label">Equilibrium expression</div>
-          <div class="formula-display" id="kc-formula">\\(K_c = \\frac{[HI]^2}{[H_2][I_2]} = \\frac{k_f}{k_r}\\)</div>
-          <div class="formula-display" id="qc-relation">\\(Q_c < K_c\\;\\Rightarrow\\;\\text{forward shift}\\)</div>
+          <div class="formula-display" id="kc-formula">\(K_c = \frac{[HI]^2}{[H_2][I_2]} = \frac{k_f}{k_r}\)</div>
+          <div class="formula-display" id="qc-relation">\(Q_c < K_c\;\Rightarrow\;\text{forward shift}\)</div>
         </div>
         <p class="model-note">At dynamic equilibrium, forward and reverse rates are equal. Both reactions continue; concentrations remain constant because the rates balance.</p>
       </aside>
